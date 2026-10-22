@@ -41,8 +41,7 @@ export const LOOKING_FOR = [
 ];
 
 export const GEOGRAPHY = [
-  'Nordelta', 'Vicente López', 'Pilar', 'San Isidro',
-  'Tigre', 'Escobar', 'General Pacheco', 'San Fernando',
+  'Tigre', 'Vicente López', 'Pilar', 'San Isidro', 'Escobar', 'General Pacheco', 'San Fernando',
 ];
 
 // `websites` es el conteo previo a la migración: no incluye a los builders cuyo huevsite se
@@ -83,13 +82,13 @@ export const TIERS = [
     perks: [
       'Tu marca al frente de los eventos',
       'Espacio para hablar en los encuentros',
-      'Presencia en bsasnortetech.vercel.app',
+      'Presencia en el sitio de la comunidad',
       'Línea directa con la comunidad',
     ],
   },
 ];
 
-export const CONTACT = { emails: ['tomasdelucaa@gmail.com', 'patricio@mateandbuild.com.ar'], site: 'bsasnortetech.vercel.app' };
+export const CONTACT = { emails: ['tomasdelucaa@gmail.com', 'patricio@mateandbuild.com.ar'], site: 'Norte Tech · zona norte' };
 
 // ── Perfil de sponsor (opcional) ─────────────────────────────────────────────
 // Cuando se pasa a buildSlides(), el deck se personaliza para ese sponsor: cover
@@ -116,7 +115,7 @@ export const BALANZ: Sponsor = {
   why: [
     {
       t: 'Ya son vecinos',
-      d: 'Balanz se mudó a Nordelta para estar cerca de sus clientes de Zona Norte. La comunidad construye a minutos de esa oficina. Falta que se conozcan.',
+      d: 'Balanz se mudó a zona norte para estar cerca de sus clientes de Zona Norte. La comunidad construye a minutos de esa oficina. Falta que se conozcan.',
     },
     {
       t: 'Tu segmento, sin vueltas',
@@ -138,7 +137,7 @@ export const BALANZ: Sponsor = {
   proposal: [
     {
       t: 'La sede',
-      d: 'El co-work y los encuentros del ciclo en las áreas comunes de Balanz Nordelta. La comunidad entra por tu puerta.',
+      d: 'El co-work y los encuentros del ciclo en las áreas comunes de la sede de Balanz en zona norte. La comunidad entra por tu puerta.',
     },
     {
       t: 'La producción',

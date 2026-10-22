@@ -3,15 +3,15 @@
 // respete en print (los custom properties no aplican como presentation attrs).
 import React from 'react';
 
-const ACCENT = '#a9b7f3';
-const BORDER = '#1f2a52';
-const BG = '#0a0f24';
-const MUTED = '#6b7699';
+const ACCENT = '#1774FD';
+const BORDER = '#24242A';
+const BG = '#000000';
+const MUTED = '#82848F';
 
 export type Datum = { label: string; n: number };
 
 // Paleta del degradado de la marca para composición (dona): durazno → violeta → azul → gris.
-export const DONUT_COLORS = ['#f4c2a8', '#c99ab0', '#8e6bae', '#6f7cc4', '#5a8fda', '#4a5780'];
+export const DONUT_COLORS = ['#1774FD', '#0F58DE', '#6EA6FF', '#A9CAFF', '#A5A6B0', '#5E5E5E'];
 
 // Área/línea para series temporales (crecimiento).
 export function AreaChart({

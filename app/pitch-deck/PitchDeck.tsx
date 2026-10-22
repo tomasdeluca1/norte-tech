@@ -4,6 +4,7 @@ import './pitch-deck.css';
 import { buildSlides } from './slides';
 import { MEMBERS_FALLBACK, type Sponsor } from './pitch-data';
 import { clampIndex, parseHash, hashFor } from './nav';
+import BrandLogo from '../components/BrandLogo';
 
 export default function PitchDeck({ sponsor }: { sponsor?: Sponsor }) {
   const [memberTotal, setMemberTotal] = useState<number>(MEMBERS_FALLBACK);
@@ -46,7 +47,7 @@ export default function PitchDeck({ sponsor }: { sponsor?: Sponsor }) {
 
   return (
     <div className="deck">
-      <a className="deck-home" href="/" aria-label="Norte Tech, inicio"><img src="/brand/norte-tech-horizontal.svg" alt="Norte Tech" /></a>
+      <a className="deck-home" href="/" aria-label="Norte Tech, inicio"><BrandLogo variant="logo-horizontal" /></a>
       {sponsor && (
         <div className="deck-cobrand">
           <span className="cb-label">Sponsor principal</span>

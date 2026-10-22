@@ -5,6 +5,10 @@ import PresentationFields, { EMPTY_PRESENTATION, presentationPayload, type Prese
 import { ROLES } from '@/lib/profile-fields';
 import CommunityDirectory from './components/CommunityDirectory';
 import { PALETTE } from '@/lib/palette';
+import BrandLogo from './components/BrandLogo';
+import ThemeToggle from './components/ThemeToggle';
+import CompassMotif from './components/CompassMotif';
+import { MEETUP_URL } from '@/lib/site';
 
 interface Member {
   _id: string;
@@ -35,10 +39,17 @@ export default function Home() {
   const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const patchPresentation = (patch: Partial<PresentationState>) => setPresentation(prev => ({ ...prev, ...patch }));
 
+  const CATEGORIES = ['Founders', 'Builders', 'Inversores', 'Growth', 'Marketing', 'Creators'];
   const AVAILABLE_TAGS = ['AI', 'SaaS', 'Fintech', 'Web3', 'Proptech', 'Dev', 'Design', 'Marketing', 'Founder', 'Builder', 'Inversor'];
   const toggleTag = (tag: string) => setFormTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
 
   const closeMob = () => setIsMobOpen(false);
+
+  // CTA principal: la página de Luma del próximo meetup (MEETUP_URL en lib/site.ts).
+  // Sin URL configurada, el CTA abre el formulario de alta.
+  const meetupLinkProps = MEETUP_URL
+    ? { href: MEETUP_URL, target: '_blank', rel: 'noopener noreferrer' }
+    : { href: '#join', onClick: (e: React.MouseEvent) => { e.preventDefault(); setIsMobOpen(false); setShowJoinModal(true); } };
 
   const fetchMembers = () => {
     fetch('/api/members')
@@ -149,14 +160,16 @@ export default function Home() {
     <>
       <nav className={navScrolled ? 'scrolled' : ''}>
         <a href="#" className="nav-logo" aria-label="Norte Tech, inicio">
-          <img src="/brand/norte-tech-horizontal.svg" alt="Norte Tech" />
+          <BrandLogo variant="logo-horizontal" className="nav-logo-full" />
+          <BrandLogo variant="cursor" className="nav-logo-mark" />
         </a>
         <ul className="nav-center">
-          <li><a href="#sobre">Sobre</a></li>
-          <li><a href="#eventos">Eventos</a></li>
+          <li><a href="#sobre">Qué es</a></li>
+          <li><a href="#eventos">Agenda</a></li>
           <li><a href="#comunidad">Comunidad</a></li>
         </ul>
         <div className="nav-right">
+          <ThemeToggle />
           {me ? (
             <>
               <a href="/dashboard" className="nav-user" title="Ir a mi dashboard">
@@ -169,11 +182,9 @@ export default function Home() {
               <button onClick={handleLogout} className="btn btn-outline nav-logout">Salir</button>
             </>
           ) : (
-            <>
-              <a href="/login" className="btn btn-outline">Iniciar sesión</a>
-              <button onClick={() => setShowJoinModal(true)} className="btn btn-green">Unirse</button>
-            </>
+            <a href="/login" className="btn btn-outline">Iniciar sesión</a>
           )}
+          <a {...meetupLinkProps} className="btn btn-green nav-cta">Próximo meetup</a>
           <button className={`hamburger ${isMobOpen ? 'open' : ''}`} onClick={() => setIsMobOpen(!isMobOpen)} aria-label="Menú">
             <span></span><span></span><span></span>
           </button>
@@ -181,8 +192,8 @@ export default function Home() {
       </nav>
 
       <div className={`mobile-menu ${isMobOpen ? 'open' : ''}`} id="mob">
-        <a href="#sobre" onClick={closeMob}>Sobre</a>
-        <a href="#eventos" onClick={closeMob}>Eventos</a>
+        <a href="#sobre" onClick={closeMob}>Qué es</a>
+        <a href="#eventos" onClick={closeMob}>Agenda</a>
         <a href="#comunidad" onClick={closeMob}>Comunidad</a>
         {me ? (
           <>
@@ -190,12 +201,13 @@ export default function Home() {
             <button className="btn btn-outline" onClick={() => { closeMob(); handleLogout(); }}>Salir</button>
           </>
         ) : (
-          <>
-            <a href="/login" onClick={closeMob}>Iniciar sesión</a>
-            <button className="btn btn-green" onClick={() => { closeMob(); setShowJoinModal(true); }}>
-              Unirse a la comunidad
-            </button>
-          </>
+          <a href="/login" onClick={closeMob}>Iniciar sesión</a>
+        )}
+        <a {...meetupLinkProps} className="btn btn-green">Sumate al próximo meetup</a>
+        {!me && (
+          <button className="btn btn-outline" onClick={() => { closeMob(); setShowJoinModal(true); }}>
+            Unirme a la comunidad
+          </button>
         )}
       </div>
 
@@ -207,44 +219,41 @@ export default function Home() {
           <div className="pill">
             <span className="pill-dot"></span>
             Comunidad tech
-            <span className="pill-sep">/</span>
-            Buenos Aires
+            <span className="pill-sep">·</span>
+            Zona norte
           </div>
-          <h1 className="hero-h1 display">
-            Founders, capital y talento.<br /><span className="serif-hl">En la misma sala.</span>
-          </h1>
+          <h1 className="hero-h1 display">Encontrá tu norte.</h1>
           <p className="hero-sub">
-            La comunidad de founders, devs e inversores de la Zona Norte de Buenos Aires.
-            Nos juntamos a construir startups, mostrar lo que hacemos y conectar.
+            La comunidad tech de zona norte.<br />
+            Founders, builders e inversores en la misma mesa.
           </p>
           <div className="hero-actions">
-            <button onClick={() => setShowJoinModal(true)} className="btn btn-green">
-              Unirse a la comunidad
-            </button>
-            <a href="#eventos" className="btn btn-ghost">Ver eventos →</a>
+            <a {...meetupLinkProps} className="btn btn-green">Sumate al próximo meetup</a>
+            <button onClick={() => setShowJoinModal(true)} className="btn btn-ghost">Unirme a la comunidad</button>
           </div>
+          <ul className="nt-chips" aria-label="Quiénes forman la comunidad">
+            {CATEGORIES.map(c => <li key={c} className="nt-chip">{c}</li>)}
+          </ul>
           <div className="hero-stats">
             <div className="hero-stat">
-              <div className="val">{memberTotal ?? '—'}</div>
-              <div className="lbl">Miembros fundadores</div>
+              <div className="val">{memberTotal ?? '·'}</div>
+              <div className="lbl">Miembros</div>
             </div>
             <div className="hero-stat">
               <div className="val">2025</div>
-              <div className="lbl">Año de inicio</div>
+              <div className="lbl">Desde</div>
             </div>
             <div className="hero-stat">
-              <div className="val">∞</div>
-              <div className="lbl">Por construir</div>
+              <div className="val">6</div>
+              <div className="lbl">Perfiles en la mesa</div>
             </div>
           </div>
         </div>
 
         <div className="hero-right">
-          <div className="hero-video">
-            <video autoPlay muted loop playsInline preload="metadata" poster="/video/norte-tech-hero-poster.jpg" aria-label="Video de presentación de Norte Tech">
-              <source src="/video/norte-tech-hero.webm" type="video/webm" />
-              <source src="/video/norte-tech-hero.mp4" type="video/mp4" />
-            </video>
+          <div className="hero-emblem">
+            <CompassMotif />
+            <BrandLogo variant="isologo" className="hero-isologo" />
           </div>
         </div>
 
@@ -268,38 +277,38 @@ export default function Home() {
       <section id="sobre" className="section">
         <div className="about-grid">
           <div>
-            <div className="eyebrow">¿Qué es esto?</div>
-            <h2 className="sec-title display">TECH NACE<br />EN ZONA NORTE</h2>
+            <div className="eyebrow">Qué es Norte Tech</div>
+            <h2 className="sec-title display">Hay gente construyendo al lado tuyo.</h2>
             <p className="sec-sub">
-              Somos un grupo de builders que vive y trabaja en la Zona Norte del Gran Buenos Aires.
-              Arrancamos en 2025 con ganas de construir el ecosistema tech de la zona — desde cero, sin humo.
+              Norte Tech junta a founders, builders e inversores que viven y trabajan en zona norte.
+              Nos vemos en meetups, coworks y charlas para mostrar lo que estamos haciendo, pedir feedback
+              y armar equipo sin tener que ir hasta Capital.
             </p>
             <div className="feat-grid">
-              <div className="feat"><div className="feat-icon">🚀</div><h4>Startups & Proyectos</h4><p>Conectamos fundadores con co-founders, early hires y primeros usuarios.</p></div>
-              <div className="feat"><div className="feat-icon">🧠</div><h4>Conocimiento</h4><p>Workshops técnicos, talks de founders y sesiones de Q&A.</p></div>
-              <div className="feat"><div className="feat-icon">🤝</div><h4>Red de Contactos</h4><p>Inversores, mentores y corporaciones de zona norte.</p></div>
-              <div className="feat"><div className="feat-icon">⚡</div><h4>Acción Real</h4><p>No es otro grupo de WhatsApp. Construimos cosas juntos.</p></div>
+              <div className="feat"><div className="feat-icon">01</div><h4>Meetups</h4><p>Encuentros cortos y sin slides. Contás en qué andás y conocés a los que están en lo mismo.</p></div>
+              <div className="feat"><div className="feat-icon">02</div><h4>Coworks</h4><p>Tardes de laburo compartido en cafés y clubes de la zona. Traés la compu, el resto sale solo.</p></div>
+              <div className="feat"><div className="feat-icon">03</div><h4>Red</h4><p>Founders con ronda, builders que despliegan todos los días e inversores que quieren ver proyectos de cerca.</p></div>
+              <div className="feat"><div className="feat-icon">04</div><h4>Feedback</h4><p>Mostrás tu producto y te devuelven algo útil. Sin filtro y sin pitch armado.</p></div>
             </div>
           </div>
           <div>
             <div className="terminal">
               <div className="t-bar">
                 <div className="td"></div><div className="td"></div><div className="td"></div>
-                <span>~/nortetech</span>
+                <span>~/norte-tech</span>
               </div>
               <div className="t-body mono">
                 <div><span className="pr">$</span> <span className="cm">whoami</span></div>
-                <div><span className="ou">→ builders, devs, founders, makers</span></div>
+                <div><span className="ou">→ founders, builders, inversores, growth, marketing, creators</span></div>
                 <div>&nbsp;</div>
-                <div><span className="pr">$</span> <span className="cm">cat ./manifest.json</span></div>
-                <div><span className="ou">{`{ "domain": "bsasnortetech.vercel.app",`}</span></div>
-                <div><span className="ou">&nbsp;&nbsp;{`"members": ${memberTotal ?? 163},`}</span></div>
-                <div><span className="ou">&nbsp;&nbsp;{`"year": 2025,`}</span></div>
-                <div><span className="ou">&nbsp;&nbsp;{`"status": "shipping" }`}</span></div>
+                <div><span className="pr">$</span> <span className="cm">cat ./comunidad.json</span></div>
+                <div><span className="ou">{`{ "nombre": "Norte Tech",`}</span></div>
+                <div><span className="ou">&nbsp;&nbsp;{`"miembros": ${memberTotal ?? 163},`}</span></div>
+                <div><span className="ou">&nbsp;&nbsp;{`"desde": 2025,`}</span></div>
+                <div><span className="ou">&nbsp;&nbsp;{`"estado": "shipping" }`}</span></div>
                 <div>&nbsp;</div>
-                <div><span className="pr">$</span> <span className="cm">next-event</span></div>
-                <div><span className="ou">→ Kick-off — fecha por confirmar</span></div>
-                <div><span className="ou">→ Zona Norte, Buenos Aires</span></div>
+                <div><span className="pr">$</span> <span className="cm">next --meetup</span></div>
+                <div><span className="ou">→ zona norte, Buenos Aires</span></div>
                 <div>&nbsp;</div>
                 <div><span className="pr">$</span> <span className="cm">join<span className="cursor"></span></span></div>
               </div>
@@ -313,31 +322,31 @@ export default function Home() {
           <div className="events-hd">
             <div>
               <div className="eyebrow">Agenda</div>
-              <h2 className="sec-title display">PRÓXIMOS<br />EVENTOS</h2>
+              <h2 className="sec-title display">Cómo nos juntamos</h2>
             </div>
-            <button onClick={() => setShowJoinModal(true)} className="btn btn-ghost">Avisame de nuevos eventos →</button>
+            <a {...meetupLinkProps} className="btn btn-ghost">Sumate al próximo meetup →</a>
           </div>
           <div className="events-grid">
             <div className="ev-card ev-featured">
-              <div className="ev-badge badge-star">★ Evento fundacional</div>
-              <h3>Kick-off Norte Tech</h3>
-              <p>El primer encuentro de la comunidad. Nos juntamos para conocernos, contar en qué estamos construyendo y definir juntos el rumbo de Norte Tech. Lugar y fecha a confirmar — anotate para que te avisemos en cuanto esté todo listo.</p>
+              <div className="ev-badge badge-star">Próximo meetup</div>
+              <h3>Meet &amp; Talk</h3>
+              <p>Charlamos de tecnología y conocemos a los que están construyendo en la zona. En el Random Pick &amp; Talk salen nombres al azar y cada uno tiene 60 segundos para contar quién es y qué está haciendo. Sin slides, sin pitch.</p>
               <div className="ev-meta">
-                <span className="ev-date">Fecha a confirmar · Zona Norte</span>
-                <button onClick={() => setShowJoinModal(true)} className="ev-link" style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 'inherit' }}>Avisame cuando sea →</button>
+                <span className="ev-date">Zona norte · Fecha y lugar en Luma</span>
+                <a {...meetupLinkProps} className="ev-link">Reservá tu lugar →</a>
               </div>
             </div>
-            <div className="ev-card ev-dim">
-              <div className="ev-badge badge-ws">Workshop</div>
-              <h3>Build with AI — TBD</h3>
-              <p>Sesión práctica de vibe coding: de idea a MVP en pocas horas. Fecha a definir por la comunidad.</p>
-              <div className="ev-meta"><span className="ev-date">Próximamente</span><span>Zona Norte</span></div>
+            <div className="ev-card">
+              <div className="ev-badge badge-ws">Cowork</div>
+              <h3>Cowork de la comunidad</h3>
+              <p>Una tarde de laburo en cafés y clubes de la zona. Ya pasamos por Café García, Santa Bárbara e Islas del Golf.</p>
+              <div className="ev-meta"><span className="ev-date">Recurrente</span><span>Zona norte</span></div>
             </div>
-            <div className="ev-card ev-dim">
-              <div className="ev-badge badge-hack">Hackathon</div>
-              <h3>Norte Hack #1 — TBD</h3>
-              <p>El primer hackathon de la comunidad. Track y fecha a definir. ¿Tenés idea de tema? Sugerila.</p>
-              <div className="ev-meta"><span className="ev-date">Próximamente</span><span>Zona Norte</span></div>
+            <div className="ev-card">
+              <div className="ev-badge badge-hack">Founders</div>
+              <h3>Founders Edition</h3>
+              <p>Una noche para founders que ya construyeron algo real: con ronda, facturando o con años encima. Con dinámicas para que termines hablando con gente que no habrías cruzado.</p>
+              <div className="ev-meta"><span className="ev-date">Con cupo</span><span>Zona norte</span></div>
             </div>
           </div>
         </section>
@@ -346,9 +355,9 @@ export default function Home() {
       <section id="comunidad" className="section">
         <div className="comunidad-head">
           <div className="comunidad-head-main">
-            <div className="eyebrow">Miembros fundadores</div>
-            <h2 className="sec-title display">LA COMUNIDAD</h2>
-            <p className="sec-sub">Los primeros builders armando esto desde el día cero. Cada uno con lo que está construyendo. Si todavía no estás, estás a un clic.</p>
+            <div className="eyebrow">Miembros</div>
+            <h2 className="sec-title display">La comunidad</h2>
+            <p className="sec-sub">Founders, builders, inversores, growth, marketing y creators de zona norte, cada uno con lo que está construyendo. Si todavía no estás, te sumás en un minuto.</p>
           </div>
         </div>
 
@@ -382,19 +391,19 @@ export default function Home() {
         <div className="members-join">
           {me
             ? <a href="/dashboard#tu-sitio" className="btn btn-outline">Sumá tu sitio →</a>
-            : <button onClick={() => setShowJoinModal(true)} className="btn btn-green">Sumate a la comunidad →</button>}
+            : <button onClick={() => setShowJoinModal(true)} className="btn btn-green">Unirme a la comunidad →</button>}
         </div>
       </section>
 
       <div id="join" className="cta-band">
         <div className="cta-inner">
           <div>
-            <h2 className="display">¿LISTO PARA<br />CONSTRUIR?</h2>
-            <p>Sumate a Norte Tech. Es gratis, es local y es real. Nos vemos en bsasnortetech.vercel.app.</p>
+            <h2 className="display">¿Te vemos en el próximo?</h2>
+            <p>Los meetups son en zona norte y puede venir cualquiera que esté construyendo algo. Reservá tu lugar y vení.</p>
           </div>
-          <button onClick={() => setShowJoinModal(true)} className="btn btn-dark" style={{ fontSize: '.9rem', padding: '16px 36px' }}>
-            Unirse al grupo
-          </button>
+          <a {...meetupLinkProps} className="btn btn-green" style={{ fontSize: '.9rem', padding: '16px 36px' }}>
+            Sumate al próximo meetup
+          </a>
         </div>
       </div>
 
@@ -403,30 +412,26 @@ export default function Home() {
           <div className="footer-top">
             <div className="f-brand">
               <div className="logo">
-                <img src="/brand/norte-tech-horizontal.svg" alt="Norte Tech" />
+                <BrandLogo variant="logo-horizontal" />
               </div>
-              <div className="domain-tag">→ bsasnortetech.vercel.app</div>
-              <p>Comunidad tech de la Zona Norte del Gran Buenos Aires. Construimos juntos desde cero.</p>
+              <p>La comunidad tech de zona norte. Founders, builders e inversores en la misma mesa.</p>
             </div>
             <div className="f-col">
               <h5>Comunidad</h5>
-              <a href="#sobre">Sobre nosotros</a>
+              <a href="#sobre">Qué es</a>
               <a href="#comunidad">Miembros</a>
-              <a href="#eventos">Eventos</a>
+              <a href="#eventos">Agenda</a>
               <a href="/login">Iniciar sesión</a>
             </div>
             <div className="f-col">
-              <h5>Contacto</h5>
-              <a href="#" onClick={(e) => { e.preventDefault(); setShowJoinModal(true); }}>Unirse a la comunidad</a>
-              <a href="tel:+541125085500">+54 11 2508-5500</a>
-              <a href="https://bsasnortetech.vercel.app" target="_blank">bsasnortetech.vercel.app</a>
+              <h5>Sumate</h5>
+              <a {...meetupLinkProps}>Próximo meetup</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setShowJoinModal(true); }}>Unirme a la comunidad</a>
             </div>
           </div>
           <div className="footer-bottom">
-            <p>© 2025 Norte Tech · bsasnortetech.vercel.app · Zona Norte, Pcia. de Buenos Aires</p>
-            <a href="#" onClick={(e) => { e.preventDefault(); setShowJoinModal(true); }} className="f-wa">
-              Unirse a la comunidad
-            </a>
+            <p>© {new Date().getFullYear()} Norte Tech · Zona norte, Buenos Aires</p>
+            <a {...meetupLinkProps} className="f-wa">Sumate al próximo meetup</a>
           </div>
         </div>
       </footer>

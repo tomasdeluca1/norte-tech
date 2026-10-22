@@ -1,6 +1,6 @@
 "use client";
 
-import { NEIGHBORHOODS, LOOKING_FOR_OPTIONS } from '@/lib/profile-fields';
+import { NEIGHBORHOODS, LOOKING_FOR_OPTIONS, neighborhoodLabel } from '@/lib/profile-fields';
 
 export interface PresentationState {
   neighborhood: string;
@@ -80,7 +80,7 @@ export default function PresentationFields({ value, onChange }: Props) {
         <select value={value.neighborhood} onChange={(e) => onChange({ neighborhood: e.target.value })}>
           <option value="">Elegí tu barrio / zona…</option>
           {NEIGHBORHOODS.map((n) => (
-            <option key={n} value={n}>{n}</option>
+            <option key={n} value={n}>{neighborhoodLabel(n)}</option>
           ))}
         </select>
       </div>
@@ -90,7 +90,7 @@ export default function PresentationFields({ value, onChange }: Props) {
         <textarea
           rows={2}
           maxLength={1000}
-          placeholder="Ej. Dev full-stack, ex-Mercado Libre. Me mudé a Nordelta en 2023 y armo productos de IA."
+          placeholder="Ej. Dev full-stack, ex-Mercado Libre. Me mudé a zona norte en 2023 y armo productos de IA."
           value={value.bio}
           onChange={(e) => onChange({ bio: e.target.value })}
         />

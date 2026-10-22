@@ -10,7 +10,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   return (
     <main style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: '40px 16px', background: 'var(--bg)' }}>
       <div className="modal-card" style={{ maxWidth: 560, width: '100%', position: 'relative' }}>
-        <a href="/" className="modal-eyebrow" style={{ textDecoration: 'none', display: 'inline-block' }}>$ bsasnortetech.vercel.app</a>
+        <a href="/" className="modal-eyebrow" style={{ textDecoration: 'none', display: 'inline-block' }}>$ norte-tech</a>
         {children}
       </div>
     </main>

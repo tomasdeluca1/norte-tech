@@ -18,7 +18,7 @@ export function emailShell(params: { appUrl: string; bodyHtml: string; footerNot
   const { appUrl, bodyHtml } = params;
   const footerNote =
     params.footerNote ??
-    `Recibís este email porque te sumaste a Norte Tech en <a href="${escapeAttr(appUrl)}" style="color:#a9b7f3;text-decoration:none;">bsasnortetech.vercel.app</a>.`;
+    `Recibís este email porque te sumaste a <a href="${escapeAttr(appUrl)}" style="color:#6EA6FF;text-decoration:none;">Norte Tech</a>.`;
   const year = new Date().getFullYear();
   return `<!DOCTYPE html>
 <html lang="es">
@@ -39,7 +39,6 @@ export function emailShell(params: { appUrl: string; bodyHtml: string; footerNot
                 <table cellpadding="0" cellspacing="0" border="0" role="presentation"><tr>
                   <td style="vertical-align:middle;">
                     <img src="${appUrl}/brand/norte-tech-horizontal.png" width="180" alt="Norte Tech" style="display:block;border:0;outline:0;text-decoration:none;width:180px;height:auto;"/>
-                    <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#95a0c2;margin-top:4px;">bsasnortetech.vercel.app</div>
                   </td>
                 </tr></table>
               </td>
@@ -54,7 +53,7 @@ export function emailShell(params: { appUrl: string; bodyHtml: string; footerNot
             </tr>
           </table>
           <div style="margin-top:16px;font-size:11px;color:#52626e;letter-spacing:0.12em;text-transform:uppercase;">
-            © ${year} Norte Tech · bsasnortetech.vercel.app
+            © ${year} Norte Tech · Zona norte, Buenos Aires
           </div>
         </td>
       </tr>

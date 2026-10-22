@@ -3,7 +3,7 @@ import PitchDeck from './PitchDeck';
 
 export const metadata: Metadata = {
   title: 'Norte Tech · Pitch para sponsors',
-  description: 'La comunidad tech de founders, devs y makers de la Zona Norte.',
+  description: 'La comunidad tech de zona norte. Founders, builders e inversores en la misma mesa.',
   robots: { index: false, follow: false },
 };
 

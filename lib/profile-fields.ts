@@ -64,6 +64,17 @@ export const NEIGHBORHOODS: string[] = [
   'Otra zona',
 ];
 
+// Etiqueta visible de un barrio/zona. Los valores guardados en la base no cambian
+// (compatibilidad con los datos existentes); sólo se reescribe lo que se muestra.
+const NEIGHBORHOOD_PREFIX = /^Nordelta\s*·\s*/;
+export function neighborhoodLabel(value: string | null | undefined): string {
+  if (!value) return '';
+  if (!NEIGHBORHOOD_PREFIX.test(value)) return value;
+  const rest = value.replace(NEIGHBORHOOD_PREFIX, '');
+  const name = rest.charAt(0).toUpperCase() + rest.slice(1);
+  return `${name} · Tigre`;
+}
+
 // Qué busca cada builder en la comunidad (chips).
 export const LOOKING_FOR_OPTIONS: string[] = [
   'Cofounder',

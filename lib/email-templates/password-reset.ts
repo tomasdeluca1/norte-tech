@@ -25,5 +25,5 @@ export function passwordResetHtml(params: {
     ${paragraphRow(`Si no pediste esto, podés ignorar este email — tu contraseña anterior ya no funciona, pero nadie más tiene la nueva.`)}
   `;
 
-  return emailShell({ appUrl, bodyHtml: body, footerNote: 'Recibís este email porque se solicitó recuperar el acceso a tu cuenta en bsasnortetech.vercel.app.' });
+  return emailShell({ appUrl, bodyHtml: body, footerNote: 'Recibís este email porque se solicitó recuperar el acceso a tu cuenta de Norte Tech.' });
 }

@@ -20,6 +20,6 @@ export function rejectedEmailHtml(params: { name: string; appUrl: string }): str
   return emailShell({
     appUrl,
     bodyHtml: body,
-    footerNote: 'Recibís este email porque te registraste en bsasnortetech.vercel.app.',
+    footerNote: 'Recibís este email porque te registraste en Norte Tech.',
   });
 }
