@@ -4,7 +4,7 @@
 
 **Producto:** Comunidad tech presencial de founders, builders e inversores de la Zona Norte de Buenos Aires.
 **Web:** https://bsasnortetech.vercel.app · **Tagline:** `BUILD THE FUTURE.`
-**Estado:** v0.1 beta · 40+ founding members · 2025
+**Estado:** comunidad activa · 261 miembros activos (datos a octubre 2026)
 **Voz:** español es-AR, tech-native, directo, sin humo. Mezcla inglés tech + español ("buildear", "shippear", "desde el agua"). Estética terminal/programador.
 **Color marca:** verde neón `#00E5A0` sobre fondo oscuro `#05070A`. Fuentes: Bebas Neue (títulos) · Space Mono (mono/tags) · DM Sans (texto).
 
@@ -116,7 +116,7 @@ Zona Norte tiene torres, lagos, y ahora algo nuevo:
 
 una comunidad tech de founders, builders e inversores que construyen en serio.
 
-Se llama Norte Tech. Ya somos 40+ buildeando desde el agua 🌊
+Se llama Norte Tech. Ya somos más de 260 miembros 🌊
 
 Te cuento qué es 🧵
 —
@@ -247,8 +247,7 @@ Respondé 👇 (armamos bsasnortetech.vercel.app justo para esto)
 $ cat bsasnortetech.vercel.app/status
 
 {
-  members: "40+",
-  year: 2025,
+  members: "260+", // datos a octubre 2026
   status: "shipping"
 }
 
@@ -262,7 +261,7 @@ Cada semana sumamos builders.
 ```
 En poco tiempo:
 
-→ 40+ founders, builders e inversores adentro
+→ Más de 260 miembros adentro
 → Kick-off en camino
 → Una comunidad tech real en zona norte, no un grupo más
 
@@ -293,7 +292,7 @@ Así es la gente que vas a encontrar adentro → bsasnortetech.vercel.app
 - **Slide 2:** "Zona Norte tiene torres, lagos... y ahora una comunidad tech."
 - **Slide 3:** "Founders. Devs. Makers. Buildeando desde el agua 🌊"
 - **Slide 4:** "No es otro grupo de WhatsApp. Es donde se construye en serio."
-- **Slide 5:** "Ya somos 40+. Y esto recién arranca."
+- **Slide 5:** "Ya somos más de 260. Y esto recién arranca." (datos a octubre 2026)
 - **Slide 6 (CTA):** "Sumate gratis → link en bio · bsasnortetech.vercel.app"
 
 **Caption:**
@@ -302,7 +301,7 @@ Arrancó Norte Tech 🌊⚡
 
 La comunidad tech de founders, builders e inversores de la Zona Norte. Construimos startups, compartimos conocimiento y hacemos crecer el ecosistema —en serio, no en otro grupo de WhatsApp.
 
-Ya somos 40+ builders. Si estás en zona norte y construís (o querés construir) algo, esto es para vos.
+Ya somos más de 260 miembros. Si estás en zona norte y construís (o querés construir) algo, esto es para vos.
 
 Sumate gratis 👉 link en bio · bsasnortetech.vercel.app
 
@@ -369,7 +368,7 @@ Conocé a los builders de Norte Tech 👇
 ```
 [0-3s]  HOOK: "Estamos armando una comunidad tech en zona norte. Día [X]."
 [3-20s] Detrás de escena: pantalla de la web (member grid creciendo), mensajes del grupo,
-        preparando el kick-off. Texto: "40+ builders y subiendo."
+        preparando el kick-off. Texto: "Más de 260 miembros y subiendo."
 [20-30s] CTA: "Querés ser parte? bsasnortetech.vercel.app · link en bio"
 ```
 **Caption:** `Construyendo la comunidad tech de zona norte, en público 🛠️ #BuildInPublic #NorteTech #ZonaNorte #Startups`
