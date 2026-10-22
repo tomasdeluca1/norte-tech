@@ -8,7 +8,7 @@ import { PALETTE } from '@/lib/palette';
 import BrandLogo from './components/BrandLogo';
 import ThemeToggle from './components/ThemeToggle';
 import CompassMotif from './components/CompassMotif';
-import { MEETUP_URL } from '@/lib/site';
+import { MEETUP_URL, AREABETA_URL, isAreabetaPromoActive } from '@/lib/site';
 
 interface Member {
   _id: string;
@@ -32,6 +32,9 @@ export default function Home() {
   const [memberTotal, setMemberTotal] = useState<number | null>(null);
 
   const [navScrolled, setNavScrolled] = useState(false);
+  // Badge temporal de Areabeta: se decide en el cliente para que no quede fijo en el HTML estático.
+  const [areabetaPromo, setAreabetaPromo] = useState(false);
+  useEffect(() => { setAreabetaPromo(isAreabetaPromoActive()); }, []);
   const [membersLoading, setMembersLoading] = useState(true);
   const [formData, setFormData] = useState({ name: '', email: '', role: '', jobTitle: '', company: '', companyUrl: '' });
   const [formTags, setFormTags] = useState<string[]>([]);
@@ -335,9 +338,12 @@ export default function Home() {
               </div>
             </div>
             <div className="ev-card">
-              <div className="ev-badge badge-ws">Cowork</div>
+              <div className="ev-badges">
+                <div className="ev-badge badge-ws">Cowork</div>
+                {areabetaPromo && <div className="ev-badge badge-star badge-promo">Octubre: cowork gratis en Areabeta</div>}
+              </div>
               <h3>Cowork de la comunidad</h3>
-              <p>Una tarde de laburo en cafés y clubes de la zona. Ya pasamos por Café García, Santa Bárbara e Islas del Golf.</p>
+              <p>Una tarde de laburo en cafés, clubes y hubs de la zona. Ya pasamos por <a className="inline-link" href={AREABETA_URL} target="_blank" rel="noopener noreferrer">Areabeta</a>, Café García, Santa Bárbara e Islas del Golf.</p>
               <div className="ev-meta"><span className="ev-date">Recurrente</span><span>Zona norte</span></div>
             </div>
             <div className="ev-card">
@@ -349,6 +355,17 @@ export default function Home() {
           </div>
         </section>
       </div>
+
+      <section id="base" className="section base-section" aria-labelledby="base-title">
+        <div className="base-inner" data-reveal>
+          <div>
+            <div className="eyebrow">Dónde nos juntamos</div>
+            <h2 id="base-title" className="sec-title display">Nuestra base: Areabeta</h2>
+            <p className="sec-sub">Varios de nuestros encuentros fueron en Areabeta, un hub de comunidad e innovación en zona norte. Ahí hacemos meetups y coworks.</p>
+          </div>
+          <a href={AREABETA_URL} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">Conocé Areabeta →</a>
+        </div>
+      </section>
 
       <section id="comunidad" className="section">
         <div className="comunidad-head">
