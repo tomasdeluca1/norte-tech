@@ -23,12 +23,25 @@ export default function SiteNav({ meetup }: { meetup: MeetupLink }) {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Estado de sesión para el chip del nav.
+  // Estado de sesión para el chip del nav. Se pide después del load para no sumar
+  // un round trip a la cadena crítica del primer paint.
   useEffect(() => {
-    fetch('/api/auth/me')
-      .then((r) => r.json())
-      .then((d) => setMe(d.user ?? null))
-      .catch(() => {});
+    let cancelled = false;
+    const run = () => {
+      fetch('/api/auth/me')
+        .then((r) => r.json())
+        .then((d) => { if (!cancelled) setMe(d.user ?? null); })
+        .catch(() => {});
+    };
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const onLoad = () => { timer = setTimeout(run, 0); };
+    if (document.readyState === 'complete') onLoad();
+    else window.addEventListener('load', onLoad, { once: true });
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+      window.removeEventListener('load', onLoad);
+    };
   }, []);
 
   const c = me ? PALETTE[me.colorIndex % PALETTE.length] : null;

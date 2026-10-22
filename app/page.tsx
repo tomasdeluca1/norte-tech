@@ -71,6 +71,10 @@ const FOTOS = [
   { src: fotoCafeGarcia, cls: 'ef-g', ev: 'Cowork · Café García', cap: 'Tarde de laburo', pos: '50% 45%', alt: 'Cuatro chicos sonríen alrededor de una mesa redonda con computadoras en un café.' },
 ];
 
+/* CSS crítico del bloque de texto del hero, inline para no depender del CSS externo.
+   Copia exacta de las reglas de home.css (que siguen siendo la fuente de verdad). */
+const HERO_CRITICAL_CSS = `.v2 .hero-copy{position:relative;z-index:2}.v2 .pill{display:inline-flex;align-items:center;gap:10px;height:32px;padding:0 14px;border:1px solid var(--n800);border-radius:999px;font:500 var(--t-mono)/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--n300);margin:0 0 28px}.v2 .pill-dot{width:6px;height:6px;border-radius:50%;background:var(--b400);position:relative}.v2 .h-display{font:700 var(--t-display)/.98 var(--f-display);letter-spacing:-.035em;text-wrap:balance}.v2 .hero h1{margin:0 0 24px}.v2 .hero-sub{font-size:var(--t-lead);line-height:1.55;color:var(--n300);max-width:30em;margin:0 0 36px;text-wrap:balance}.v2 .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:40px}@media (max-width:960px){.v2 .hero h1{padding-right:96px}.v2 .hero-actions .btn{flex:1 1 100%}}@media (max-width:400px){.v2 .hero h1{padding-right:84px}}@media (min-width:600px) and (max-width:960px){.v2 .hero-actions .btn{flex:0 0 auto}}`;
+
 export default async function Home() {
   const stats = await getCommunityStats();
   const total = stats.live && stats.total > 0 ? stats.total : null;
@@ -92,6 +96,7 @@ export default async function Home() {
 
       <main id="contenido">
         {/* ───────────── HERO · base B (51e4a5f) + elementos de A (4b96efd) ───────────── */}
+        <style dangerouslySetInnerHTML={{ __html: HERO_CRITICAL_CSS }} />
         <div className="v2 v2-hero">
           <section className="hero hero--mix" id="top" aria-labelledby="hero-title">
             {/* A: grilla de puntos del motivo brújula detrás del hero */}

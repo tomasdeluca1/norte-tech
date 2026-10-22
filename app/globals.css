@@ -1,11 +1,11 @@
-/* Fuentes etapa 1 (hasta el load): Arial con la métrica de Inter, los mismos overrides
+/* Fuentes etapa 1 (hasta el load y el primer paint; también dentro de .mixA, que redefine --f-body): Arial con la métrica de Inter, los mismos overrides
    que genera next/font para __inter_Fallback, así el cambio a Inter no mueve nada. */
 @font-face {
   font-family: 'Inter Fallback';
   src: local('Arial'), local('Liberation Sans'), local('Helvetica');
   ascent-override: 89.79%; descent-override: 22.36%; line-gap-override: 0%; size-adjust: 107.89%;
 }
-html:not(.fonts-2) body { --f-body: 'Inter Fallback', Arial, sans-serif; --f-mono: ui-monospace, Menlo, 'DejaVu Sans Mono', monospace; }
+html:not(.fonts-2) body, html:not(.fonts-2) .mixA { --f-body: 'Inter Fallback', Arial, sans-serif; --f-mono: ui-monospace, Menlo, 'DejaVu Sans Mono', monospace; }
 
 /* ─── RESET & TOKENS ─────────────────────────────────────── */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }

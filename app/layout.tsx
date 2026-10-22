@@ -8,7 +8,7 @@ import './globals.css';
 // Fuentes de marca self-hosted. Subset latino básico + ÁÉÍÓÚáéíóúÑñ¿¡·→ y
 // rango de pesos recortado a lo que usa el sitio (pyftsubset + instancer,
 // ver docs/web-v2.md). Sólo Montserrat se precarga: es la del H1 (LCP).
-// Inter y Mono entran en una segunda etapa, después del load (FONTS_STAGE_2).
+// Inter y Mono entran en una segunda etapa, después del load y del primer paint (FONTS_STAGE_2).
 const montserrat = localFont({
   src: './fonts/Montserrat-latin-700.woff2',
   variable: '--font-montserrat',
@@ -89,8 +89,10 @@ const THEME_INIT = `(function(){try{var q=new URLSearchParams(location.search).g
 
 // Fuentes en dos etapas (crítica v2 §3.3 paso 1): hasta el load, cuerpo y mono usan
 // fallbacks con la métrica ajustada (ver 'Inter Fallback' en globals.css) y Inter y
-// JetBrains Mono no se piden; después del load se agrega .fonts-2 y entran.
-const FONTS_STAGE_2 = `(function(){var d=document.documentElement;function go(){requestAnimationFrame(function(){d.classList.add('fonts-2')})}if(document.readyState==='complete')go();else addEventListener('load',go)})();`;
+// JetBrains Mono no se piden; después del load y del primer paint se agrega .fonts-2 y entran.
+// Etapa 2 de fuentes: espera el load Y el primer paint (+300 ms), así Inter y Mono nunca compiten con el LCP
+// (el subtítulo pinta con 'Inter Fallback' local, con métricas ajustadas, y después hace swap).
+const FONTS_STAGE_2 = `(function(){var d=document.documentElement,l=0,p=0,t;function go(){if(t)return;t=1;setTimeout(function(){requestAnimationFrame(function(){d.classList.add('fonts-2')})},300)}function chk(){if(l&&p)go()}function onL(){l=1;chk();setTimeout(go,2500)}try{if(performance.getEntriesByName('first-contentful-paint').length)p=1;else new PerformanceObserver(function(e,o){if(e.getEntriesByName('first-contentful-paint').length){p=1;o.disconnect();chk()}}).observe({type:'paint',buffered:true})}catch(e){p=1}if(document.readyState==='complete')onL();else addEventListener('load',onL)})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
