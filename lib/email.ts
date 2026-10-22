@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
 import { getSetting } from './settings';
+import { SITE_URL } from './site';
 import { registrationReceivedHtml } from './email-templates/registration-received';
 import { acceptedEmailHtml } from './email-templates/accepted';
 import { rejectedEmailHtml } from './email-templates/rejected';
@@ -22,7 +23,8 @@ function getFromAddress(): string {
 }
 
 function getAppUrl(): string {
-  return process.env.APP_URL?.trim() || 'https://bsasnortetech.vercel.app';
+  // APP_URL (env) manda; si no está, se usa SITE_URL de lib/site.ts.
+  return (process.env.APP_URL?.trim() || SITE_URL).replace(/\/$/, '');
 }
 
 /** Builder se registró → "recibimos tu registro" (sin credenciales). */

@@ -7,10 +7,10 @@ export function presentationReceivedHtml(params: { name: string; appUrl: string 
 
   const body = `
     ${headingRow(`¡GRACIAS, ${escapeHtml(firstName.toUpperCase())}! ✅`)}
-    ${paragraphRow(`Recibimos tu <strong style="color:#a9b7f3;">presentación</strong>. Ya quedó en la cola de revisión.`)}
+    ${paragraphRow(`Recibimos tu <strong style="color:#6EA6FF;">presentación</strong>. Ya quedó en la cola de revisión.`)}
     <tr><td style="padding:24px 40px 0 40px;">
-      <div style="background:#131920;border:1px solid #252e35;border-radius:12px;padding:18px 22px;font-size:14px;color:#a9b6c0;line-height:1.6;">
-        <span style="font-family:'SF Mono',Menlo,Consolas,monospace;color:#a9b7f3;">$ status</span><br/>
+      <div style="background:#16161A;border:1px solid #24242A;border-radius:12px;padding:18px 22px;font-size:14px;color:#A5A6B0;line-height:1.6;">
+        <span style="font-family:'JetBrains Mono',Menlo,Consolas,'Courier New',monospace;color:#6EA6FF;">$ status</span><br/>
         → presentación recibida · pendiente de aprobación
       </div>
     </td></tr>
