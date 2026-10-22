@@ -273,18 +273,16 @@ export default function Home() {
             <button onClick={() => setShowJoinModal(true)} className="btn btn-ghost">Unirme a la comunidad</button>
           </div>
           <CategoryChips stats={stats} />
-          <div className="hero-stats">
-            {shownTotal ? (
+          {/* Único número del hero: miembros activos reales (Neon vía /api/members/stats,
+              o el total de /api/members si stats falla). Sin dato real no se muestra nada. */}
+          {shownTotal ? (
+            <div className="hero-stats">
               <div className="hero-stat hero-stat--members">
                 <div className="val"><CountUp value={shownTotal} /></div>
                 <div className="lbl">Miembros</div>
               </div>
-            ) : null}
-            <div className="hero-stat">
-              <div className="val">2025</div>
-              <div className="lbl">Desde</div>
             </div>
-          </div>
+          ) : null}
         </div>
 
         <div className="hero-right">

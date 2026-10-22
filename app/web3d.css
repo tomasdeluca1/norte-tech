@@ -280,12 +280,16 @@
 
 /* ─── Acento ámbar brújula (--nt-accent, uso escaso) ──────
    Sólo en: badge de Areabeta, contador de miembros, baliza del próximo
-   meetup y cola sur de la aguja 3D. Nunca de fondo ni en texto chico sobre
-   blanco: en tema claro el texto queda oscuro y el ámbar va en borde/marca. */
+   meetup y cola sur de la aguja 3D. Nunca de fondo ni en texto sobre blanco:
+   en tema claro el texto queda oscuro y el ámbar va en borde/marca.
+   Texto ámbar sólo sobre superficies oscuras, nunca sobre azul. Texto encima
+   del ámbar: siempre --nt-on-accent (Tinta), nunca blanco. */
 .badge-promo {
   color: var(--nt-accent); border-color: rgba(var(--nt-accent-rgb), .55); background: transparent;
 }
 .badge-promo::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--nt-accent); flex: none; }
+/* El badge vive sobre la superficie oscura de la card (--surf2/--surf3), no sobre azul: sin fondo propio. */
+.ev-card .badge-promo, .ev-card:hover .badge-promo { background: transparent; }
 [data-theme="light"] .badge-promo { color: var(--text); border-color: var(--nt-accent); }
 
 .hero-stat--members .val { color: var(--nt-accent); }

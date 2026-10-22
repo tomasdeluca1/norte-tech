@@ -16,7 +16,6 @@ export default function Terminal({ total, onJoin }: { total: number | null; onJo
     { cmd: 'cat ./comunidad.json' },
     { out: '{ "nombre": "Norte Tech",' },
     ...(total ? [{ out: `  "miembros": ${total},` }] : []),
-    { out: '  "desde": 2025,' },
     { out: '  "estado": "shipping" }' },
     { gap: true },
     { cmd: 'next --meetup' },

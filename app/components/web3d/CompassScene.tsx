@@ -26,8 +26,8 @@ const S = 0.01; // unidades del SVG del logo -> mundo
 
 /** Ámbar brújula: se lee de --nt-accent (tokens.css) para que el hex final cambie en un solo lugar. */
 const AMBER = typeof window !== 'undefined'
-  ? (getComputedStyle(document.documentElement).getPropertyValue('--nt-amber-400').trim() || '#FF9A2E')
-  : '#FF9A2E';
+  ? (getComputedStyle(document.documentElement).getPropertyValue('--nt-amber-400').trim() || '#FFA23A')
+  : '#FFA23A';
 
 function polyShape(points: [number, number][]) {
   const s = new THREE.Shape();
