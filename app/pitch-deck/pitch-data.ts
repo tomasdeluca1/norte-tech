@@ -88,7 +88,7 @@ export const TIERS = [
   },
 ];
 
-export const CONTACT = { emails: ['tomasdelucaa@gmail.com', 'patricio@mateandbuild.com.ar'], site: 'Norte Tech · zona norte' };
+export const CONTACT = { emails: ['tomasdelucaa@gmail.com', 'nortetech.ar@gmail.com'], site: 'Norte Tech · zona norte' };
 
 // ── Perfil de sponsor (opcional) ─────────────────────────────────────────────
 // Cuando se pasa a buildSlides(), el deck se personaliza para ese sponsor: cover
@@ -119,7 +119,7 @@ export const BALANZ: Sponsor = {
     },
     {
       t: 'Tu segmento, sin vueltas',
-      d: 'Founders con liquidez y devs bien pagos, varios con exits reales. No es awareness difuso: es tu cliente, reunido en un solo lugar.',
+      d: 'Founders con liquidez y builders bien pagos, varios con exits reales. No es awareness difuso: es tu cliente, reunido en un solo lugar.',
     },
     {
       t: 'La marca de los que construyen',
@@ -127,7 +127,7 @@ export const BALANZ: Sponsor = {
     },
     {
       t: 'Talento y deal-flow',
-      d: '46 devs para tus equipos y las startups fintech/AI de la zona, de cerca, antes que nadie.',
+      d: '46 builders para tus equipos y las startups fintech/AI de la zona, de cerca, antes que nadie.',
     },
   ],
   proposalTier: 'Lead',

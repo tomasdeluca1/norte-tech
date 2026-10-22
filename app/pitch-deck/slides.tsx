@@ -29,7 +29,7 @@ const COWORKS: { venue: string; img?: string }[] = [
 ];
 
 const SPONSOR_WINS = [
-  { t: 'Una audiencia que construye', d: 'Founders y devs AI-first de Zona Norte, en un solo lugar.' },
+  { t: 'Una audiencia que construye', d: 'Founders y builders AI-first de Zona Norte, en un solo lugar.' },
   { t: 'Tu marca donde pasa', d: 'Presencia en los eventos y en el sitio de la comunidad.' },
   { t: 'Acceso a talento', d: 'Gente que ya está buscando equipo y proyectos.' },
   { t: 'Las startups de la zona, de cerca', d: 'Ves qué se está construyendo antes que nadie.' },
@@ -102,7 +102,7 @@ export function buildSlides(memberTotal: number, sponsor?: Sponsor): React.React
         <Donut data={ROLES} />
         <Legend data={ROLES} />
       </div>
-      <p className="s-lead" style={{ marginTop: 14 }}>8 de cada 10 son founders o devs.</p>
+      <p className="s-lead" style={{ marginTop: 14 }}>8 de cada 10 son founders o builders.</p>
       <Snapshot />
     </React.Fragment>,
 

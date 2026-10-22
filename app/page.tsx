@@ -284,7 +284,7 @@ export default function Home() {
             </p>
             <div className="feat-grid">
               <div className="feat"><div className="feat-icon">01</div><h4>Meetups</h4><p>Encuentros cortos y sin slides. Contás en qué andás y conocés a los que están en lo mismo.</p></div>
-              <div className="feat"><div className="feat-icon">02</div><h4>Coworks</h4><p>Tardes de laburo compartido en cafés y clubes de la zona. Traés la compu y laburás al lado de otros que están en lo mismo.</p></div>
+              <div className="feat"><div className="feat-icon">02</div><h4>Coworks</h4><p>Tardes de laburo compartido en cafés y clubes de la zona. Traés la compu y trabajás al lado de otros que están en lo mismo.</p></div>
               <div className="feat"><div className="feat-icon">03</div><h4>Red</h4><p>Founders, builders, inversores y gente de growth, marketing y contenido que vive en la zona.</p></div>
               <div className="feat"><div className="feat-icon">04</div><h4>Feedback</h4><p>Mostrás tu producto y te devuelven algo útil. Sin pitch armado.</p></div>
             </div>
