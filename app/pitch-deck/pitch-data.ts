@@ -127,7 +127,7 @@ export const BALANZ: Sponsor = {
     },
     {
       t: 'Talento y deal-flow',
-      d: '46 builders para tus equipos y las startups fintech/AI de la zona, de cerca, antes que nadie.',
+      d: '46 miembros para tus equipos y las startups fintech/AI de la zona, de cerca, antes que nadie.',
     },
   ],
   proposalTier: 'Lead',
