@@ -333,7 +333,7 @@ function EditModal({ member, canManageAdmin, onClose, onSaved }: { member: Admin
           </div>
           <label className="auth-label"><span>Barrio / zona</span>
             <select value={f.neighborhood} onChange={e => setF({ ...f, neighborhood: e.target.value })}>
-              <option value="">—</option>
+              <option value="">Sin elegir</option>
               {NEIGHBORHOODS.map(n => <option key={n} value={n}>{neighborhoodLabel(n)}</option>)}
             </select>
           </label>

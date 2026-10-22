@@ -29,7 +29,9 @@
      Contraste: texto ámbar SOLO sobre negro o superficies oscuras (10,48:1 sobre #000).
      PROHIBIDO texto blanco sobre ámbar (2,0:1) y ámbar sobre azul (2,1:1): si algo lleva texto
      encima del ámbar, va en --nt-on-accent (Tinta). Nunca como fondo grande ni en texto sobre blanco.
-     El azul de marca pasó a --nt-accent-blue. */
+     Nombres alineados con brand-v1 tokens v1.1: --nt-primary* = azul, --nt-accent* = ámbar.
+     Los --nt-accent-blue/-hover/-text/-solid/-solid-hover viejos quedan como alias del azul
+     (deprecados, no usar en código nuevo). */
   --nt-amber-400: #FFA23A;
   --nt-accent: var(--nt-amber-400);
   --nt-accent-rgb: 255,162,58;
@@ -97,12 +99,17 @@
   --nt-text-primary: var(--nt-white);
   --nt-text-secondary: var(--nt-neutral-300);
   --nt-text-muted: var(--nt-neutral-450);
-  --nt-accent-blue: var(--nt-blue-400);
-  --nt-accent-hover: var(--nt-blue-300);
-  --nt-accent-text: var(--nt-blue-300);
-  --nt-accent-solid: var(--nt-blue-600);
-  --nt-accent-solid-hover: var(--nt-blue-500);
-  --nt-on-accent: var(--nt-white);
+  --nt-primary: var(--nt-blue-400);
+  --nt-primary-hover: var(--nt-blue-300);
+  --nt-primary-text: var(--nt-blue-300);
+  --nt-primary-solid: var(--nt-blue-600);
+  --nt-primary-solid-hover: var(--nt-blue-500);
+  --nt-on-primary: var(--nt-white);
+  --nt-accent-blue: var(--nt-primary);
+  --nt-accent-hover: var(--nt-primary-hover);
+  --nt-accent-text: var(--nt-primary-text);
+  --nt-accent-solid: var(--nt-primary-solid);
+  --nt-accent-solid-hover: var(--nt-primary-solid-hover);
   --nt-focus-ring: var(--nt-blue-300);
   --nt-brand-ring: var(--nt-neutral-600);
   --nt-logo-primary: var(--nt-white);
@@ -124,12 +131,17 @@
   --nt-text-primary: var(--nt-neutral-ink);
   --nt-text-secondary: var(--nt-neutral-550);
   --nt-text-muted: var(--nt-neutral-500);
-  --nt-accent-blue: var(--nt-blue-600);
-  --nt-accent-hover: var(--nt-blue-700);
-  --nt-accent-text: var(--nt-blue-600);
-  --nt-accent-solid: var(--nt-blue-600);
-  --nt-accent-solid-hover: var(--nt-blue-700);
-  --nt-on-accent: var(--nt-white);
+  --nt-primary: var(--nt-blue-600);
+  --nt-primary-hover: var(--nt-blue-700);
+  --nt-primary-text: var(--nt-blue-600);
+  --nt-primary-solid: var(--nt-blue-600);
+  --nt-primary-solid-hover: var(--nt-blue-700);
+  --nt-on-primary: var(--nt-white);
+  --nt-accent-blue: var(--nt-primary);
+  --nt-accent-hover: var(--nt-primary-hover);
+  --nt-accent-text: var(--nt-primary-text);
+  --nt-accent-solid: var(--nt-primary-solid);
+  --nt-accent-solid-hover: var(--nt-primary-solid-hover);
   --nt-focus-ring: var(--nt-blue-400);
   --nt-brand-ring: var(--nt-neutral-400);
   --nt-logo-primary: var(--nt-neutral-ink);

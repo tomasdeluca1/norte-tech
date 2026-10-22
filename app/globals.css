@@ -14,12 +14,12 @@ html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
   --border:    var(--nt-border);
   --border2:   var(--nt-border-strong);
   --border3:   var(--nt-border-strong);
-  --accent:    var(--nt-accent-text);
-  --accent-2:  var(--nt-accent-hover);
-  --accent-d:  var(--nt-accent-blue);
+  --accent:    var(--nt-primary-text);
+  --accent-2:  var(--nt-primary-hover);
+  --accent-d:  var(--nt-primary);
   --accent-rgb: 23,116,253;
   --accent-glow: var(--nt-shadow-glow);
-  --blue:      var(--nt-accent-blue);
+  --blue:      var(--nt-primary);
   --red:       #ff5d7a;
   --text:      var(--nt-text-primary);
   --text-d:    var(--nt-text-secondary);
@@ -103,16 +103,16 @@ body {
 }
 /* Primario: siempre #0F58DE con texto blanco (6,05:1). Nunca #1774FD con texto blanco. */
 .btn-green {
-  background: var(--nt-accent-solid); color: var(--nt-on-accent);
-  border-color: var(--nt-accent-solid);
+  background: var(--nt-primary-solid); color: var(--nt-on-primary);
+  border-color: var(--nt-primary-solid);
 }
 .btn-green:hover {
-  background: var(--nt-accent-solid-hover); border-color: var(--nt-accent-solid-hover);
-  color: var(--nt-on-accent);
+  background: var(--nt-primary-solid-hover); border-color: var(--nt-primary-solid-hover);
+  color: var(--nt-on-primary);
 }
 
 .btn-ghost  {
-  background: transparent; color: var(--nt-accent-text);
+  background: transparent; color: var(--nt-primary-text);
   border: 1px solid var(--nt-border-strong);
 }
 .btn-ghost:hover  { border-color: var(--accent); color: var(--accent); background: rgba(var(--accent-rgb),.04); }
@@ -126,8 +126,8 @@ body {
 
 .btn-wa     { background: var(--wa); color: #fff; box-shadow: 0 6px 22px rgba(37,211,102,.28); }
 .btn-wa:hover     { background: #1aeba0; transform: translateY(-1px); }
-.btn-dark   { background: var(--nt-accent-solid); color: var(--nt-on-accent); border: 1px solid var(--nt-accent-solid); }
-.btn-dark:hover   { background: var(--nt-accent-solid-hover); }
+.btn-dark   { background: var(--nt-primary-solid); color: var(--nt-on-primary); border: 1px solid var(--nt-primary-solid); }
+.btn-dark:hover   { background: var(--nt-primary-solid-hover); }
 
 /* ─── SECTION LABELS ─────────────────────────────────────── */
 .eyebrow {
