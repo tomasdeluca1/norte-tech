@@ -47,8 +47,11 @@ function StaticCompass({ needleRef }: { needleRef: React.RefObject<SVGGElement> 
       <path className="iso-ring" d="M-56.31 -186.69A195 195 0 0 0 -32 192.36L-32 172.05A175 175 0 0 1 -67.7 -161.37ZM56.31 -186.69A195 195 0 0 1 32 192.36L32 172.05A175 175 0 0 0 67.7 -161.37Z" />
       <path className="iso-ring" d="M-255 0L-179 -15L-179 15ZM255 0L179 -15L179 15ZM0 131L14 176L0 230L-14 176Z" />
       <g ref={needleRef} className="iso-needle">
-        <path fill="#1774FD" d="M0 -268L-125.5 11L0 -71Z" />
-        <path fill="#0F58DE" d="M0 -268L125.5 11L0 -71Z" />
+        {/* N1-5: al cargar, la aguja busca el norte una vez (CSS, no toca el LCP). */}
+        <g className="iso-seek">
+          <path fill="#1774FD" d="M0 -268L-125.5 11L0 -71Z" />
+          <path fill="#0F58DE" d="M0 -268L125.5 11L0 -71Z" />
+        </g>
       </g>
     </svg>
   );

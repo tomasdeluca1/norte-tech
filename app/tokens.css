@@ -25,7 +25,7 @@
   --nt-blue-700: #0B47B8;
   --nt-blue-800: #0A3A94;
   /* Acento cálido "ámbar brújula" (Marketing, hex final 22/10/2026; ver brand-v1 ACENTO-PROPUESTA.md).
-     Uso escaso (~10%): badge de Areabeta, contador, baliza del próximo meetup y cola sur de la aguja 3D.
+     Uso escaso (~10%): subrayado de "norte", tick norte del bisel, +160 de Fotos, faro del próximo meetup y badge de Areabeta.
      Contraste: texto ámbar SOLO sobre negro o superficies oscuras (10,48:1 sobre #000).
      PROHIBIDO texto blanco sobre ámbar (2,0:1) y ámbar sobre azul (2,1:1): si algo lleva texto
      encima del ámbar, va en --nt-on-accent (Tinta). Nunca como fondo grande ni en texto sobre blanco.

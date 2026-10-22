@@ -15,7 +15,7 @@ import {
 } from 'three';
 import { CATEGORIES, type CommunityStats } from '@/lib/categories';
 import { bus, screenAngle, angleDelta } from './bus';
-import { buildLayout, makeParticleGeometry, categoryColorUniform, stepCategoryMix, PARTICLE_VERT, PARTICLE_FRAG } from './particles';
+import { buildLayout, makeParticleGeometry, categoryColorUniform, restColorUniform, stepCategoryMix, PARTICLE_VERT, PARTICLE_FRAG } from './particles';
 
 export interface SceneProps {
   compact: boolean;
@@ -218,6 +218,7 @@ function Members({ compact, light, stats }: { compact: boolean; light: boolean; 
       uSize: { value: 5.2 },
       uPixelRatio: { value: gl.getPixelRatio() },
       uColors: { value: categoryColorUniform(light) },
+      uRest: { value: restColorUniform() },
     },
   }), [light, gl]);
 

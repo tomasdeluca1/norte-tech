@@ -1,0 +1,53 @@
+{
+  "ci": {
+    "collect": {
+      "startServerCommand": "npx next start -p 3311",
+      "startServerReadyPattern": "Ready",
+      "url": [
+        "http://localhost:3311/"
+      ],
+      "numberOfRuns": 5,
+      "settings": {
+        "formFactor": "mobile",
+        "extraHeaders": "{\"x-vercel-skip-toolbar\":\"1\"}",
+        "chromeFlags": "--headless=new --no-sandbox"
+      }
+    },
+    "assert": {
+      "assertions": {
+        "largest-contentful-paint": [
+          "error",
+          {
+            "maxNumericValue": 2400,
+            "aggregationMethod": "pessimistic"
+          }
+        ],
+        "cumulative-layout-shift": [
+          "error",
+          {
+            "maxNumericValue": 0.02,
+            "aggregationMethod": "pessimistic"
+          }
+        ],
+        "total-blocking-time": [
+          "warn",
+          {
+            "maxNumericValue": 100,
+            "aggregationMethod": "pessimistic"
+          }
+        ],
+        "categories:accessibility": [
+          "error",
+          {
+            "minScore": 0.95,
+            "aggregationMethod": "pessimistic"
+          }
+        ]
+      }
+    },
+    "upload": {
+      "target": "filesystem",
+      "outputDir": ".lighthouseci/reports"
+    }
+  }
+}

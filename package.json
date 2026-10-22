@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "lhci": "next build && npx --yes @lhci/cli@0.15 autorun",
     "seed": "node scripts/seed.js",
     "og": "node scripts/generate-og.js",
     "migrate": "node scripts/migrate.js",

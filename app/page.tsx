@@ -19,7 +19,7 @@ import CompassCursor from './components/web3d/CompassCursor';
 import { getCommunityStats } from '@/lib/stats';
 import {
   MEETUP_URL, MEETUP_DATE, AREABETA_URL, isAreabetaPromoActive,
-  MEET_TALK_01_DATE_PLACEHOLDER, NAV_MEETUPS_LINK, FOTOS_FACT_REQUESTS,
+  MEET_TALK_01_DATE_PLACEHOLDER, NAV_MEETUPS_LINK, FOTOS_FACT_REQUESTS, TERMINAL_ON_MOBILE,
 } from '@/lib/site';
 
 import fotoTrio from '@/public/meetups/mt02-trio-risas.webp';
@@ -118,23 +118,23 @@ export default async function Home() {
           </div>
           <div className="bento">
             <figure className="ph ph-a">
-              <Image src={fotoTrio} placeholder="blur" sizes="(max-width: 720px) 100vw, 600px" alt="Tres personas riéndose a cámara en un salón con techo de hormigón y ventanales: un chico de rulos con remera negra, una chica de pelo largo y un chico de camisa blanca." />
+              <Image src={fotoTrio} sizes="(max-width: 720px) 100vw, 600px" alt="Tres personas riéndose a cámara en un salón con techo de hormigón y ventanales: un chico de rulos con remera negra, una chica de pelo largo y un chico de camisa blanca." />
               <figcaption>La previa</figcaption>
             </figure>
             <figure className="ph ph-b">
-              <Image src={fotoRonda} placeholder="blur" sizes="(max-width: 720px) 50vw, 300px" alt="Un chico de remera blanca habla con micrófono al lado de una pizarra, con ventanales azules del atardecer atrás." />
+              <Image src={fotoRonda} sizes="(max-width: 720px) 50vw, 300px" alt="Un chico de remera blanca habla con micrófono al lado de una pizarra, con ventanales azules del atardecer atrás." />
               <figcaption>La ronda</figcaption>
             </figure>
             <figure className="ph ph-c">
-              <Image src={fotoPizarra} placeholder="blur" sizes="(max-width: 720px) 50vw, 300px" alt="Un chico de espaldas mira una pizarra blanca escrita a mano con dos columnas: qué vengo a buscar y qué puedo ofrecer." />
+              <Image src={fotoPizarra} sizes="(max-width: 720px) 50vw, 300px" alt="Un chico de espaldas mira una pizarra blanca escrita a mano con dos columnas: qué vengo a buscar y qué puedo ofrecer." />
               <figcaption>La pizarra</figcaption>
             </figure>
             <figure className="ph ph-d">
-              <Image src={fotoSonrisa} placeholder="blur" sizes="(max-width: 720px) 50vw, 300px" alt="Una chica sonríe a cámara en medio de un salón con gente charlando en grupos." />
+              <Image src={fotoSonrisa} sizes="(max-width: 720px) 50vw, 300px" alt="Una chica sonríe a cámara en medio de un salón con gente charlando en grupos." />
               <figcaption>Gente nueva</figcaption>
             </figure>
             <figure className="ph ph-e">
-              <Image src={fotoRecorrida} placeholder="blur" sizes="(max-width: 720px) 50vw, 300px" alt="Un grupo grande camina y charla entre escritorios de una oficina con ventanales." />
+              <Image src={fotoRecorrida} sizes="(max-width: 720px) 50vw, 300px" alt="Un grupo grande camina y charla entre escritorios de una oficina con ventanales." />
               <figcaption>Recorrida por Areabeta</figcaption>
             </figure>
           </div>
@@ -164,7 +164,7 @@ export default async function Home() {
               <h2 id="sobre-title" className="h2">Hay gente construyendo al lado tuyo.</h2>
               <p className="lead">Norte Tech junta a founders, builders e inversores que viven y trabajan en zona norte. Nos vemos en meetups, coworks y charlas para mostrar lo que estamos haciendo, pedir feedback y armar equipo sin tener que ir hasta Capital.</p>
             </div>
-            <div data-reveal>
+            <div className={TERMINAL_ON_MOBILE ? 'about-terminal' : 'about-terminal about-terminal--desktop'} data-reveal>
               <Terminal total={total} />
             </div>
           </div>
@@ -188,14 +188,19 @@ export default async function Home() {
             </div>
           </div>
           <ol className="route" aria-label="Meetups de Norte Tech" data-reveal>
-            {route.map((s) => (
-              <li key={s.name} className="stop past">
+            {route.map((s, i) => (
+              <li key={s.name} className="stop past" style={{ ['--i' as string]: i }}>
                 <span className="dot" aria-hidden="true" />
                 <b>{s.name}</b>
                 {s.meta ? <small>{s.meta}</small> : null}
               </li>
             ))}
-            <li className="stop next">
+            <li className="stop next" style={{ ['--i' as string]: route.length }}>
+              {/* La flecha (aguja del isologo) recorre los tramos y se queda junto al faro. */}
+              <svg className="route-arrow" viewBox="-130 -280 260 300" aria-hidden="true" focusable="false">
+                <path fill="#1774FD" d="M0 -268L-125.5 11L0 -71Z" />
+                <path fill="#0F58DE" d="M0 -268L125.5 11L0 -71Z" />
+              </svg>
               <span className="dot" aria-hidden="true" />
               <a {...meetup} className="stop-link"><b>Próximo meetup</b></a>
               <small>{nextDate ? `${nextDate} · Lugar en Luma` : 'Fecha y lugar en Luma'}</small>
@@ -204,13 +209,13 @@ export default async function Home() {
           <div className="events">
             <article className="ev ev-featured" data-reveal>
               <div className="ev-photo">
-                <Image src={fotoPresenta} placeholder="blur" sizes="(max-width: 860px) 100vw, 480px" alt="Una chica con suéter negro se ríe mientras presenta frente a una pizarra, con ventanales al atardecer." />
+                <Image src={fotoPresenta} sizes="(max-width: 860px) 100vw, 480px" alt="Una chica con suéter negro se ríe mientras presenta frente a una pizarra, con ventanales al atardecer." />
               </div>
               <div className="ev-body">
-                <p className="badge">Próximo meetup</p>
+                <p className="badge">Meetup</p>
                 <h3>Meet &amp; Talk</h3>
                 <p>Charlamos de tecnología y conocemos a los que están construyendo en la zona. En el Random Pick &amp; Talk salen nombres al azar y cada uno tiene 60 segundos para contar quién es y qué está haciendo. Sin slides, sin pitch.</p>
-                <div className="ev-foot"><span>Zona norte · {nextDate ? `${nextDate} · lugar en Luma` : 'Fecha y lugar en Luma'}</span><a {...meetup} className="link">Reservá tu lugar <span aria-hidden="true">→</span></a></div>
+                <div className="ev-foot"><span>Zona norte · Sin slides</span><a {...meetup} className="link">Reservá tu lugar <span aria-hidden="true">→</span></a></div>
               </div>
             </article>
             <article className="ev" data-reveal>
@@ -221,9 +226,9 @@ export default async function Home() {
               <h3>Cowork de la comunidad</h3>
               <p>Una tarde de laburo en cafés, clubes y hubs de la zona. Ya pasamos por <a className="link-inline" href={AREABETA_URL} target="_blank" rel="noopener noreferrer">Areabeta</a>, Café García, Santa Bárbara e Islas del Golf.</p>
               <ul className="thumbs" aria-label="Lugares donde hicimos coworks">
-                <li><Image src={fotoCafeGarcia} placeholder="blur" sizes="(max-width: 860px) 33vw, 180px" alt="" /><span>Café García</span></li>
-                <li><Image src={fotoSantaBarbara} placeholder="blur" sizes="(max-width: 860px) 33vw, 180px" alt="" /><span>Santa Bárbara</span></li>
-                <li><Image src={fotoIslasGolf} placeholder="blur" sizes="(max-width: 860px) 33vw, 180px" alt="" /><span>Islas del Golf</span></li>
+                <li><Image src={fotoCafeGarcia} sizes="(max-width: 860px) 33vw, 180px" alt="" /><span>Café García</span></li>
+                <li><Image src={fotoSantaBarbara} sizes="(max-width: 860px) 33vw, 180px" alt="" /><span>Santa Bárbara</span></li>
+                <li><Image src={fotoIslasGolf} sizes="(max-width: 860px) 33vw, 180px" alt="" /><span>Islas del Golf</span></li>
               </ul>
               <div className="ev-foot"><span>Recurrente · Zona norte</span></div>
             </article>
@@ -239,7 +244,7 @@ export default async function Home() {
         {/* ───────────── BASE · Areabeta con foto ───────────── */}
         <section className="section base" id="base" aria-labelledby="base-title">
           <figure className="base-photo" data-reveal>
-            <Image src={fotoMicVentanal} placeholder="blur" sizes="(max-width: 860px) 100vw, 460px" alt="Un chico de camisa blanca habla con micrófono en un salón con columnas de hormigón y ventanales al atardecer." />
+            <Image src={fotoMicVentanal} sizes="(max-width: 860px) 100vw, 460px" alt="Un chico de camisa blanca habla con micrófono en un salón con columnas de hormigón y ventanales al atardecer." />
           </figure>
           <div className="base-copy" data-reveal>
             <p className="eyebrow">Dónde nos juntamos</p>
@@ -265,12 +270,14 @@ export default async function Home() {
         {/* ───────────── BANDA CTA ───────────── */}
         <section className="cta" id="meetup" aria-labelledby="cta-title">
           <div className="cta-inner" data-reveal>
-            <CtaNeedle targetSelector=".cta-btn" />
             <div>
               <h2 id="cta-title" className="h2">¿Te vemos en el próximo?</h2>
               <p className="lead">Los meetups son en zona norte y puede venir cualquiera que esté construyendo algo. Reservá tu lugar y vení.</p>
             </div>
-            <a {...meetup} className="btn btn-primary btn-xl cta-btn" data-cta="">Sumate al próximo meetup</a>
+            <div className="cta-action">
+              <CtaNeedle targetSelector=".cta-btn" />
+              <a {...meetup} className="btn btn-primary btn-xl cta-btn" data-cta="">Sumate al próximo meetup</a>
+            </div>
           </div>
         </section>
       </main>
@@ -283,11 +290,11 @@ export default async function Home() {
               <p>La comunidad tech de zona norte. Founders, builders e inversores en la misma mesa.</p>
             </div>
             <nav className="f-col" aria-labelledby="f-comunidad">
-              <p className="f-title" id="f-comunidad">Comunidad</p>
+              <p className="f-title" id="f-comunidad">Norte Tech</p>
               <a href="#sobre">Qué es</a>
               {NAV_MEETUPS_LINK && <a href="#fotos">Meetups</a>}
               <a href="#eventos">Agenda</a>
-              <a href="#comunidad">Miembros</a>
+              <a href="#comunidad">Comunidad</a>
               <a href="/login">Iniciar sesión</a>
             </nav>
             <nav className="f-col" aria-labelledby="f-sumate">

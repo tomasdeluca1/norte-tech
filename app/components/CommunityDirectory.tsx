@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { PALETTE } from '@/lib/palette';
 import { CATEGORIES, categoryOf, type Category } from '@/lib/categories';
 import AssembleGrid from './web3d/AssembleGrid';
@@ -35,11 +35,29 @@ export default function CommunityDirectory() {
   const [visible, setVisible] = useState(FIRST_PAGE);
   const pick = (c: Category | null) => { setCategory(c); setVisible(FIRST_PAGE); };
 
+  const [failed, setFailed] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+
+  // A demanda (crítica v2 §3.3 paso 3): el fetch sale cuando el directorio está a
+  // 800 px de entrar en pantalla, no en el mount (saca la request del arranque).
   useEffect(() => {
-    fetch('/api/members/all')
-      .then((r) => r.json())
-      .then((d) => { setMembers(d.members ?? []); setLoaded(true); })
-      .catch(() => setLoaded(true));
+    const el = root.current;
+    let started = false;
+    const load = () => {
+      if (started) return;
+      started = true;
+      fetch('/api/members/all')
+        .then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+        .then((d) => { setMembers(d.members ?? []); setLoaded(true); })
+        .catch(() => { setFailed(true); setLoaded(true); });
+    };
+    if (!el || !('IntersectionObserver' in window)) { load(); return; }
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io.disconnect(); load(); } }, { rootMargin: '800px 0px' });
+    io.observe(el);
+    // Los chips del hero en mobile filtran el directorio (N1-4): también lo cargan.
+    const onFilter = (e: Event) => { const c = (e as CustomEvent<Category>).detail; if (c) pick(c); load(); };
+    window.addEventListener('nt:filter', onFilter);
+    return () => { io.disconnect(); window.removeEventListener('nt:filter', onFilter); };
   }, []);
 
   const filtered = useMemo(() => {
@@ -63,10 +81,11 @@ export default function CommunityDirectory() {
     </ul>
   );
 
-  if (!loaded) return <div className="dir">{filters}<p className="dir-empty" role="status">Cargando la comunidad…</p></div>;
+  if (!loaded) return <div className="dir" ref={root}>{filters}<p className="dir-empty" role="status">Cargando la comunidad…</p></div>;
+  if (failed) return <div className="dir" ref={root}><p className="dir-empty" role="status">No pudimos cargar la comunidad. Probá de nuevo en un rato.</p></div>;
 
   return (
-    <div className="dir">
+    <div className="dir" ref={root}>
       {filters}
       <div className="dir-head">
         <input

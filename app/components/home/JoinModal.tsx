@@ -9,9 +9,8 @@
 // HTML del servidor).
 import { useCallback, useEffect, useRef, useState } from 'react';
 import PresentationFields, { EMPTY_PRESENTATION, presentationPayload, type PresentationState } from '../PresentationFields';
-import { ROLES } from '@/lib/profile-fields';
+import { ROLES, TAGS } from '@/lib/profile-fields';
 
-const AVAILABLE_TAGS = ['AI', 'SaaS', 'Fintech', 'Web3', 'Proptech', 'Dev', 'Design', 'Marketing', 'Founder', 'Builder', 'Inversor'];
 const EMPTY = { name: '', email: '', role: '', jobTitle: '', company: '', companyUrl: '' };
 
 export default function JoinModal() {
@@ -116,11 +115,11 @@ export default function JoinModal() {
           <form onSubmit={handleSubmit} className="modal-form">
             <div className="field">
               <label htmlFor="join-name">Nombre completo</label>
-              <input ref={firstField} id="join-name" name="name" autoComplete="name" required placeholder="Ej. Ada Lovelace" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
+              <input ref={firstField} id="join-name" name="name" autoComplete="name" required placeholder="Ej. Sofía Martínez" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
             </div>
             <div className="field">
               <label htmlFor="join-email">E-mail</label>
-              <input id="join-email" name="email" autoComplete="email" required type="email" placeholder="ada@ejemplo.com" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+              <input id="join-email" name="email" autoComplete="email" required type="email" placeholder="sofia@ejemplo.com" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
             </div>
             <div className="form-grid">
               <div className="field">
@@ -138,7 +137,7 @@ export default function JoinModal() {
             <div className="form-grid">
               <div className="field">
                 <label htmlFor="join-company">Empresa o proyecto</label>
-                <input id="join-company" name="company" autoComplete="organization" placeholder="Ej. Norte Tech" value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} />
+                <input id="join-company" name="company" autoComplete="organization" placeholder="Ej. tu startup o proyecto" value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} />
               </div>
               <div className="field">
                 <label htmlFor="join-url">URL</label>
@@ -148,7 +147,7 @@ export default function JoinModal() {
             <div className="field">
               <span className="label" id="join-tags">Tags <span className="opt">(opcional)</span></span>
               <div className="tag-picker" role="group" aria-labelledby="join-tags">
-                {AVAILABLE_TAGS.map((tag) => (
+                {TAGS.map((tag) => (
                   <button key={tag} type="button" aria-pressed={formTags.includes(tag)} onClick={() => toggleTag(tag)} className={`tag-btn${formTags.includes(tag) ? ' active' : ''}`}>{tag}</button>
                 ))}
               </div>

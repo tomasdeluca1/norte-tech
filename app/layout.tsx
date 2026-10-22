@@ -1,17 +1,18 @@
 import type { Metadata, Viewport } from 'next';
-import Script from 'next/script';
 import localFont from 'next/font/local';
 import { SITE_URL, THEME_TOGGLE_ENABLED } from '@/lib/site';
+import DeferredAnalytics from './components/home/DeferredAnalytics';
 import './tokens.css';
 import './globals.css';
 
 // Fuentes de marca self-hosted. Subset latino básico + ÁÉÍÓÚáéíóúÑñ¿¡·→ y
 // rango de pesos recortado a lo que usa el sitio (pyftsubset + instancer,
 // ver docs/web-v2.md). Sólo Montserrat se precarga: es la del H1 (LCP).
+// Inter y Mono entran en una segunda etapa, después del load (FONTS_STAGE_2).
 const montserrat = localFont({
-  src: './fonts/Montserrat-latin-var.woff2',
+  src: './fonts/Montserrat-latin-700.woff2',
   variable: '--font-montserrat',
-  weight: '600 800',
+  weight: '700',
   display: 'swap',
   preload: true,
 });
@@ -86,6 +87,11 @@ export const viewport: Viewport = {
 // este script no se inyecta.
 const THEME_INIT = `(function(){try{var q=new URLSearchParams(location.search).get('theme');if(q==='light'||q==='dark'){localStorage.setItem('nt-theme',q);}var t=q||localStorage.getItem('nt-theme');if(t==='light'){document.documentElement.setAttribute('data-theme','light');}}catch(e){}})();`;
 
+// Fuentes en dos etapas (crítica v2 §3.3 paso 1): hasta el load, cuerpo y mono usan
+// fallbacks con la métrica ajustada (ver 'Inter Fallback' en globals.css) y Inter y
+// JetBrains Mono no se piden; después del load se agrega .fonts-2 y entran.
+const FONTS_STAGE_2 = `(function(){var d=document.documentElement;function go(){requestAnimationFrame(function(){d.classList.add('fonts-2')})}if(document.readyState==='complete')go();else addEventListener('load',go)})();`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
@@ -95,26 +101,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <head>
         {THEME_TOGGLE_ENABLED && <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />}
+        <script dangerouslySetInnerHTML={{ __html: FONTS_STAGE_2 }} />
       </head>
       <body>
         {children}
-        <Script
-          src="https://cloud.umami.is/script.js"
-          data-website-id="c6d29b68-5d43-4ebf-96cb-74b8ca555a80"
-          strategy="lazyOnload"
-        />
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-XN447TYF0F"
-          strategy="lazyOnload"
-        />
-        <Script id="google-analytics" strategy="lazyOnload">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-XN447TYF0F');
-          `}
-        </Script>
+        <DeferredAnalytics />
       </body>
     </html>
   );

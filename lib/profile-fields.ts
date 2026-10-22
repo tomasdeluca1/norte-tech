@@ -34,6 +34,10 @@ export const ROLE_TAGS: Record<string, string[]> = {
   'Otro':                ['Builder'],
 };
 
+// Tags que se pueden elegir en los 3 formularios (alta de la home, dashboard y
+// admin). Growth y Creator cuentan para las categorías públicas (lib/categories.ts).
+export const TAGS = ['AI', 'SaaS', 'Fintech', 'Web3', 'Proptech', 'Dev', 'Design', 'Founder', 'Builder', 'Inversor', 'Growth', 'Marketing', 'Creator'] as const;
+
 // Barrios de Tigre + localidades de zona norte. Formato "Barrio · Localidad".
 const TIGRE_BARRIOS = [
   'Los Castores', 'El Yacht', 'La Isla', 'Los Lagos', 'El Golf', 'Las Caletas',

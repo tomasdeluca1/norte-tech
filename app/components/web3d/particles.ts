@@ -45,8 +45,10 @@ export function buildLayout(stats: CommunityStats | null, cap: number): Particle
   const TAU = Math.PI * 2;
   const sectors = perCategory.filter((n) => n > 0).length;
   const usable = TAU - SECTOR_GAP * sectors;
-  // 0 = norte, sentido horario. El primer sector arranca justo a la derecha del norte.
-  let start = SECTOR_GAP / 2;
+  // 0 = norte, sentido horario. Los sectores arrancan en el SUR (N1-6): Founders y
+  // Builders, los grandes, cubren el norte parejo y las categorías chicas caen abajo,
+  // junto a la marca S, en vez de quedar como un racimo sobre la punta de la aguja.
+  let start = Math.PI + SECTOR_GAP / 2;
   let i = 0;
   perCategory.forEach((n, ci) => {
     if (!n) return;
@@ -61,6 +63,12 @@ export function buildLayout(stats: CommunityStats | null, cap: number): Particle
   return { count, perParticle, angle, radius, cat, perCategory, live };
 }
 
+/** Color de reposo de las partículas (#1774FD), en el mismo espacio que categoryColorUniform. */
+export function restColorUniform(): Vector3 {
+  const c = new Color('#1774FD');
+  return new Vector3(c.r, c.g, c.b);
+}
+
 export function categoryColorUniform(light: boolean): Vector3[] {
   const list = light ? CATEGORY_COLORS_LIGHT : CATEGORIES.map((c) => CATEGORY_COLORS[c]);
   return list.map((hex) => {
@@ -70,7 +78,9 @@ export function categoryColorUniform(light: boolean): Vector3[] {
 }
 
 // Órbita lenta: una vuelta cada 240 s (0,026 rad/s). Sin titileo.
-// Categoría resaltada: opacidad 1 y tamaño x1,45; el resto baja a 0,25.
+// En reposo todas las partículas van en azul de marca (uRest) a opacidad 0,85 (N1-6);
+// el color propio de la categoría aparece sólo al resaltarla (hover/foco del chip):
+// opacidad 1 y tamaño x1,45; el resto baja a 0,25.
 export const PARTICLE_VERT = /* glsl */ `
   uniform float uTime;
   uniform float uCat[6];
@@ -78,6 +88,7 @@ export const PARTICLE_VERT = /* glsl */ `
   uniform float uSize;
   uniform float uPixelRatio;
   uniform vec3 uColors[6];
+  uniform vec3 uRest;
   attribute float aAngle;
   attribute float aRadius;
   attribute float aCat;
@@ -91,8 +102,8 @@ export const PARTICLE_VERT = /* glsl */ `
     vec4 mv = modelViewMatrix * vec4(p, 1.0);
     gl_Position = projectionMatrix * mv;
     gl_PointSize = uSize * (1.0 + h * 0.45) * uPixelRatio * (10.0 / -mv.z);
-    vColor = uColors[ci];
-    vAlpha = mix(1.0 - uDim * 0.75, 1.0, h);
+    vColor = mix(uRest, uColors[ci], h);
+    vAlpha = mix((1.0 - uDim * 0.75) * 0.85, 1.0, h);
   }
 `;
 

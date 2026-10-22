@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ROLES } from '@/lib/profile-fields';
+import { ROLES, TAGS } from '@/lib/profile-fields';
 import '../auth.css';
 import BrandLogo from '../components/BrandLogo';
 import ThemeToggle from '../components/ThemeToggle';
@@ -35,7 +35,6 @@ const PALETTE = [
   { bg: 'rgba(76,175,80,.12)',  color: '#4caf50' },
 ];
 
-const AVAILABLE_TAGS = ['AI', 'SaaS', 'Fintech', 'Web3', 'Proptech', 'Dev', 'Design', 'Marketing', 'Founder', 'Builder', 'Inversor'];
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -253,7 +252,7 @@ export default function DashboardPage() {
               <div className="auth-label">
                 <span>Tags</span>
                 <div className="dash-tag-picker">
-                  {AVAILABLE_TAGS.map(tag => {
+                  {TAGS.map(tag => {
                     const active = profileTags.includes(tag);
                     return (
                       <button

@@ -22,18 +22,42 @@ Spec: `marketing-contenido/norte-tech-redes/web-iteracion-v2/DISENO-ITERACION.md
 | `THEME_TOGGLE_ENABLED` | `false` | `true` vuelve el toggle y el tema claro |
 | `NAV_MEETUPS_LINK` | `true` | link "Meetups" en barra y footer |
 | `FOTOS_FACT_REQUESTS` | `'+160'` | dato validado por Marketing; vacío lo oculta |
+| `COMPASS_CURSOR` (ronda 2) | `'off'` | D3: sin cursor brújula; `'hero'` lo vuelve sólo en el hero |
+| `GA4_MODE` | `'deferred'` | D-B: GA4 se carga con la primera interacción o a los 5 s, igual que Umami; `'off'` = sólo Umami |
+| `TERMINAL_ON_MOBILE` | `false` | D-C: terminal de "Qué es" oculta en <= 560 px |
+| `HERO_CHIP_COUNTS` | `false` | D-A: chips del hero sin número por categoría (el único número es el total) |
+
+## Producción bloqueada sin meetup (N0-2)
+
+`next.config.mjs` corta el build cuando `VERCEL_ENV=production` y falta la URL de Luma
+(`NEXT_PUBLIC_MEETUP_URL` o `LUMA_NEXT_MEETUP_URL_PLACEHOLDER`) o la fecha del pill
+(`NEXT_PUBLIC_MEETUP_DATE` o `NEXT_MEETUP_DATE_PLACEHOLDER`). Preview y local buildean igual.
+`lib/site.ts` repite el chequeo en runtime del servidor.
+
+## LCP mobile
+
+- Fuentes en dos etapas: Montserrat (sólo 700, 17 KB) precargada para el H1; Inter y JetBrains
+  Mono se piden después del `load` (clase `fonts-2`, script en `app/layout.tsx`). Hasta entonces el
+  cuerpo usa `'Inter Fallback'` (Arial con la métrica de Inter, `globals.css`): CLS 0.
+- Analytics con `DeferredAnalytics` (primera interacción o 5 s después del load).
+- Directorio a demanda (`IntersectionObserver`, 800 px antes de entrar).
+- `content-visibility: auto` en las secciones debajo de Fotos; antes de saltar a un ancla se apaga
+  (`cv-off`, ver `Reveal.tsx`) para que el destino caiga bien.
+- Fotos sin `placeholder="blur"`.
+- Medición: `npm run lhci` (build + 5 corridas mobile de Lighthouse CI contra `next start`, asserts
+  con el PEOR run: LCP < 2,4 s, CLS < 0,02, a11y >= 0,95). Config en `lighthouserc.json`.
 
 ## Placeholders pendientes (Tomás)
 
 - `LUMA_NEXT_MEETUP_URL_PLACEHOLDER`: URL de Luma del próximo meetup (o `NEXT_PUBLIC_MEETUP_URL`).
   Vacía = los CTA abren el formulario de alta. No linkear Luma de eventos pasados.
 - `MEET_TALK_01_DATE_PLACEHOLDER`: fecha "DD.MM" del Meet & Talk 01 (vacía = sin fecha en la ruta).
-- Opcional: `NEXT_PUBLIC_MEETUP_DATE` (ISO) pone la fecha en el pill del hero y en la ruta.
+- `NEXT_PUBLIC_MEETUP_DATE` (ISO, o `NEXT_MEETUP_DATE_PLACEHOLDER`): fecha del pill del hero y de la ruta. Obligatoria para producción.
 
 ## Fuentes
 
 `app/fonts/*.woff2` están subseteadas (latín básico + Latin-1 + → ↗ · ¿ ¡) e instanciadas al rango
-de pesos que se usa: Montserrat 600-800, Inter 400-700 (opsz fijo 14), JetBrains Mono 400-600.
+de pesos que se usa: Montserrat 700 (estática), Inter 400-700 (opsz fijo 14), JetBrains Mono 400-600.
 Para regenerar desde las variables completas de brand-v1:
 
 ```
