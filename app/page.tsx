@@ -235,17 +235,15 @@ export default function Home() {
             {CATEGORIES.map(c => <li key={c} className="nt-chip">{c}</li>)}
           </ul>
           <div className="hero-stats">
-            <div className="hero-stat">
-              <div className="val">{memberTotal ?? '·'}</div>
-              <div className="lbl">Miembros</div>
-            </div>
+            {memberTotal ? (
+              <div className="hero-stat">
+                <div className="val">{memberTotal}</div>
+                <div className="lbl">Miembros</div>
+              </div>
+            ) : null}
             <div className="hero-stat">
               <div className="val">2025</div>
               <div className="lbl">Desde</div>
-            </div>
-            <div className="hero-stat">
-              <div className="val">6</div>
-              <div className="lbl">Perfiles en la mesa</div>
             </div>
           </div>
         </div>
@@ -286,9 +284,9 @@ export default function Home() {
             </p>
             <div className="feat-grid">
               <div className="feat"><div className="feat-icon">01</div><h4>Meetups</h4><p>Encuentros cortos y sin slides. Contás en qué andás y conocés a los que están en lo mismo.</p></div>
-              <div className="feat"><div className="feat-icon">02</div><h4>Coworks</h4><p>Tardes de laburo compartido en cafés y clubes de la zona. Traés la compu, el resto sale solo.</p></div>
-              <div className="feat"><div className="feat-icon">03</div><h4>Red</h4><p>Founders con ronda, builders que despliegan todos los días e inversores que quieren ver proyectos de cerca.</p></div>
-              <div className="feat"><div className="feat-icon">04</div><h4>Feedback</h4><p>Mostrás tu producto y te devuelven algo útil. Sin filtro y sin pitch armado.</p></div>
+              <div className="feat"><div className="feat-icon">02</div><h4>Coworks</h4><p>Tardes de laburo compartido en cafés y clubes de la zona. Traés la compu y laburás al lado de otros que están en lo mismo.</p></div>
+              <div className="feat"><div className="feat-icon">03</div><h4>Red</h4><p>Founders, builders, inversores y gente de growth, marketing y contenido que vive en la zona.</p></div>
+              <div className="feat"><div className="feat-icon">04</div><h4>Feedback</h4><p>Mostrás tu producto y te devuelven algo útil. Sin pitch armado.</p></div>
             </div>
           </div>
           <div>
@@ -303,7 +301,7 @@ export default function Home() {
                 <div>&nbsp;</div>
                 <div><span className="pr">$</span> <span className="cm">cat ./comunidad.json</span></div>
                 <div><span className="ou">{`{ "nombre": "Norte Tech",`}</span></div>
-                <div><span className="ou">&nbsp;&nbsp;{`"miembros": ${memberTotal ?? 163},`}</span></div>
+                {memberTotal ? <div><span className="ou">&nbsp;&nbsp;{`"miembros": ${memberTotal},`}</span></div> : null}
                 <div><span className="ou">&nbsp;&nbsp;{`"desde": 2025,`}</span></div>
                 <div><span className="ou">&nbsp;&nbsp;{`"estado": "shipping" }`}</span></div>
                 <div>&nbsp;</div>

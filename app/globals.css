@@ -293,6 +293,7 @@ nav {
 
 /* stat pills below CTA */
 .hero-stats {
+  align-self: stretch;
   display: flex; flex-wrap: wrap; gap: clamp(18px, 3vw, 28px);
   margin-top: clamp(20px, 3.5vh, 40px);
   padding-top: clamp(16px, 2.4vh, 28px);
