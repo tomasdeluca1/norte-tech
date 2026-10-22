@@ -1,558 +1,310 @@
-"use client";
-
-import { useEffect, useState } from 'react';
-import PresentationFields, { EMPTY_PRESENTATION, presentationPayload, type PresentationState } from './components/PresentationFields';
-import { ROLES } from '@/lib/profile-fields';
-import CommunityDirectory from './components/CommunityDirectory';
-import { PALETTE } from '@/lib/palette';
+// Home de Norte Tech (v2, DISENO-ITERACION de Marketing). Server Component:
+// todo el texto sale en el HTML; quedan como islas cliente sólo la brújula
+// (Hero3D), los chips, el contador, la terminal, la aguja de la banda CTA, el
+// directorio, la barra y el formulario de alta.
+import Image from 'next/image';
+import './home.css';
 import BrandLogo from './components/BrandLogo';
-import ThemeToggle from './components/ThemeToggle';
-import { MEETUP_URL, MEETUP_DATE, AREABETA_URL, isAreabetaPromoActive } from '@/lib/site';
-import { CATEGORIES, categoryOf, type Category, type CommunityStats } from '@/lib/categories';
+import SiteNav, { type MeetupLink } from './components/home/SiteNav';
+import JoinModal from './components/home/JoinModal';
+import Reveal from './components/home/Reveal';
+import CommunityDirectory from './components/CommunityDirectory';
 import Hero3D from './components/web3d/Hero3D';
 import CategoryChips from './components/web3d/CategoryChips';
 import CountUp from './components/web3d/CountUp';
-import WindRose, { type RoseCard } from './components/web3d/WindRose';
 import Terminal from './components/web3d/Terminal';
-import AgendaRoute from './components/web3d/AgendaRoute';
 import CtaNeedle from './components/web3d/CtaNeedle';
 import FooterCompass from './components/web3d/FooterCompass';
 import CompassCursor from './components/web3d/CompassCursor';
-import { bus } from './components/web3d/bus';
-import AssembleGrid from './components/web3d/AssembleGrid';
+import { getCommunityStats } from '@/lib/stats';
+import {
+  MEETUP_URL, MEETUP_DATE, AREABETA_URL, isAreabetaPromoActive,
+  MEET_TALK_01_DATE_PLACEHOLDER, NAV_MEETUPS_LINK, FOTOS_FACT_REQUESTS,
+} from '@/lib/site';
 
-interface Member {
-  _id: string;
-  name: string;
-  initials: string;
-  role: string;
-  jobTitle?: string;
-  company?: string;
-  companyUrl?: string;
-  tags?: string[];
-  colorIndex: number;
-  websiteUrl?: string | null;
+import fotoTrio from '@/public/meetups/mt02-trio-risas.webp';
+import fotoRonda from '@/public/meetups/mt02-ronda-mic-crop.webp';
+import fotoPizarra from '@/public/meetups/mt02-pizarra.webp';
+import fotoSonrisa from '@/public/meetups/mt02-sonrisa.webp';
+import fotoRecorrida from '@/public/meetups/mt02-recorrida.webp';
+import fotoPresenta from '@/public/meetups/mt02-presenta-risa-crop.webp';
+import fotoMicVentanal from '@/public/meetups/mt02-mic-ventanal-crop.webp';
+import fotoCafeGarcia from '@/public/meetups/cowork-cafe-garcia.webp';
+import fotoSantaBarbara from '@/public/meetups/cowork-santa-barbara.webp';
+import fotoIslasGolf from '@/public/meetups/cowork-islas-del-golf.webp';
+
+// Contador y chips: totales reales de Neon, regenerados cada 5 minutos (ISR).
+// Tiene que ser un literal (Next lo lee estáticamente); igual a STATS_REVALIDATE_SECONDS.
+export const revalidate = 300;
+
+/** "2026-11-12T19:00:00-03:00" -> "12.11" (hora de Argentina). Vacío si no hay fecha válida. */
+function shortDate(iso: string): string {
+  const t = Date.parse(iso);
+  if (!iso || Number.isNaN(t)) return '';
+  const parts = new Intl.DateTimeFormat('es-AR', { day: '2-digit', month: '2-digit', timeZone: 'America/Argentina/Buenos_Aires' }).formatToParts(new Date(t));
+  const d = parts.find((p) => p.type === 'day')?.value;
+  const m = parts.find((p) => p.type === 'month')?.value;
+  return d && m ? `${d}.${m}` : '';
 }
 
-export default function Home() {
-  const [isMobOpen, setIsMobOpen] = useState(false);
-  const [showJoinModal, setShowJoinModal] = useState(false);
-  const [me, setMe] = useState<{ name: string; initials: string; colorIndex: number } | null>(null);
+const ABOUT_CARDS = [
+  { k: '01 · N', title: 'Meetups', text: 'Encuentros cortos y sin slides. Contás en qué andás y conocés a los que están en lo mismo.' },
+  { k: '02 · E', title: 'Coworks', text: 'Tardes de laburo compartido en cafés y clubes de la zona. Traés la compu y trabajás al lado de otros.' },
+  { k: '03 · S', title: 'Red', text: 'Founders, builders, inversores y gente de growth, marketing y contenido que vive en la zona.' },
+  { k: '04 · O', title: 'Feedback', text: 'Mostrás tu producto y te devuelven algo útil. Sin pitch armado.' },
+];
 
-  const [members, setMembers] = useState<Member[]>([]);
-  const [memberTotal, setMemberTotal] = useState<number | null>(null);
-
-  const [navScrolled, setNavScrolled] = useState(false);
-  // Badge temporal de Areabeta: se decide en el cliente para que no quede fijo en el HTML estático.
-  const [areabetaPromo, setAreabetaPromo] = useState(false);
-  useEffect(() => { setAreabetaPromo(isAreabetaPromoActive()); }, []);
-  const [membersLoading, setMembersLoading] = useState(true);
-  const [formData, setFormData] = useState({ name: '', email: '', role: '', jobTitle: '', company: '', companyUrl: '' });
-  const [formTags, setFormTags] = useState<string[]>([]);
-  const [presentation, setPresentation] = useState<PresentationState>(EMPTY_PRESENTATION);
-  const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const patchPresentation = (patch: Partial<PresentationState>) => setPresentation(prev => ({ ...prev, ...patch }));
-
-  const [stats, setStats] = useState<CommunityStats | null>(null);
-  const [dirCategory, setDirCategory] = useState<Category | null>(null);
-  const AVAILABLE_TAGS = ['AI', 'SaaS', 'Fintech', 'Web3', 'Proptech', 'Dev', 'Design', 'Marketing', 'Founder', 'Builder', 'Inversor'];
-  const toggleTag = (tag: string) => setFormTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
-
-  const closeMob = () => setIsMobOpen(false);
+export default async function Home() {
+  const stats = await getCommunityStats();
+  const total = stats.live && stats.total > 0 ? stats.total : null;
+  const nextDate = shortDate(MEETUP_DATE);
+  const promo = isAreabetaPromoActive();
 
   // CTA principal: la página de Luma del próximo meetup (MEETUP_URL en lib/site.ts).
-  // Sin URL configurada, el CTA abre el formulario de alta.
-  // data-cta: el cursor de brújula busca estos botones.
-  const meetupLinkProps = MEETUP_URL
-    ? { href: MEETUP_URL, target: '_blank', rel: 'noopener noreferrer', 'data-cta': '' }
-    : { href: '#join', 'data-cta': '', onClick: (e: React.MouseEvent) => { e.preventDefault(); setIsMobOpen(false); setShowJoinModal(true); } };
+  // Sin URL, el CTA abre el formulario de alta (data-open-join, ver JoinModal).
+  const meetup: MeetupLink = MEETUP_URL
+    ? { href: MEETUP_URL, target: '_blank', rel: 'noopener noreferrer' }
+    : { href: '#join', 'data-open-join': '' };
 
-  // CTA del hero: hover o foco hacen que la aguja (A) o la estrella polar (B) apunten y latan.
-  const heroCtaFx = {
-    'data-hero-cta': '',
-    onPointerEnter: () => { bus.ctaHover = true; bus.ctaPulseAt = performance.now(); },
-    onPointerLeave: () => { bus.ctaHover = false; },
-    onFocus: () => { bus.ctaHover = true; bus.ctaPulseAt = performance.now(); },
-    onBlur: () => { bus.ctaHover = false; },
-  };
-
-  const ABOUT_CARDS: RoseCard[] = [
-    { n: '01', title: 'Meetups', text: 'Encuentros cortos y sin slides. Contás en qué andás y conocés a los que están en lo mismo.' },
-    { n: '02', title: 'Coworks', text: 'Tardes de laburo compartido en cafés y clubes de la zona. Traés la compu y trabajás al lado de otros que están en lo mismo.' },
-    { n: '03', title: 'Red', text: 'Founders, builders, inversores y gente de growth, marketing y contenido que vive en la zona.' },
-    { n: '04', title: 'Feedback', text: 'Mostrás tu producto y te devuelven algo útil. Sin pitch armado.' },
+  const route = [
+    { name: 'Meet & Talk 01', meta: MEET_TALK_01_DATE_PLACEHOLDER },
+    { name: 'Founders Edition', meta: '18.09 · Tigre' },
+    { name: 'Meet & Talk 02', meta: '14.10 · Areabeta' },
   ];
 
-  const fetchMembers = () => {
-    fetch('/api/members')
-      .then(r => r.json())
-      .then(data => {
-        setMembers(data.members ?? []);
-        if (typeof data.total === 'number') setMemberTotal(data.total);
-      })
-      .catch(() => {})
-      .finally(() => setMembersLoading(false));
-  };
-
-  useEffect(() => {
-    fetchMembers();
-    // Conteo agregado por categoría (sin datos personales) para partículas, chips y contador.
-    fetch('/api/members/stats')
-      .then(r => r.json())
-      .then((d: CommunityStats) => { if (d && typeof d.total === 'number') setStats(d); })
-      .catch(() => {});
-  }, []);
-
-  // Estado de sesión para el chip del nav (top-right).
-  useEffect(() => {
-    fetch('/api/auth/me')
-      .then(r => r.json())
-      .then(d => setMe(d.user ?? null))
-      .catch(() => {});
-  }, []);
-
-  const handleLogout = async () => {
-    try { await fetch('/api/auth/logout', { method: 'POST' }); } catch {}
-    window.location.href = '/';
-  };
-
-  // Nav condenses on scroll + scroll-reveal for sections (progressive
-  // enhancement: hidden state only applies once JS marks the doc ready).
-  useEffect(() => {
-    const onScroll = () => setNavScrolled(window.scrollY > 24);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-
-    const root = document.documentElement;
-    root.classList.add('reveal-ready');
-    const targets = Array.from(
-      document.querySelectorAll<HTMLElement>(
-        '[data-reveal], .about-grid > div, .feat:not(.rose-card), .terminal, .events-hd, .ev-card:not(.ev-dim), .comunidad-head, .cta-inner',
-      ),
-    );
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) {
-            e.target.classList.add('in');
-            io.unobserve(e.target);
-          }
-        }
-      },
-      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
-    );
-    targets.forEach((t, i) => {
-      t.style.setProperty('--reveal-i', String(i % 6));
-      io.observe(t);
-    });
-
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      io.disconnect();
-    };
-  }, []);
-
-  // Builders con sitio propio, para la grilla de la sección comunidad.
-  // Cortamos en 8: esto es un showcase,
-  // el listado completo y buscable es el CommunityDirectory de más abajo.
-  const sites = members
-    .filter(m => m.websiteUrl)
-    .filter(m => !dirCategory || categoryOf(m.role, m.tags) === dirCategory)
-    .slice(0, 8);
-  const shownTotal = stats?.live && stats.total > 0 ? stats.total : memberTotal;
-
-  useEffect(() => {
-    const handleResize = () => { if (window.innerWidth > 960) closeMob(); };
-    window.addEventListener('resize', handleResize);
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  useEffect(() => {
-    if (isMobOpen || showJoinModal) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = '';
-  }, [isMobOpen, showJoinModal]);
-
-  const handleJoinSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormStatus('loading');
-    try {
-      const res = await fetch('/api/join', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, tags: formTags, ...presentationPayload(presentation) }),
-      });
-      if (!res.ok) throw new Error('Error al registrar');
-      setFormStatus('success');
-      fetchMembers();
-    } catch (err) {
-      setFormStatus('error');
-    }
-  };
-
-  const handleAddAnother = () => {
-    setFormData({ name: '', email: '', role: '', jobTitle: '', company: '', companyUrl: '' });
-    setFormTags([]);
-    setPresentation(EMPTY_PRESENTATION);
-    setFormStatus('idle');
-  };
-
   return (
-    <>
-      <nav className={navScrolled ? 'scrolled' : ''}>
-        <a href="#" className="nav-logo" aria-label="Norte Tech, inicio">
-          <BrandLogo variant="logo-horizontal" className="nav-logo-full" />
-          <BrandLogo variant="cursor" className="nav-logo-mark" />
-        </a>
-        <ul className="nav-center">
-          <li><a href="#sobre">Qué es</a></li>
-          <li><a href="#eventos">Agenda</a></li>
-          <li><a href="#comunidad">Comunidad</a></li>
-        </ul>
-        <div className="nav-right">
-          <ThemeToggle />
-          {me ? (
-            <>
-              <a href="/dashboard" className="nav-user" title="Ir a mi dashboard">
-                <span
-                  className="nav-user-av"
-                  style={{ background: PALETTE[me.colorIndex % PALETTE.length].bg, color: PALETTE[me.colorIndex % PALETTE.length].color }}
-                >{me.initials}</span>
-                <span className="nav-user-name">{me.name.split(' ')[0]}</span>
-              </a>
-              <button onClick={handleLogout} className="btn btn-outline nav-logout">Salir</button>
-            </>
-          ) : (
-            <a href="/login" className="btn btn-outline">Iniciar sesión</a>
-          )}
-          <a {...meetupLinkProps} className="btn btn-green nav-cta">Próximo meetup</a>
-          <button className={`hamburger ${isMobOpen ? 'open' : ''}`} onClick={() => setIsMobOpen(!isMobOpen)} aria-label="Menú">
-            <span></span><span></span><span></span>
-          </button>
-        </div>
-      </nav>
+    <div className="v2">
+      <a className="skip" href="#contenido">Saltar al contenido</a>
+      <SiteNav meetup={meetup} />
 
-      <div className={`mobile-menu ${isMobOpen ? 'open' : ''}`} id="mob">
-        <a href="#sobre" onClick={closeMob}>Qué es</a>
-        <a href="#eventos" onClick={closeMob}>Agenda</a>
-        <a href="#comunidad" onClick={closeMob}>Comunidad</a>
-        {me ? (
-          <>
-            <a href="/dashboard" onClick={closeMob}>Mi dashboard</a>
-            <button className="btn btn-outline" onClick={() => { closeMob(); handleLogout(); }}>Salir</button>
-          </>
-        ) : (
-          <a href="/login" onClick={closeMob}>Iniciar sesión</a>
-        )}
-        <a {...meetupLinkProps} className="btn btn-green">Sumate al próximo meetup</a>
-        {!me && (
-          <button className="btn btn-outline" onClick={() => { closeMob(); setShowJoinModal(true); }}>
-            Unirme a la comunidad
-          </button>
-        )}
-      </div>
-
-      <section className="hero" id="top">
-        <div className="hero-bg"></div>
-        <div className="hero-grid"></div>
-
-        <div className="hero-left container" style={{ maxWidth: 'none' }}>
-          <div className="pill">
-            <span className="pill-dot"></span>
-            Comunidad tech
-            <span className="pill-sep">·</span>
-            Zona norte
-          </div>
-          <h1 className="hero-h1 display">Encontrá tu norte.</h1>
-          <p className="hero-sub">
-            La comunidad tech de zona norte.<br />
-            Founders, builders e inversores en la misma mesa.
-          </p>
-          <div className="hero-actions">
-            <a {...meetupLinkProps} {...heroCtaFx} className="btn btn-green hero-cta">Sumate al próximo meetup</a>
-            <button onClick={() => setShowJoinModal(true)} className="btn btn-ghost">Unirme a la comunidad</button>
-          </div>
-          <CategoryChips stats={stats} />
-          {/* Único número del hero: miembros activos reales (Neon vía /api/members/stats,
-              o el total de /api/members si stats falla). Sin dato real no se muestra nada. */}
-          {shownTotal ? (
-            <div className="hero-stats">
-              <div className="hero-stat hero-stat--members">
-                <div className="val"><CountUp value={shownTotal} /></div>
-                <div className="lbl">Miembros</div>
-              </div>
+      <main id="contenido">
+        {/* ───────────── HERO A' · brújula viva ───────────── */}
+        <section className="hero" id="top" aria-labelledby="hero-title">
+          <div className="hero-copy">
+            {nextDate ? (
+              <p className="pill pill--live"><span className="pill-dot" aria-hidden="true" />Próximo meetup · {nextDate}</p>
+            ) : (
+              <p className="pill"><span className="pill-dot" aria-hidden="true" />Comunidad tech · Zona norte</p>
+            )}
+            <h1 id="hero-title" className="h-display">Encontrá tu <span className="u-amber">norte</span>.</h1>
+            <p className="hero-sub">La comunidad tech de zona norte. Founders, builders e inversores en la misma mesa.</p>
+            <div className="hero-actions">
+              <a {...meetup} className="btn btn-primary btn-lg hero-cta" data-hero-cta="" data-cta="">Sumate al próximo meetup</a>
+              <button type="button" className="btn btn-ghost btn-lg" data-open-join="">Unirme a la comunidad</button>
             </div>
-          ) : null}
-        </div>
-
-        <div className="hero-right">
-          <Hero3D stats={stats} />
-        </div>
-
-        <a href="#sobre" className="hero-scroll" aria-label="Bajar">
-          <span className="hero-scroll-dot" />
-          scroll
-        </a>
-      </section>
-
-      <div className="marquee-wrap">
-        <div className="marquee-track">
-          {Array(20).fill([
-            'Inteligencia Artificial', 'Fintech', 'SaaS', 'Web3', 'Proptech',
-            'Healthtech', 'EdTech', 'Developer Tools', 'E-commerce', 'Networking'
-          ]).flat().map((item, i) => (
-            <div key={i} className="m-item"><span></span>{item}</div>
-          ))}
-        </div>
-      </div>
-
-      <section id="sobre" className="section sobre">
-        {/* Salida de la cámara del hero: la apertura de la brújula se abre acá. */}
-        <div className="sobre-aperture" aria-hidden="true" />
-        <div className="about-grid">
-          <div>
-            <div className="eyebrow">Qué es Norte Tech</div>
-            <h2 className="sec-title display">Hay gente construyendo al lado tuyo.</h2>
-            <p className="sec-sub">
-              Norte Tech junta a founders, builders e inversores que viven y trabajan en zona norte.
-              Nos vemos en meetups, coworks y charlas para mostrar lo que estamos haciendo, pedir feedback
-              y armar equipo sin tener que ir hasta Capital.
-            </p>
+            <div className="hero-meta">
+              <CategoryChips stats={stats} />
+              {/* Único número del hero: miembros activos reales (Neon). Sin dato real no se muestra. */}
+              {total ? (
+                <p className="hero-count">
+                  <span className="sr-only">{total} miembros, desde 2025</span>
+                  <span aria-hidden="true"><strong><CountUp value={total} /></strong> miembros <span className="sep">·</span> desde 2025</span>
+                </p>
+              ) : null}
+            </div>
           </div>
-          <div>
-            <Terminal total={shownTotal} onJoin={() => setShowJoinModal(true)} />
+          <div className="hero-visual">
+            <Hero3D stats={stats} />
           </div>
-        </div>
-        <WindRose cards={ABOUT_CARDS} />
-      </section>
+          <CompassCursor />
+        </section>
 
-      <div className="events-bg">
-        <section id="eventos" className="section">
-          <div className="events-hd">
-            <div>
-              <div className="eyebrow">Agenda</div>
-              <h2 className="sec-title display">Cómo nos juntamos</h2>
-            </div>
-            <a {...meetupLinkProps} className="btn btn-ghost">Sumate al próximo meetup →</a>
+        {/* ───────────── FOTOS · Así fue el segundo (reemplaza al marquee) ───────────── */}
+        <section className="section fotos" id="fotos" aria-labelledby="fotos-title">
+          <div className="sec-head" data-reveal>
+            <p className="eyebrow">Meet &amp; Talk 02 · 14.10 · Areabeta</p>
+            <h2 id="fotos-title" className="h2">Así fue el segundo.</h2>
+            <p className="lead">Arrancamos con una pizarra en blanco y dos preguntas: qué venís a buscar y qué podés ofrecer. Se llenó. Después, ronda de presentaciones con micrófono y recorrida por Areabeta.</p>
           </div>
-          <AgendaRoute nextProps={meetupLinkProps} meetupDate={MEETUP_DATE} />
-          <div className="events-grid">
-            <div className="ev-card ev-featured">
-              <div className="ev-badge badge-star">Próximo meetup</div>
-              <h3>Meet &amp; Talk</h3>
-              <p>Charlamos de tecnología y conocemos a los que están construyendo en la zona. En el Random Pick &amp; Talk salen nombres al azar y cada uno tiene 60 segundos para contar quién es y qué está haciendo. Sin slides, sin pitch.</p>
-              <div className="ev-meta">
-                <span className="ev-date">Zona norte · Fecha y lugar en Luma</span>
-                <a {...meetupLinkProps} className="ev-link">Reservá tu lugar →</a>
-              </div>
-            </div>
-            <div className="ev-card">
-              <div className="ev-badges">
-                <div className="ev-badge badge-ws">Cowork</div>
-                {areabetaPromo && <div className="ev-badge badge-star badge-promo">Octubre: cowork gratis en Areabeta</div>}
-              </div>
-              <h3>Cowork de la comunidad</h3>
-              <p>Una tarde de laburo en cafés, clubes y hubs de la zona. Ya pasamos por <a className="inline-link" href={AREABETA_URL} target="_blank" rel="noopener noreferrer">Areabeta</a>, Café García, Santa Bárbara e Islas del Golf.</p>
-              <div className="ev-meta"><span className="ev-date">Recurrente</span><span>Zona norte</span></div>
-            </div>
-            <div className="ev-card">
-              <div className="ev-badge badge-hack">Founders</div>
-              <h3>Founders Edition</h3>
-              <p>Una noche para founders que ya construyeron algo real: con ronda, facturando o con años encima. Con dinámicas para que termines hablando con gente que no habrías cruzado.</p>
-              <div className="ev-meta"><span className="ev-date">Con cupo</span><span>Zona norte</span></div>
-            </div>
+          <div className="bento">
+            <figure className="ph ph-a">
+              <Image src={fotoTrio} placeholder="blur" sizes="(max-width: 720px) 100vw, 600px" alt="Tres personas riéndose a cámara en un salón con techo de hormigón y ventanales: un chico de rulos con remera negra, una chica de pelo largo y un chico de camisa blanca." />
+              <figcaption>La previa</figcaption>
+            </figure>
+            <figure className="ph ph-b">
+              <Image src={fotoRonda} placeholder="blur" sizes="(max-width: 720px) 50vw, 300px" alt="Un chico de remera blanca habla con micrófono al lado de una pizarra, con ventanales azules del atardecer atrás." />
+              <figcaption>La ronda</figcaption>
+            </figure>
+            <figure className="ph ph-c">
+              <Image src={fotoPizarra} placeholder="blur" sizes="(max-width: 720px) 50vw, 300px" alt="Un chico de espaldas mira una pizarra blanca escrita a mano con dos columnas: qué vengo a buscar y qué puedo ofrecer." />
+              <figcaption>La pizarra</figcaption>
+            </figure>
+            <figure className="ph ph-d">
+              <Image src={fotoSonrisa} placeholder="blur" sizes="(max-width: 720px) 50vw, 300px" alt="Una chica sonríe a cámara en medio de un salón con gente charlando en grupos." />
+              <figcaption>Gente nueva</figcaption>
+            </figure>
+            <figure className="ph ph-e">
+              <Image src={fotoRecorrida} placeholder="blur" sizes="(max-width: 720px) 50vw, 300px" alt="Un grupo grande camina y charla entre escritorios de una oficina con ventanales." />
+              <figcaption>Recorrida por Areabeta</figcaption>
+            </figure>
+          </div>
+          <div className="facts" data-reveal>
+            {FOTOS_FACT_REQUESTS ? (
+              <p className="fact"><strong className="amber-num">{FOTOS_FACT_REQUESTS}</strong><span>pedidos para sumarse a la comunidad</span></p>
+            ) : null}
+            <p className="fact"><strong>Cupo lleno</strong><span>En el primer meetup quedó gente afuera. Reservá con tiempo.</span></p>
+            <a {...meetup} className="btn btn-primary btn-lg" data-cta="">Reservá tu lugar</a>
           </div>
         </section>
-      </div>
 
-      <section id="base" className="section base-section" aria-labelledby="base-title">
-        <div className="base-inner" data-reveal>
-          <div>
-            <div className="eyebrow">Dónde nos juntamos</div>
-            <h2 id="base-title" className="sec-title display">Nuestra base: Areabeta</h2>
-            <p className="sec-sub">Varios de nuestros encuentros fueron en Areabeta, un hub de comunidad e innovación en zona norte. Ahí hacemos meetups y coworks.</p>
+        {/* ───────────── QUÉ ES (sin scroll pinneado; la rosa es la grilla) ───────────── */}
+        <section className="section about" id="sobre" aria-labelledby="sobre-title">
+          <div className="about-head">
+            <div className="about-copy" data-reveal>
+              <svg className="about-rose" viewBox="-280 -280 560 560" aria-hidden="true" focusable="false">
+                <circle r="250" className="ar-ring" />
+                <path className="ar-mark" d="M-255 0L-179 -15L-179 15ZM255 0L179 -15L179 15ZM0 131L14 176L0 230L-14 176Z" />
+                <path className="ar-mark" d="M0 -255L-15 -179L15 -179Z" />
+                <g className="ar-needle">
+                  <path fill="#1774FD" d="M0 -230L-104 9L0 -59Z" />
+                  <path fill="#0F58DE" d="M0 -230L104 9L0 -59Z" />
+                </g>
+              </svg>
+              <p className="eyebrow">Qué es Norte Tech</p>
+              <h2 id="sobre-title" className="h2">Hay gente construyendo al lado tuyo.</h2>
+              <p className="lead">Norte Tech junta a founders, builders e inversores que viven y trabajan en zona norte. Nos vemos en meetups, coworks y charlas para mostrar lo que estamos haciendo, pedir feedback y armar equipo sin tener que ir hasta Capital.</p>
+            </div>
+            <div data-reveal>
+              <Terminal total={total} />
+            </div>
           </div>
-          <a href={AREABETA_URL} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">Conocé Areabeta →</a>
-        </div>
-      </section>
-
-      <section id="comunidad" className="section">
-        <div className="comunidad-head">
-          <div className="comunidad-head-main">
-            <div className="eyebrow">Miembros</div>
-            <h2 className="sec-title display">La comunidad</h2>
-            <p className="sec-sub">Founders, builders, inversores, growth, marketing y creators de zona norte, cada uno con lo que está construyendo. Si todavía no estás, te sumás en un minuto.</p>
-          </div>
-          <ul className="nt-chips dir-filter" aria-label="Filtrar la comunidad por categoría">
-            <li><button type="button" className={`nt-chip${dirCategory === null ? ' is-on' : ''}`} aria-pressed={dirCategory === null} onClick={() => setDirCategory(null)}>Todos</button></li>
-            {CATEGORIES.map(c => (
-              <li key={c}>
-                <button type="button" className={`nt-chip${dirCategory === c ? ' is-on' : ''}`} aria-pressed={dirCategory === c} onClick={() => setDirCategory(dirCategory === c ? null : c)}>{c}</button>
+          <ol className="cards4">
+            {ABOUT_CARDS.map((c, i) => (
+              <li key={c.title} className="card" data-dir={i} data-reveal>
+                <span className="card-k">{c.k}</span>
+                <h3>{c.title}</h3>
+                <p>{c.text}</p>
               </li>
             ))}
-          </ul>
-        </div>
+          </ol>
+        </section>
 
-        {membersLoading ? (
-          <div className="sites"><div className="dir-grid">
-            {Array.from({ length: 6 }).map((_, i) => <div className="dir-card site-skel" key={i} />)}
-          </div></div>
-        ) : sites.length > 0 && (
-          <div className="sites"><AssembleGrid className="dir-grid" key={dirCategory ?? 'all'}>
-            {sites.map((m, i) => {
-              const c = PALETTE[m.colorIndex % PALETTE.length];
-              const sub = m.jobTitle && m.company ? `${m.jobTitle} @ ${m.company}` : (m.jobTitle || m.role);
-              return (
-                <div className="dir-card dir-card-t1" key={m._id} style={{ ['--i' as string]: i }}>
-                  <div className="dir-av" style={{ background: c.bg, color: c.color }}>{m.initials}</div>
-                  <div className="dir-info">
-                    <div className="dir-name">{m.name}</div>
-                    <div className="dir-sub">{sub}</div>
-                  </div>
-                  <a className="dir-cta" href={m.websiteUrl as string} target="_blank" rel="noopener">
-                    Ver sitio →
-                  </a>
-                </div>
-              );
-            })}
-          </AssembleGrid></div>
-        )}
-
-        <CommunityDirectory category={dirCategory} />
-
-        <div className="members-join">
-          {me
-            ? <a href="/dashboard#tu-sitio" className="btn btn-outline">Sumá tu sitio →</a>
-            : <button onClick={() => setShowJoinModal(true)} className="btn btn-green">Unirme a la comunidad →</button>}
-        </div>
-      </section>
-
-      <div id="join" className="cta-band">
-        <div className="cta-inner">
-          <CtaNeedle targetSelector=".cta-band-btn" />
-          <div className="cta-copy">
-            <h2 className="display">¿Te vemos en el próximo?</h2>
-            <p>Los meetups son en zona norte y puede venir cualquiera que esté construyendo algo. Reservá tu lugar y vení.</p>
+        {/* ───────────── AGENDA (ruta de meetups) ───────────── */}
+        <section className="section agenda" id="eventos" aria-labelledby="agenda-title">
+          <div className="sec-head sec-head--row" data-reveal>
+            <div>
+              <p className="eyebrow">Agenda</p>
+              <h2 id="agenda-title" className="h2">Cómo nos juntamos</h2>
+            </div>
           </div>
-          <a {...meetupLinkProps} className="btn btn-green cta-band-btn" style={{ fontSize: '.9rem', padding: '16px 36px' }}>
-            Sumate al próximo meetup
-          </a>
-        </div>
-      </div>
+          <ol className="route" aria-label="Meetups de Norte Tech" data-reveal>
+            {route.map((s) => (
+              <li key={s.name} className="stop past">
+                <span className="dot" aria-hidden="true" />
+                <b>{s.name}</b>
+                {s.meta ? <small>{s.meta}</small> : null}
+              </li>
+            ))}
+            <li className="stop next">
+              <span className="dot" aria-hidden="true" />
+              <a {...meetup} className="stop-link"><b>Próximo meetup</b></a>
+              <small>{nextDate ? `${nextDate} · Lugar en Luma` : 'Fecha y lugar en Luma'}</small>
+            </li>
+          </ol>
+          <div className="events">
+            <article className="ev ev-featured" data-reveal>
+              <div className="ev-photo">
+                <Image src={fotoPresenta} placeholder="blur" sizes="(max-width: 860px) 100vw, 480px" alt="Una chica con suéter negro se ríe mientras presenta frente a una pizarra, con ventanales al atardecer." />
+              </div>
+              <div className="ev-body">
+                <p className="badge">Próximo meetup</p>
+                <h3>Meet &amp; Talk</h3>
+                <p>Charlamos de tecnología y conocemos a los que están construyendo en la zona. En el Random Pick &amp; Talk salen nombres al azar y cada uno tiene 60 segundos para contar quién es y qué está haciendo. Sin slides, sin pitch.</p>
+                <div className="ev-foot"><span>Zona norte · {nextDate ? `${nextDate} · lugar en Luma` : 'Fecha y lugar en Luma'}</span><a {...meetup} className="link">Reservá tu lugar <span aria-hidden="true">→</span></a></div>
+              </div>
+            </article>
+            <article className="ev" data-reveal>
+              <div className="ev-top">
+                <p className="badge badge-muted">Cowork</p>
+                {promo && <p className="badge badge-amber">Octubre: cowork gratis en Areabeta</p>}
+              </div>
+              <h3>Cowork de la comunidad</h3>
+              <p>Una tarde de laburo en cafés, clubes y hubs de la zona. Ya pasamos por <a className="link-inline" href={AREABETA_URL} target="_blank" rel="noopener noreferrer">Areabeta</a>, Café García, Santa Bárbara e Islas del Golf.</p>
+              <ul className="thumbs" aria-label="Lugares donde hicimos coworks">
+                <li><Image src={fotoCafeGarcia} placeholder="blur" sizes="(max-width: 860px) 33vw, 180px" alt="" /><span>Café García</span></li>
+                <li><Image src={fotoSantaBarbara} placeholder="blur" sizes="(max-width: 860px) 33vw, 180px" alt="" /><span>Santa Bárbara</span></li>
+                <li><Image src={fotoIslasGolf} placeholder="blur" sizes="(max-width: 860px) 33vw, 180px" alt="" /><span>Islas del Golf</span></li>
+              </ul>
+              <div className="ev-foot"><span>Recurrente · Zona norte</span></div>
+            </article>
+            <article className="ev" data-reveal>
+              <div className="ev-top"><p className="badge badge-muted">Founders</p></div>
+              <h3>Founders Edition</h3>
+              <p>Una noche para founders que ya construyeron algo real: con ronda, facturando o con años encima. Con dinámicas para que termines hablando con gente que no habrías cruzado.</p>
+              <div className="ev-foot"><span>Con cupo · Zona norte</span></div>
+            </article>
+          </div>
+        </section>
 
-      <footer id="contacto">
+        {/* ───────────── BASE · Areabeta con foto ───────────── */}
+        <section className="section base" id="base" aria-labelledby="base-title">
+          <figure className="base-photo" data-reveal>
+            <Image src={fotoMicVentanal} placeholder="blur" sizes="(max-width: 860px) 100vw, 460px" alt="Un chico de camisa blanca habla con micrófono en un salón con columnas de hormigón y ventanales al atardecer." />
+          </figure>
+          <div className="base-copy" data-reveal>
+            <p className="eyebrow">Dónde nos juntamos</p>
+            <h2 id="base-title" className="h2">Nuestra base: Areabeta</h2>
+            <p className="lead">Varios de nuestros encuentros fueron en Areabeta, un hub de comunidad e innovación en zona norte. Ahí hacemos meetups y coworks.</p>
+            <a href={AREABETA_URL} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-lg">Conocé Areabeta <span aria-hidden="true">→</span></a>
+          </div>
+        </section>
+
+        {/* ───────────── COMUNIDAD (una sola grilla con filtros) ───────────── */}
+        <section className="section comunidad" id="comunidad" aria-labelledby="comunidad-title">
+          <div className="sec-head" data-reveal>
+            <p className="eyebrow">Miembros</p>
+            <h2 id="comunidad-title" className="h2">La comunidad</h2>
+            <p className="lead">Founders, builders, inversores, growth, marketing y creators de zona norte, cada uno con lo que está construyendo. Si todavía no estás, te sumás en un minuto.</p>
+          </div>
+          <CommunityDirectory />
+          <div className="members-join">
+            <button type="button" className="btn btn-ghost btn-lg" data-open-join="">Unirme a la comunidad</button>
+          </div>
+        </section>
+
+        {/* ───────────── BANDA CTA ───────────── */}
+        <section className="cta" id="meetup" aria-labelledby="cta-title">
+          <div className="cta-inner" data-reveal>
+            <CtaNeedle targetSelector=".cta-btn" />
+            <div>
+              <h2 id="cta-title" className="h2">¿Te vemos en el próximo?</h2>
+              <p className="lead">Los meetups son en zona norte y puede venir cualquiera que esté construyendo algo. Reservá tu lugar y vení.</p>
+            </div>
+            <a {...meetup} className="btn btn-primary btn-xl cta-btn" data-cta="">Sumate al próximo meetup</a>
+          </div>
+        </section>
+      </main>
+
+      <footer className="footer" id="contacto">
         <div className="footer-inner">
           <div className="footer-top">
             <div className="f-brand">
-              <div className="logo">
-                <BrandLogo variant="logo-horizontal" />
-              </div>
+              <BrandLogo variant="logo-horizontal" />
               <p>La comunidad tech de zona norte. Founders, builders e inversores en la misma mesa.</p>
             </div>
-            <div className="f-col">
-              <h5>Comunidad</h5>
+            <nav className="f-col" aria-labelledby="f-comunidad">
+              <p className="f-title" id="f-comunidad">Comunidad</p>
               <a href="#sobre">Qué es</a>
-              <a href="#comunidad">Miembros</a>
+              {NAV_MEETUPS_LINK && <a href="#fotos">Meetups</a>}
               <a href="#eventos">Agenda</a>
+              <a href="#comunidad">Miembros</a>
               <a href="/login">Iniciar sesión</a>
-            </div>
-            <div className="f-col">
-              <h5>Sumate</h5>
-              <a {...meetupLinkProps}>Próximo meetup</a>
-              <a href="#" onClick={(e) => { e.preventDefault(); setShowJoinModal(true); }}>Unirme a la comunidad</a>
-            </div>
+            </nav>
+            <nav className="f-col" aria-labelledby="f-sumate">
+              <p className="f-title" id="f-sumate">Sumate</p>
+              <a {...meetup}>Próximo meetup</a>
+              <a href="#join" data-open-join="">Unirme a la comunidad</a>
+            </nav>
           </div>
           <div className="footer-bottom">
             <p>© {new Date().getFullYear()} Norte Tech · Zona norte, Buenos Aires</p>
             <FooterCompass />
-            <a {...meetupLinkProps} className="f-wa">Sumate al próximo meetup</a>
           </div>
         </div>
       </footer>
 
-      <CompassCursor />
-
-      {showJoinModal && (
-        <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowJoinModal(false); }}>
-          <div className="modal-card">
-            <button onClick={() => setShowJoinModal(false)} className="modal-close" aria-label="Cerrar">&times;</button>
-
-            {formStatus === 'success' ? (
-              <div className="modal-success">
-                <div className="success-badge">✓</div>
-                <h3 className="success-title">¡Estás <span style={{ color: 'var(--accent)' }}>adentro</span>!</h3>
-                <p className="success-text">Ya sos parte de Norte Tech.</p>
-                <div className="success-note">
-                  <strong>$ status --ok</strong><br />
-                  Te mandamos un mail con tu <strong>acceso al dashboard</strong> y la <strong>invitación al grupo de WhatsApp</strong>. Revisá el inbox (y el spam, por las dudas).
-                </div>
-                <div className="success-actions">
-                  <button onClick={handleAddAnother} className="btn btn-outline">+ Registrar a otro builder</button>
-                </div>
-              </div>
-            ) : (
-              <>
-                <div className="modal-eyebrow">$ join --community</div>
-                <h3 className="modal-title">Sumate a <span className="serif-hl">Norte Tech</span></h3>
-                <p className="modal-sub">Contanos quién sos, dónde vivís y qué construís. Entrás al toque: te llega un mail con tu acceso y la invitación al grupo de WhatsApp.</p>
-
-                <form onSubmit={handleJoinSubmit} className="modal-form">
-                  <div className="field">
-                    <label>Nombre completo</label>
-                    <input required placeholder="Ej. Ada Lovelace" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
-                  </div>
-                  <div className="field">
-                    <label>E-mail</label>
-                    <input required type="email" placeholder="ada@ejemplo.com" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
-                  </div>
-                  <div className="form-grid">
-                    <div className="field">
-                      <label>¿Cuál es tu área?</label>
-                      <select required value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}>
-                        <option value="" disabled>Seleccioná tu área...</option>
-                        {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
-                      </select>
-                    </div>
-                    <div className="field">
-                      <label>Cargo <span className="opt">(opcional)</span></label>
-                      <input placeholder="Ej. Partner & CTO" maxLength={80} value={formData.jobTitle} onChange={e => setFormData({...formData, jobTitle: e.target.value})} />
-                    </div>
-                  </div>
-                  <div className="form-grid">
-                    <div className="field">
-                      <label>Empresa / Proyecto</label>
-                      <input placeholder="Ej. Norte Tech" value={formData.company} onChange={e => setFormData({...formData, company: e.target.value})} />
-                    </div>
-                    <div className="field">
-                      <label>URL</label>
-                      <input type="text" placeholder="tu-empresa.com" value={formData.companyUrl} onChange={e => setFormData({...formData, companyUrl: e.target.value})} />
-                    </div>
-                  </div>
-                  <div className="field">
-                    <label>Tags <span className="opt">(opcional)</span></label>
-                    <div className="tag-picker">
-                      {AVAILABLE_TAGS.map(tag => (
-                        <button
-                          key={tag}
-                          type="button"
-                          onClick={() => toggleTag(tag)}
-                          className={`tag-btn${formTags.includes(tag) ? ' active' : ''}`}
-                        >{tag}</button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="modal-eyebrow" style={{ marginTop: 4 }}>$ tu --presentación</div>
-                  <PresentationFields value={presentation} onChange={patchPresentation} />
-                  <button type="submit" disabled={formStatus === 'loading'} className="btn btn-green">
-                    {formStatus === 'loading' ? 'Guardando...' : 'Unirme a Norte Tech →'}
-                  </button>
-                  {formStatus === 'error' && <p className="form-error">Hubo un error al guardar. Intentá de nuevo.</p>}
-                </form>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-    </>
+      <JoinModal />
+      <Reveal />
+    </div>
   );
 }

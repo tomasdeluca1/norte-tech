@@ -1,29 +1,35 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import localFont from 'next/font/local';
-import { SITE_URL } from '@/lib/site';
+import { SITE_URL, THEME_TOGGLE_ENABLED } from '@/lib/site';
 import './tokens.css';
 import './globals.css';
-import './web3d.css';
 
-// Fuentes de marca self-hosted (subset latino, variables). Ver brand-v1/BRAND.md §7.
+// Fuentes de marca self-hosted. Subset latino básico + ÁÉÍÓÚáéíóúÑñ¿¡·→ y
+// rango de pesos recortado a lo que usa el sitio (pyftsubset + instancer,
+// ver docs/web-v2.md). Sólo Montserrat se precarga: es la del H1 (LCP).
 const montserrat = localFont({
   src: './fonts/Montserrat-latin-var.woff2',
   variable: '--font-montserrat',
-  weight: '100 900',
+  weight: '600 800',
   display: 'swap',
+  preload: true,
 });
 const inter = localFont({
   src: './fonts/Inter-latin-var.woff2',
   variable: '--font-inter',
-  weight: '100 900',
+  weight: '400 700',
   display: 'swap',
+  preload: false,
+  adjustFontFallback: 'Arial',
 });
 const jetbrainsMono = localFont({
   src: './fonts/JetBrainsMono-latin-var.woff2',
   variable: '--font-jetbrains-mono',
-  weight: '100 800',
+  weight: '400 600',
   display: 'swap',
+  preload: false,
+  adjustFontFallback: false,
 });
 
 const siteUrl = SITE_URL;
@@ -76,6 +82,8 @@ export const viewport: Viewport = {
 
 // Tema: oscuro por defecto; claro con data-theme="light" en <html>.
 // Se aplica antes del primer paint para evitar el flash. Acepta ?theme=light|dark.
+// Con THEME_TOGGLE_ENABLED = false (decisión D4) el sitio queda sólo oscuro y
+// este script no se inyecta.
 const THEME_INIT = `(function(){try{var q=new URLSearchParams(location.search).get('theme');if(q==='light'||q==='dark'){localStorage.setItem('nt-theme',q);}var t=q||localStorage.getItem('nt-theme');if(t==='light'){document.documentElement.setAttribute('data-theme','light');}}catch(e){}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -86,20 +94,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
+        {THEME_TOGGLE_ENABLED && <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />}
       </head>
       <body>
         {children}
         <Script
           src="https://cloud.umami.is/script.js"
           data-website-id="c6d29b68-5d43-4ebf-96cb-74b8ca555a80"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-XN447TYF0F"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="google-analytics" strategy="afterInteractive">
+        <Script id="google-analytics" strategy="lazyOnload">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}

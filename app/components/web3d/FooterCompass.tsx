@@ -24,7 +24,7 @@ export default function FooterCompass() {
     (document.querySelector('.nav-logo') as HTMLElement | null)?.focus({ preventScroll: true });
   };
   return (
-    <a href="#top" className="f-compass" onClick={toTop} aria-label="Volver al inicio">
+    <a href="#top" className="f-compass" onClick={toTop}>
       <svg viewBox="-50 -50 100 100" aria-hidden="true" focusable="false">
         <g ref={dial}>
           <circle r="44" className="fc-ring" />

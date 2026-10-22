@@ -193,7 +193,7 @@ function Constellation({ compact, light, stats, tooltip }: Omit<Props, 'active' 
     const sm = stars.material as THREE.ShaderMaterial;
     sm.uniforms.uTime.value = st.clock.elapsedTime;
     const active = bus.category ? CATEGORIES.indexOf(bus.category) : -1;
-    sm.uniforms.uDim.value = stepCategoryMix(mix.current, active, dt);
+    sm.uniforms.uDim.value = stepCategoryMix(mix.current, active, dt).max;
     sm.uniforms.uCat.value = mix.current;
 
     // Las líneas se dibujan solas (2,6 s) y después aparecen las facetas.
@@ -286,9 +286,9 @@ export default function ConstellationScene({ compact, light, active, stats, onRe
   return (
     <Canvas
       className="hero-canvas"
-      dpr={[1, compact ? 1.5 : 2]}
+      dpr={[1, compact ? 1.5 : 1.75]}
       frameloop={active ? 'always' : 'never'}
-      gl={{ antialias: !compact, alpha: true, powerPreference: 'high-performance' }}
+      gl={{ antialias: !compact, alpha: true, powerPreference: 'default' }}
       camera={{ fov: 38, position: [0, 0, 10], near: 0.1, far: 50 }}
       onCreated={({ gl }) => {
         gl.setClearColor(0x000000, 0);

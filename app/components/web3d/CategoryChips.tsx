@@ -1,35 +1,37 @@
 "use client";
 
-// Chips de categoría del hero. Hover o foco: las partículas/estrellas de esa
-// categoría se encienden y se acercan. En touch, tocar alterna el resaltado.
+// Chips de categoría del hero (y filtros del directorio). Hover o foco: las
+// partículas de esa categoría se encienden en la brújula. Tocar/click fija el
+// resaltado (aria-pressed). Los números son los reales de Neon (vía props del
+// Server Component); si no hay datos, los chips van sin número.
 import { useState } from 'react';
 import { CATEGORIES, type Category, type CommunityStats } from '@/lib/categories';
-import { bus } from './bus';
+import { setBusCategory } from './bus';
 
 export default function CategoryChips({ stats }: { stats: CommunityStats | null }) {
   const [pinned, setPinned] = useState<Category | null>(null);
   const live = !!stats?.live && stats.total > 0;
-  const set = (c: Category | null) => { bus.category = c ?? pinned; };
+  const preview = (c: Category | null) => setBusCategory(c ?? pinned);
   return (
-    <ul className="nt-chips nt-chips--live" aria-label="Quiénes forman la comunidad">
+    <ul className="chips" aria-label="Quiénes forman la comunidad">
       {CATEGORIES.map((c) => (
         <li key={c}>
           <button
             type="button"
-            className={`nt-chip${pinned === c ? ' is-on' : ''}`}
+            className="chip"
             aria-pressed={pinned === c}
-            onPointerEnter={(e) => { if (e.pointerType === 'mouse') set(c); }}
-            onPointerLeave={(e) => { if (e.pointerType === 'mouse') set(null); }}
-            onFocus={() => set(c)}
-            onBlur={() => set(null)}
+            onPointerEnter={(e) => { if (e.pointerType === 'mouse') preview(c); }}
+            onPointerLeave={(e) => { if (e.pointerType === 'mouse') preview(null); }}
+            onFocus={() => preview(c)}
+            onBlur={() => preview(null)}
             onClick={() => {
               const next = pinned === c ? null : c;
               setPinned(next);
-              bus.category = next;
+              setBusCategory(next);
             }}
           >
             {c}
-            {live && stats!.categories[c] > 0 ? <span className="nt-chip-n">{stats!.categories[c]}</span> : null}
+            {live && stats!.categories[c] > 0 ? <span>{stats!.categories[c]}</span> : null}
           </button>
         </li>
       ))}

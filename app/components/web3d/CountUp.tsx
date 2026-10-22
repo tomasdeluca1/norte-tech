@@ -3,15 +3,24 @@
 import { useEffect, useRef, useState } from 'react';
 import { prefersReducedMotion } from './capabilities';
 
-/** Cuenta desde 0 hasta el número real cuando entra en pantalla. */
-export default function CountUp({ value, duration = 1400 }: { value: number; duration?: number }) {
-  const [shown, setShown] = useState(0);
+/**
+ * Número real con el valor final ya en el HTML (SSR). Sólo anima desde 0 si el
+ * elemento entra en pantalla después de la carga (si ya se ve, no se mueve).
+ * El valor accesible va en el texto sr-only del padre; esto es aria-hidden.
+ */
+export default function CountUp({ value, duration = 900 }: { value: number; duration?: number }) {
+  const [shown, setShown] = useState(value);
   const ref = useRef<HTMLSpanElement>(null);
   useEffect(() => {
-    if (prefersReducedMotion()) { setShown(value); return; }
-    let raf = 0;
     const el = ref.current;
-    const run = () => {
+    if (!el || prefersReducedMotion()) return;
+    const r = el.getBoundingClientRect();
+    if (r.top < window.innerHeight && r.bottom > 0) return; // ya visible: queda el número final
+    let raf = 0;
+    setShown(0);
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
       const t0 = performance.now();
       const step = (now: number) => {
         const p = Math.min(1, (now - t0) / duration);
@@ -19,16 +28,9 @@ export default function CountUp({ value, duration = 1400 }: { value: number; dur
         if (p < 1) raf = requestAnimationFrame(step);
       };
       raf = requestAnimationFrame(step);
-    };
-    if (!el) { run(); return; }
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io.disconnect(); run(); } });
+    });
     io.observe(el);
-    return () => { io.disconnect(); cancelAnimationFrame(raf); };
+    return () => { io.disconnect(); cancelAnimationFrame(raf); setShown(value); };
   }, [value, duration]);
-  // El número real queda accesible aunque la animación esté a mitad.
-  return (
-    <span ref={ref} aria-label={String(value)}>
-      <span aria-hidden="true">{shown}</span>
-    </span>
-  );
+  return <span ref={ref} aria-hidden="true">{shown}</span>;
 }

@@ -1,14 +1,14 @@
 "use client";
 
 // Terminal de "Qué es": los comandos se tipean al entrar en pantalla y `join`
-// es un botón que abre el formulario de alta. Todo el texto está en el HTML
+// es un botón que abre el formulario de alta (data-open-join, ver JoinModal). Todo el texto está en el HTML
 // desde el server (SEO y lectores de pantalla); la animación sólo lo revela.
 import { useEffect, useRef, useState } from 'react';
 import { prefersReducedMotion } from './capabilities';
 
 type Line = { cmd: string } | { out: string } | { gap: true };
 
-export default function Terminal({ total, onJoin }: { total: number | null; onJoin: () => void }) {
+export default function Terminal({ total }: { total: number | null }) {
   const lines: Line[] = [
     { cmd: 'whoami' },
     { out: '→ founders, builders, inversores, growth, marketing, creators' },
@@ -41,7 +41,7 @@ export default function Terminal({ total, onJoin }: { total: number | null; onJo
       const step = () => {
         n += 1;
         setTyped(n);
-        if (n < chars + 3) timer = window.setTimeout(step, 38 + Math.random() * 40);
+        if (n < chars + 3) timer = window.setTimeout(step, 28); // 28 ms por carácter, una sola vez
         else setTyped(-1);
       };
       timer = window.setTimeout(step, 250);
@@ -80,7 +80,7 @@ export default function Terminal({ total, onJoin }: { total: number | null; onJo
         {rows}
         <div className={reachedEnd ? '' : 't-hidden'}>
           <span className="pr">$</span>{' '}
-          <button type="button" className="t-join" onClick={onJoin} aria-label="join: abrir el formulario para sumarte a la comunidad">
+          <button type="button" className="t-join" data-open-join="" aria-label="join: abrir el formulario para sumarte a la comunidad">
             join
           </button>
           <span className="cursor"></span>

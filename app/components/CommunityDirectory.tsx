@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { PALETTE } from '@/lib/palette';
-import { categoryOf, type Category } from '@/lib/categories';
+import { CATEGORIES, categoryOf, type Category } from '@/lib/categories';
 import AssembleGrid from './web3d/AssembleGrid';
 
 export interface DirectoryMember {
@@ -19,17 +19,21 @@ export interface DirectoryMember {
   tier: 1 | 2 | 3;
 }
 
+const FIRST_PAGE = 12;
 const PAGE_SIZE = 24;
 
 /**
- * Directorio de toda la comunidad activa, escalonado: T1 (sitio propio) con
- * tarjeta destacada, T2 (web de empresa) con chip "web ↗", T3 básica.
+ * Directorio de toda la comunidad activa (una sola grilla, con filtros por
+ * categoría y búsqueda), escalonado: T1 (sitio propio) con tarjeta destacada,
+ * T2 (web de empresa) con chip "web ↗", T3 básica. Arranca con 12 tarjetas.
  */
-export default function CommunityDirectory({ category = null }: { category?: Category | null } = {}) {
+export default function CommunityDirectory() {
   const [members, setMembers] = useState<DirectoryMember[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [query, setQuery] = useState('');
-  const [visible, setVisible] = useState(PAGE_SIZE);
+  const [category, setCategory] = useState<Category | null>(null);
+  const [visible, setVisible] = useState(FIRST_PAGE);
+  const pick = (c: Category | null) => { setCategory(c); setVisible(FIRST_PAGE); };
 
   useEffect(() => {
     fetch('/api/members/all')
@@ -50,18 +54,30 @@ export default function CommunityDirectory({ category = null }: { category?: Cat
 
   const shown = filtered.slice(0, visible);
 
-  if (!loaded) return <div className="dir"><p className="dir-empty">Cargando builders…</p></div>;
+  const filters = (
+    <ul className="chips dir-filter" aria-label="Filtrar la comunidad por categoría">
+      <li><button type="button" className="chip" aria-pressed={category === null} onClick={() => pick(null)}>Todos</button></li>
+      {CATEGORIES.map((c) => (
+        <li key={c}><button type="button" className="chip" aria-pressed={category === c} onClick={() => pick(category === c ? null : c)}>{c}</button></li>
+      ))}
+    </ul>
+  );
+
+  if (!loaded) return <div className="dir">{filters}<p className="dir-empty" role="status">Cargando la comunidad…</p></div>;
 
   return (
     <div className="dir">
+      {filters}
       <div className="dir-head">
         <input
           className="dir-search"
+          type="search"
+          aria-label="Buscar en la comunidad"
           placeholder="Buscar por nombre, empresa, rol o tag…"
           value={query}
-          onChange={(e) => { setQuery(e.target.value); setVisible(PAGE_SIZE); }}
+          onChange={(e) => { setQuery(e.target.value); setVisible(FIRST_PAGE); }}
         />
-        <span className="dir-count">{filtered.length} de {members.length} builders</span>
+        <span className="dir-count" aria-live="polite">{filtered.length} de {members.length} miembros</span>
       </div>
 
       {!filtered.length ? (
@@ -70,7 +86,7 @@ export default function CommunityDirectory({ category = null }: { category?: Cat
         <>
           <AssembleGrid className="dir-grid" key={category ?? 'all'}>
             {shown.map((m, i) => {
-              const order = { ['--i' as string]: Math.min(i, 14) };
+              const order = { ['--i' as string]: Math.min(i % PAGE_SIZE, 11) };
               const c = PALETTE[m.colorIndex % PALETTE.length];
               const sub = m.jobTitle && m.company ? `${m.jobTitle} @ ${m.company}` : (m.jobTitle || m.role);
 
@@ -82,7 +98,7 @@ export default function CommunityDirectory({ category = null }: { category?: Cat
                       <div className="dir-name">{m.name}</div>
                       <div className="dir-sub">{sub}</div>
                     </div>
-                    <a className="dir-cta" href={m.websiteUrl} target="_blank" rel="noopener">
+                    <a className="dir-cta" href={m.websiteUrl} target="_blank" rel="noopener noreferrer">
                       Ver sitio →
                     </a>
                   </div>
@@ -97,15 +113,15 @@ export default function CommunityDirectory({ category = null }: { category?: Cat
                     <div className="dir-name">{m.name}</div>
                     <div className="dir-sub">{sub}</div>
                   </div>
-                  {web && <a className="dir-cta dir-cta-web" href={web} target="_blank" rel="noopener">web ↗</a>}
+                  {web && <a className="dir-cta dir-cta-web" href={web} target="_blank" rel="noopener noreferrer">web ↗</a>}
                 </div>
               );
             })}
           </AssembleGrid>
 
           {filtered.length > visible && (
-            <button className="btn btn-outline dir-more" onClick={() => setVisible((v) => v + PAGE_SIZE)}>
-              Cargar más ({filtered.length - visible} restantes)
+            <button type="button" className="btn btn-ghost btn-md dir-more" onClick={() => setVisible((v) => v + PAGE_SIZE)}>
+              {visible === FIRST_PAGE ? 'Ver toda la comunidad' : `Ver más (${filtered.length - visible})`}
             </button>
           )}
         </>

@@ -19,6 +19,12 @@ export interface HeroBus {
   /** Punto (viewport px) que sigue el glow del shader de fondo: punta de la aguja o estrella polar. */
   glowPoint: { x: number; y: number } | null;
   stats: CommunityStats | null;
+  /** Rect del canvas del hero (viewport px), medido sólo en resize/scroll. */
+  stage: { x: number; y: number; w: number; h: number } | null;
+  /** Último movimiento del puntero (performance.now), para dormir el render. */
+  pointerAt: number;
+  /** Despierta el render bajo demanda de la escena (lo setea la escena). */
+  wake: () => void;
 }
 
 export const bus: HeroBus = {
@@ -31,7 +37,18 @@ export const bus: HeroBus = {
   needle: 0,
   glowPoint: null,
   stats: null,
+  stage: null,
+  pointerAt: -1e9,
+  wake: () => {},
 };
+
+/** Evento DOM con la categoría resaltada por los chips (para la etiqueta de la brújula). */
+export const CATEGORY_EVENT = 'nt:category';
+export function setBusCategory(c: Category | null) {
+  bus.category = c;
+  bus.wake();
+  if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent(CATEGORY_EVENT, { detail: c }));
+}
 
 /** Ángulo (0 = arriba, horario) desde el punto a hasta b, en pantalla. */
 export function screenAngle(ax: number, ay: number, bx: number, by: number): number {
