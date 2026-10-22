@@ -1,3 +1,4 @@
+import { normalizeNeighborhood } from '@/lib/profile-fields';
 import { eq } from 'drizzle-orm';
 import { getDb, schema } from '@/lib/db';
 import { readProfileToken } from '@/lib/magic-link';
@@ -99,7 +100,7 @@ export default async function CompletarPage({ searchParams }: { searchParams: { 
     jobTitle: member.jobTitle ?? '',
     company: member.company ?? '',
     companyUrl: member.companyUrl ?? '',
-    neighborhood: member.neighborhood ?? '',
+    neighborhood: normalizeNeighborhood(member.neighborhood),
     bio: member.bio ?? '',
     building: member.building ?? '',
     lookingFor: member.lookingFor ?? [],

@@ -23,7 +23,7 @@
 
 | Campo (SQL) | Tipo | Notas |
 |---|---|---|
-| `neighborhood` | varchar(100) | Barrio de Nordelta o localidad de zona norte (select) |
+| `neighborhood` | varchar(100) | Barrio de Tigre o localidad de zona norte (select) |
 | `bio` | text | Bio corta (quién sos) |
 | `building` | varchar(280) | Qué estás construyendo hoy |
 | `linkedin_url` | varchar(500) | Opcional |

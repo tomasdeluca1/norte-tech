@@ -1,6 +1,6 @@
 "use client";
 
-import { NEIGHBORHOODS, LOOKING_FOR_OPTIONS, neighborhoodLabel } from '@/lib/profile-fields';
+import { NEIGHBORHOODS, LOOKING_FOR_OPTIONS, neighborhoodLabel, normalizeNeighborhood } from '@/lib/profile-fields';
 
 export interface PresentationState {
   neighborhood: string;
@@ -28,7 +28,7 @@ export const EMPTY_PRESENTATION: PresentationState = {
 
 export function presentationFromMember(m: Partial<Record<keyof PresentationState, unknown>>): PresentationState {
   return {
-    neighborhood: (m.neighborhood as string) ?? '',
+    neighborhood: normalizeNeighborhood(m.neighborhood as string | null),
     bio: (m.bio as string) ?? '',
     building: (m.building as string) ?? '',
     lookingFor: Array.isArray(m.lookingFor) ? (m.lookingFor as string[]) : [],

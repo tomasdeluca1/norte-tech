@@ -1,4 +1,4 @@
-import { LOOKING_FOR_OPTIONS } from './profile-fields';
+import { LOOKING_FOR_OPTIONS, normalizeNeighborhood } from './profile-fields';
 
 const LOOKING_SET = new Set(LOOKING_FOR_OPTIONS);
 
@@ -39,7 +39,7 @@ export function parsePresentationFields(body: unknown): PresentationFields {
   const lookingForRaw = Array.isArray(b.lookingFor) ? b.lookingFor.map((x) => String(x).trim()) : [];
   const lookingFor = Array.from(new Set(lookingForRaw)).filter((x) => LOOKING_SET.has(x));
   return {
-    neighborhood: str(b.neighborhood, 100),
+    neighborhood: str(normalizeNeighborhood(typeof b.neighborhood === 'string' ? b.neighborhood : ''), 100),
     bio: str(b.bio, 1000),
     building: str(b.building, 280),
     linkedinUrl: normalizeUrl(b.linkedinUrl),

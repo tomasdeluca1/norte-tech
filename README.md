@@ -1,6 +1,6 @@
-# Norte Tech · bsasnortetech.vercel.app
+# Norte Tech
 
-Comunidad de founders, devs y makers de la Zona Norte (Buenos Aires).
+Sitio de Norte Tech, la comunidad tech de zona norte (Buenos Aires): Founders, Builders, Inversores, Growth, Marketing y Creators.
 Next.js 14 (App Router) · Neon Postgres + Drizzle · Iron Session + bcrypt · Resend · `@vercel/og`.
 
 ## Stack
@@ -34,11 +34,11 @@ npm run seed
 
 ### 3. Migrate from legacy MongoDB (optional)
 
-If you have an existing MongoDB collection at `nordelta-build.members`:
+If you have the legacy MongoDB `members` collection (database name in `MONGODB_DB`):
 
 ```bash
-MONGODB_URI="..." DATABASE_URL="..." npm run migrate:mongo -- --dry   # preview
-MONGODB_URI="..." DATABASE_URL="..." npm run migrate:mongo            # write
+MONGODB_URI="..." MONGODB_DB="..." DATABASE_URL="..." npm run migrate:mongo -- --dry   # preview
+MONGODB_URI="..." MONGODB_DB="..." DATABASE_URL="..." npm run migrate:mongo            # write
 ```
 
 The script generates a temporary password per migrated user (bcrypt-hashed in DB) and writes a `migrated-credentials.csv` with `email,temp_password` so you can email those out manually (or feed them into Resend with a small script).
@@ -58,7 +58,7 @@ npm run build && npm run start
 - **Change password** (`POST /api/auth/change-password`): validates current password, sets new hash, clears the flag.
 - **Logout** (`POST /api/auth/logout`).
 
-Session cookie: `nordelta_session`, HttpOnly, SameSite=Lax, 30-day max-age.
+Session cookie: `nt_session`, HttpOnly, SameSite=Lax, 30-day max-age. A valid session cookie from the previous name (any `*_session` cookie sealed with the same `SESSION_PASSWORD`) is migrated to `nt_session` on the first request, so nobody gets logged out.
 
 ## Project layout
 

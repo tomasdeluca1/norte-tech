@@ -40,7 +40,7 @@ async function main() {
   const joinEmail = `tomasdelucaa+verify-join-${stamp}@gmail.com`;
 
   const richPayload = {
-    neighborhood: 'Nordelta · Los Castores',
+    neighborhood: 'Los Castores · Tigre',
     bio: 'Bio de prueba de verificación end-to-end.',
     building: 'Un verificador de flujos',
     lookingFor: ['Cofounder', 'Clientes'],
@@ -125,7 +125,7 @@ async function main() {
       { userId: admin.id, email: admin.email, name: admin.name, mustChangePassword: false },
       { password: pwd, ttl: 60 * 60 * 24 * 30 },
     );
-    const admRes = await fetch(`${BASE}/api/admin/members`, { headers: { Cookie: `nordelta_session=${cookie}` } });
+    const admRes = await fetch(`${BASE}/api/admin/members`, { headers: { Cookie: `nt_session=${cookie}` } });
     const admData = await admRes.json().catch(() => ({}));
     check(admRes.status === 200 && Array.isArray(admData.members), 'admin autenticado, lista 200');
     const row = (admData.members || []).find((x) => x.id === magicId);

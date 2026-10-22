@@ -85,7 +85,7 @@ export const LOOKING_FOR = [
 ];
 
 export const GEOGRAPHY = [
-  'Nordelta', 'Vicente López', 'San Isidro', 'Pilar',
+  'Tigre', 'Vicente López', 'San Isidro', 'Pilar',
   'Escobar', 'Tigre', 'General Pacheco', 'San Fernando',
 ];
 
@@ -101,7 +101,7 @@ export const TIERS = [
   {
     name: 'Lead',
     tagline: 'El sponsor principal del ciclo.',
-    perks: ['Tu marca al frente de los eventos', 'Espacio para hablar en los encuentros', 'Presencia en nordelta.tech', 'Línea directa con la comunidad'],
+    perks: ['Tu marca al frente de los eventos', 'Espacio para hablar en los encuentros', 'Presencia en nortetech.ar', 'Línea directa con la comunidad'],
   },
   {
     name: 'Partner',
@@ -115,7 +115,7 @@ export const TIERS = [
   },
 ];
 
-export const CONTACT = { email: 'huevsite.studio@gmail.com', site: 'nordelta.tech' };
+export const CONTACT = { email: 'huevsite.studio@gmail.com', site: 'nortetech.ar' };
 ```
 
 - [ ] **Step 2: Crear `app/pitch-deck/nav.ts`**
@@ -277,16 +277,16 @@ git commit -m "feat(pitch-deck): estilos del deck + print-to-PDF"
 
 - [ ] **Step 1: Crear `app/pitch-deck/slides.tsx`** con los 14 slides. Cada slide es un `<>...</>` con `.s-eyebrow` + `.s-title` + contenido. Copy en la voz del spec (ver Global Constraints). Estructura (resumen — implementar cada uno con los datos de `pitch-data.ts`):
 
-  1. **Cover:** `.s-title` "BUILD THE FUTURE"; `.s-lead` "La comunidad tech de Nordelta y Zona Norte."; mono tag "Pitch para sponsors · 2026"; muestra `{memberTotal}+ builders`.
+  1. **Cover:** `.s-title` "BUILD THE FUTURE"; `.s-lead` "La comunidad tech de zona norte."; mono tag "Pitch para sponsors · 2026"; muestra `{memberTotal}+ builders`.
   2. **La oportunidad:** eyebrow "La oportunidad"; título "ACÁ HAY MUCHA GENTE QUE CONSTRUYE"; lead: "Zona Norte está lleno de founders, devs y makers. Hasta ahora cada uno remaba solo. No había un lugar tech que los junte. Eso es lo que estamos armando."
-  3. **Qué es:** eyebrow "Qué es Nordelta Tech"; título "TECH NACE EN NORDELTA"; lead: "Una comunidad de builders que vive y trabaja en la zona. Nos juntamos a construir, no a hacer networking de tarjetita."; grid cols-4 de 4 pilares (Startups & proyectos / Conocimiento / Red de contactos / Acción real).
+  3. **Qué es:** eyebrow "Qué es Norte Tech"; título "TECH NACE EN ZONA NORTE"; lead: "Una comunidad de builders que vive y trabaja en la zona. Nos juntamos a construir, no a hacer networking de tarjetita."; grid cols-4 de 4 pilares (Startups & proyectos / Conocimiento / Red de contactos / Acción real).
   4. **Tracción:** eyebrow "Tracción"; `.s-bignum` `{memberTotal}+`; bajo: "builders en cuestión de semanas"; mini timeline con `GROWTH` (mar 4 → may 6 → jun 160); nota "Sin pauta. Boca a boca."
   5. **Quiénes son:** eyebrow "Quiénes son"; título "NO ES UNA LISTA DE EMAILS"; barras con `ROLES` (fill = n/86*100%); nota "9 de cada 10 son founders o devs."
   6. **Qué construyen:** eyebrow "Qué construyen"; título "UNA COMUNIDAD AI-FIRST"; chips con `VERTICALS` (label + n).
   7. **De dónde son:** eyebrow "De dónde son"; título "TODO A 20 MINUTOS"; chips con `GEOGRAPHY`; lead "Por eso pasa en persona, no sólo en un chat."
   8. **Qué buscan:** eyebrow "Qué buscan"; título "VIENEN A BUSCAR COSAS CONCRETAS"; barras con `LOOKING_FOR` (fill = n/70*100%).
   9. **Qué hacemos:** eyebrow "Qué hacemos"; título "ESTO RECIÉN ARRANCA"; grid: "Primer co-work — hecho (Islas del Golf)", "Kick-off", "Build with AI", "Hackathon #1".
-  10. **La plataforma:** eyebrow "La plataforma"; título "NO ES SÓLO UN GRUPO"; grid cols-3 de KPIs con `PLATFORM` (29 perfiles públicos / 80 con LinkedIn / 22 con web); lead sobre dashboard + directorio en nordelta.tech.
+  10. **La plataforma:** eyebrow "La plataforma"; título "NO ES SÓLO UN GRUPO"; grid cols-3 de KPIs con `PLATFORM` (29 perfiles públicos / 80 con LinkedIn / 22 con web); lead sobre dashboard + directorio en nortetech.ar.
   11. **Equipo:** eyebrow "Quiénes lo organizan"; título "GENTE QUE VIVE Y CONSTRUYE ACÁ"; grid cols-3 con `TEAM` (`.team-av` iniciales + nombre + rol).
   12. **Por qué un sponsor:** eyebrow "Por qué sumarte"; título "QUÉ GANÁS"; grid de 4: audiencia premium AI-first / marca en eventos y plataforma / acceso a talento / pipeline de startups de la zona.
   13. **Formas de sumarte:** eyebrow "Formas de sumarte"; título "ELEGÍ CÓMO ENTRAR"; grid cols-3 con `TIERS` (primer card `.tier-card.lead`); nota "Sin precio de lista: armamos el formato juntos."
@@ -326,8 +326,8 @@ export function buildSlides(memberTotal: number): React.ReactNode[] {
     <>
       <div className="s-eyebrow">Pitch para sponsors · 2026</div>
       <h1 className="s-title">BUILD<br />THE FUTURE</h1>
-      <p className="s-lead">La comunidad tech de founders, devs y makers de Nordelta y Zona Norte.</p>
-      <div className="deck-foot">{memberTotal}+ builders · nordelta.tech</div>
+      <p className="s-lead">La comunidad tech de founders, builders e inversores de zona norte.</p>
+      <div className="deck-foot">{memberTotal}+ builders · nortetech.ar</div>
     </>,
     // ... (slides 2–14 siguiendo el resumen de arriba)
   ];
@@ -411,7 +411,7 @@ export default function PitchDeck() {
 
   return (
     <div className="deck">
-      <a className="deck-home" href="/">NORDELTA <b>TECH</b></a>
+      <a className="deck-home" href="/">NORTE <b>TECH</b></a>
       <div className="deck-stage">
         {slides.map((node, idx) => (
           <section key={idx} className={`slide${idx === i ? ' is-active' : ''}`}>
@@ -443,8 +443,8 @@ import type { Metadata } from 'next';
 import PitchDeck from './PitchDeck';
 
 export const metadata: Metadata = {
-  title: 'Nordelta Tech · Pitch para sponsors',
-  description: 'La comunidad tech de founders, devs y makers de Nordelta y Zona Norte.',
+  title: 'Norte Tech · Pitch para sponsors',
+  description: 'La comunidad tech de founders, builders e inversores de zona norte.',
   robots: { index: false, follow: false },
 };
 

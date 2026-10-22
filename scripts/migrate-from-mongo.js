@@ -1,10 +1,10 @@
 /* eslint-disable */
 // Migrate members from MongoDB (legacy) to Neon Postgres.
 // Usage:
-//   MONGODB_URI=... DATABASE_URL=... node scripts/migrate-from-mongo.js [--dry]
+//   MONGODB_URI=... MONGODB_DB=... LEGACY_PASSWORD_SUFFIX=... DATABASE_URL=... node scripts/migrate-from-mongo.js [--dry]
 //
 // Behavior:
-// - Connects to legacy MongoDB and reads all members from `nordelta-build.members`.
+// - Connects to legacy MongoDB and reads all members from `<MONGODB_DB>.members`.
 // - Inserts into Postgres `members` with a per-user random temporary password (bcrypt-hashed).
 // - Skips rows whose email already exists in Postgres.
 // - Prints a CSV-style report (email,tempPassword) so you can send credentials manually if needed.
@@ -32,12 +32,15 @@ function slugifyName(name) {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
 }
-// Patrón legacy, NO renombrar con el rebrand: tiene que coincidir con
+// Patrón legacy `{slug}.<sufijo>`: tiene que coincidir con
 // scripts/send-access-emails.js, que le manda esta misma contraseña a los
-// miembros migrados desde Mongo. Las altas nuevas usan lib/password.ts.
+// miembros migrados desde Mongo. El sufijo viejo NO está en el repo (repo
+// público): va en la env LEGACY_PASSWORD_SUFFIX. Las altas nuevas usan lib/password.ts.
 function defaultPasswordFor(name) {
+  const suffix = process.env.LEGACY_PASSWORD_SUFFIX?.trim();
+  if (!suffix) throw new Error('Missing LEGACY_PASSWORD_SUFFIX');
   const slug = slugifyName(name) || 'builder';
-  return `${slug}.nordelta.tech`;
+  return `${slug}.${suffix}`;
 }
 
 function getInitials(name) {
@@ -58,7 +61,9 @@ async function main() {
 
   console.log('→ Connecting to MongoDB and Postgres…');
   await mongo.connect();
-  const col = mongo.db('nordelta-build').collection('members');
+  const mongoDb = process.env.MONGODB_DB?.trim();
+  if (!mongoDb) throw new Error('Missing MONGODB_DB');
+  const col = mongo.db(mongoDb).collection('members');
   const rows = await col.find({}).sort({ createdAt: 1 }).toArray();
   console.log(`→ Found ${rows.length} members in MongoDB.`);
 

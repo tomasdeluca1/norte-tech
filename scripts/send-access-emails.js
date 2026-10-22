@@ -1,16 +1,16 @@
 /* eslint-disable */
 // Sends an "Acceso a Norte Tech" email to existing members with their default-pattern
-// password. Pattern is `{slug(name)}.nordelta.tech`.
+// password. Pattern is `{slug(name)}.<LEGACY_PASSWORD_SUFFIX>`.
 //
-// OJO: este patrón NO se renombra con el rebrand a Norte Tech. Los hashes de los
-// miembros existentes se generaron con el dominio viejo; si se cambia acá, el mail
-// manda una contraseña que no valida. Los usuarios nuevos usan el patrón nuevo
-// (ver lib/password.ts); estos siguen con el viejo hasta que la roten.
+// OJO: los hashes de los miembros existentes se generaron con el sufijo viejo; si
+// cambia, el mail manda una contraseña que no valida. El sufijo NO está en el repo
+// (repo público): pasalo por la env LEGACY_PASSWORD_SUFFIX. Los usuarios nuevos usan
+// el patrón nuevo (ver lib/password.ts); estos siguen con el viejo hasta que la roten.
 //
 // Usage:
 //   node scripts/send-access-emails.js [--dry] [--only=email@x.com]
 //
-// Requires RESEND_API_KEY, EMAIL_FROM, APP_URL, DATABASE_URL in .env.local.
+// Requires RESEND_API_KEY, EMAIL_FROM, APP_URL, DATABASE_URL, LEGACY_PASSWORD_SUFFIX in .env.local.
 
 const fs = require('fs');
 const path = require('path');
@@ -35,8 +35,10 @@ function slugifyName(name) {
 }
 
 function defaultPasswordFor(name) {
+  const suffix = process.env.LEGACY_PASSWORD_SUFFIX?.trim();
+  if (!suffix) throw new Error('Missing LEGACY_PASSWORD_SUFFIX');
   const slug = slugifyName(name) || 'builder';
-  return `${slug}.nordelta.tech`;
+  return `${slug}.${suffix}`;
 }
 
 function escapeHtml(s) {
@@ -53,12 +55,12 @@ function buildHtml({ name, email, password, loginUrl, appUrl }) {
 <table cellpadding="0" cellspacing="0" border="0" role="presentation"><tr>
 <td style="vertical-align:middle;">
                     <img src="${appUrl}/brand/norte-tech-horizontal.png" width="180" alt="Norte Tech" style="display:block;border:0;outline:0;text-decoration:none;width:180px;height:auto;"/>
-<div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#95a0c2;margin-top:4px;">bsasnortetech.vercel.app</div>
+<div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#95a0c2;margin-top:4px;">${escapeHtml(appUrl.replace(/^https?:\/\//, ''))}</div>
 </td></tr></table>
 </td></tr>
 <tr><td style="padding:32px 40px 8px 40px;">
 <h1 style="margin:0;font-family:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:36px;font-weight:700;line-height:1.08;letter-spacing:-0.02em;color:#ffffff;">HOLA, ${escapeHtml(firstName.toUpperCase())} 👋</h1>
-<p style="margin:16px 0 0 0;font-size:16px;line-height:1.6;color:#a9b6c0;">Ya tenés acceso a <strong style="color:#a9b7f3;">Norte Tech</strong> — la comunidad de founders, devs y makers de Nordelta y zona norte. Tu cuenta ya está activa, podés iniciar sesión cuando quieras.</p>
+<p style="margin:16px 0 0 0;font-size:16px;line-height:1.6;color:#a9b6c0;">Ya tenés acceso a <strong style="color:#a9b7f3;">Norte Tech</strong>, la comunidad tech de zona norte: founders, builders e inversores en la misma mesa. Tu cuenta ya está activa, podés iniciar sesión cuando quieras.</p>
 </td></tr>
 <tr><td style="padding:24px 40px 0 40px;">
 <div style="background:#131920;border:1px solid #252e35;border-radius:12px;padding:20px 24px;">

@@ -2,11 +2,11 @@
 
 **Fecha:** 2026-06-23
 **Estado:** Diseño aprobado (pendiente review del spec)
-**Ruta:** `nordelta.tech/pitch-deck`
+**Ruta:** `nortetech.ar/pitch-deck`
 
 ## Objetivo
 
-Una página `/pitch-deck` para presentarle Nordelta Tech a **sponsors** (empresas).
+Una página `/pitch-deck` para presentarle Norte Tech a **sponsors** (empresas).
 Muestra la info real de la comunidad y a dónde aspira, en formato **slides
 navegables** (no scroll), compartible por link y exportable a PDF.
 
@@ -93,11 +93,11 @@ Fuente: DB de producción al 2026-06-23. Se guardan en `pitch-data.ts`.
   Builder/Founder/Dev como identidad. → comunidad **AI-first**.
 - **Qué buscan:** Networking 70 · Feedback 32 · Talento/equipo 27 · Clientes 25 ·
   Mentoría 24 · Cofounder 21 · Inversión 14.
-- **Geografía:** Nordelta (varios barrios) + Vicente López 9 · San Isidro 7 · Pilar 7
+- **Geografía:** Tigre (varios barrios) + Vicente López 9 · San Isidro 7 · Pilar 7
   · Escobar 6 · Tigre 5 · Pacheco 4 · San Fernando 2. Eje Zona Norte.
 - **Plataforma:** 29 huevsites (perfiles públicos) creados · 80 con LinkedIn · 22 con
   website propio.
-- **Actividad:** primer co-work ya realizado (Islas del Golf, Nordelta). Próximos:
+- **Actividad:** primer co-work ya realizado (Islas del Golf, Tigre). Próximos:
   kick-off, "Build with AI", Hackathon #1.
 - **Equipo organizador:** Tomás Deluca, Patricio Iturraspe, Lucas Argento (el rol /
   one-liner de cada uno es un campo editable en `pitch-data.ts`; no se inventa).
@@ -115,12 +115,12 @@ Fuente: DB de producción al 2026-06-23. Se guardan en `pitch-data.ts`.
 Cada slide incluye su intención. El copy abajo es **draft en la voz correcta**
 (ajustable), no placeholder.
 
-1. **Cover** — `BUILD THE FUTURE`. Bajada: "La comunidad tech de Nordelta y Zona
-   Norte." Tag mono: `Pitch para sponsors · 2026`. Logo + `nordelta.tech`.
+1. **Cover** — `BUILD THE FUTURE`. Bajada: "La comunidad tech de zona
+   norte." Tag mono: `Pitch para sponsors · 2026`. Logo + `nortetech.ar`.
 2. **La oportunidad** — "Zona Norte está lleno de gente que construye —founders, devs,
    makers— pero hasta ahora cada uno remaba solo. No había un lugar tech que los
    junte." Cierre: "Eso es lo que estamos armando."
-3. **Qué es Nordelta Tech** — "Una comunidad de builders que vive y trabaja en la
+3. **Qué es Norte Tech** — "Una comunidad de builders que vive y trabaja en la
    zona. Sin humo: nos juntamos a construir, no a hacer networking de tarjetita."
    4 pilares (de la home): Startups & proyectos · Conocimiento · Red de contactos ·
    Acción real ("no es otro grupo de WhatsApp").
@@ -130,14 +130,14 @@ Cada slide incluye su intención. El copy abajo es **draft en la voz correcta**
    marketing. "9 de cada 10 son founders o devs." Barras simples por rol.
 6. **Qué construyen** — verticales: AI 94, SaaS, Fintech, Web3, Proptech. "Una
    comunidad AI-first." Chips/marquee de verticales.
-7. **De dónde son** — eje Zona Norte: Nordelta, Vicente López, San Isidro, Pilar,
+7. **De dónde son** — eje Zona Norte: Tigre, Vicente López, San Isidro, Pilar,
    Escobar, Tigre, Pacheco. "Todos a 20 minutos. Eso hace que pase en persona."
 8. **Qué buscan** — "Vienen a buscar cosas concretas": Talento, Clientes, Cofounder,
    Feedback, Mentoría, Inversión. → demanda real que un sponsor puede ayudar a
    resolver.
 9. **Qué hacemos** — actividad: el primer co-work ya pasó (Islas del Golf). Agenda:
    kick-off, Build with AI, Hackathon #1. "Esto recién arranca."
-10. **La plataforma** — `nordelta.tech` no es sólo un grupo: dashboard, perfiles
+10. **La plataforma** — `nortetech.ar` no es sólo un grupo: dashboard, perfiles
     públicos (huevsites), directorio de builders. Producto real, presencia online.
 11. **Quiénes lo organizan** — el equipo detrás: **Tomás Deluca · Patricio Iturraspe
     · Lucas Argento**. Avatares con iniciales en estilo de marca + nombre + one-liner
@@ -149,7 +149,7 @@ Cada slide incluye su intención. El copy abajo es **draft en la voz correcta**
     beneficios escalonados (marca, presencia en eventos, acceso a comunidad/talento).
     **Sin precios** — "armamos el formato juntos."
 14. **Hablemos** — CTA: "Si querés ser parte de esto desde el lado que construye la
-    zona, hablemos." Contacto: `huevsite.studio@gmail.com` · `nordelta.tech`.
+    zona, hablemos." Contacto: `huevsite.studio@gmail.com` · `nortetech.ar`.
 
 ## Guía de voz (requisito explícito: que no suene a AI)
 

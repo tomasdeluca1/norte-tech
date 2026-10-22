@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { NEIGHBORHOODS, LOOKING_FOR_OPTIONS, ROLES, neighborhoodLabel } from '@/lib/profile-fields';
+import { NEIGHBORHOODS, LOOKING_FOR_OPTIONS, ROLES, neighborhoodLabel, normalizeNeighborhood } from '@/lib/profile-fields';
 import '../auth.css';
 import './admin.css';
 import BrandLogo from '../components/BrandLogo';
@@ -274,7 +274,7 @@ function EditModal({ member, canManageAdmin, onClose, onSaved }: { member: Admin
     company: member.company ?? '',
     companyUrl: member.companyUrl ?? '',
     isAdmin: member.isAdmin,
-    neighborhood: member.neighborhood ?? '',
+    neighborhood: normalizeNeighborhood(member.neighborhood),
     bio: member.bio ?? '',
     building: member.building ?? '',
     canHelpWith: member.canHelpWith ?? '',

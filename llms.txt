@@ -1,7 +1,7 @@
 # Norte Tech
 
 ## Overview
-Norte Tech is a community of tech founders, developers, and makers located in the northern zone (Zona Norte) of Greater Buenos Aires. Founded in 2025, the goal is to build the tech ecosystem of the area from the ground up.
+Norte Tech is the tech community of the northern zone (Zona Norte) of Greater Buenos Aires: Founders, Builders, Inversores (investors), Growth, Marketing and Creators. Founded in 2025, the goal is to build the tech ecosystem of the area from the ground up.
 
 ## Key Features
 - **Startups & Projects:** Connecting founders with co-founders, early hires, and first users.
