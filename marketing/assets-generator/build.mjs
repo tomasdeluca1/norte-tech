@@ -133,7 +133,7 @@ const ig1 = [
     content: `
       <span class="kick">status: shipping</span>
       <div style="display:flex;align-items:baseline;gap:30px;margin-top:30px;">
-        <span class="title g" style="font-size:340px;">40+</span>
+        <!-- datos a octubre 2026: 261 miembros activos --><span class="title g" style="font-size:340px;">260+</span>
         <span class="title" style="font-size:120px;">MIEMBROS</span>
       </div>
       <p class="sub" style="font-size:40px;margin-top:30px;">Y esto <span style="color:var(--text)">recién arranca.</span></p>`,
