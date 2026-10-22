@@ -27,13 +27,16 @@ const PAGE_SIZE = 24;
  * categoría y búsqueda), escalonado: T1 (sitio propio) con tarjeta destacada,
  * T2 (web de empresa) con chip "web ↗", T3 básica. Arranca con 12 tarjetas.
  */
-export default function CommunityDirectory() {
+export default function CommunityDirectory({ category: controlled, hideFilters = false }: { category?: Category | null; hideFilters?: boolean } = {}) {
   const [members, setMembers] = useState<DirectoryMember[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<Category | null>(null);
   const [visible, setVisible] = useState(FIRST_PAGE);
   const pick = (c: Category | null) => { setCategory(c); setVisible(FIRST_PAGE); };
+
+  // MIX: con filtros externos (chips de la sección, como en la versión A) la categoría viene por prop.
+  useEffect(() => { if (controlled !== undefined) pick(controlled); }, [controlled]);
 
   const [failed, setFailed] = useState(false);
   const root = useRef<HTMLDivElement>(null);
@@ -72,7 +75,7 @@ export default function CommunityDirectory() {
 
   const shown = filtered.slice(0, visible);
 
-  const filters = (
+  const filters = hideFilters ? null : (
     <ul className="chips dir-filter" aria-label="Filtrar la comunidad por categoría">
       <li><button type="button" className="chip" aria-pressed={category === null} onClick={() => pick(null)}>Todos</button></li>
       {CATEGORIES.map((c) => (
