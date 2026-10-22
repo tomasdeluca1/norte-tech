@@ -4,6 +4,7 @@ import localFont from 'next/font/local';
 import { SITE_URL } from '@/lib/site';
 import './tokens.css';
 import './globals.css';
+import './web3d.css';
 
 // Fuentes de marca self-hosted (subset latino, variables). Ver brand-v1/BRAND.md §7.
 const montserrat = localFont({

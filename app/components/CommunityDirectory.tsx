@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { PALETTE } from '@/lib/palette';
+import { categoryOf, type Category } from '@/lib/categories';
+import AssembleGrid from './web3d/AssembleGrid';
 
 export interface DirectoryMember {
   _id: string;
@@ -23,7 +25,7 @@ const PAGE_SIZE = 24;
  * Directorio de toda la comunidad activa, escalonado: T1 (sitio propio) con
  * tarjeta destacada, T2 (web de empresa) con chip "web ↗", T3 básica.
  */
-export default function CommunityDirectory() {
+export default function CommunityDirectory({ category = null }: { category?: Category | null } = {}) {
   const [members, setMembers] = useState<DirectoryMember[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [query, setQuery] = useState('');
@@ -38,12 +40,13 @@ export default function CommunityDirectory() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return members;
-    return members.filter((m) =>
+    const inCat = category ? members.filter((m) => categoryOf(m.role, m.tags) === category) : members;
+    if (!q) return inCat;
+    return inCat.filter((m) =>
       [m.name, m.company, m.role, m.jobTitle, ...(m.tags ?? [])]
         .filter(Boolean)
         .some((f) => String(f).toLowerCase().includes(q)));
-  }, [members, query]);
+  }, [members, query, category]);
 
   const shown = filtered.slice(0, visible);
 
@@ -65,14 +68,15 @@ export default function CommunityDirectory() {
         <p className="dir-empty">No encontramos a nadie con eso.</p>
       ) : (
         <>
-          <div className="dir-grid">
-            {shown.map((m) => {
+          <AssembleGrid className="dir-grid" key={category ?? 'all'}>
+            {shown.map((m, i) => {
+              const order = { ['--i' as string]: Math.min(i, 14) };
               const c = PALETTE[m.colorIndex % PALETTE.length];
               const sub = m.jobTitle && m.company ? `${m.jobTitle} @ ${m.company}` : (m.jobTitle || m.role);
 
               if (m.tier === 1 && m.websiteUrl) {
                 return (
-                  <div className="dir-card dir-card-t1" key={m._id}>
+                  <div className="dir-card dir-card-t1" key={m._id} style={order}>
                     <div className="dir-av" style={{ background: c.bg, color: c.color }}>{m.initials}</div>
                     <div className="dir-info">
                       <div className="dir-name">{m.name}</div>
@@ -87,7 +91,7 @@ export default function CommunityDirectory() {
 
               const web = m.tier === 2 ? m.companyUrl : null;
               return (
-                <div className="dir-card" key={m._id}>
+                <div className="dir-card" key={m._id} style={order}>
                   <div className="dir-av" style={{ background: c.bg, color: c.color }}>{m.initials}</div>
                   <div className="dir-info">
                     <div className="dir-name">{m.name}</div>
@@ -97,7 +101,7 @@ export default function CommunityDirectory() {
                 </div>
               );
             })}
-          </div>
+          </AssembleGrid>
 
           {filtered.length > visible && (
             <button className="btn btn-outline dir-more" onClick={() => setVisible((v) => v + PAGE_SIZE)}>

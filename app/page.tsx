@@ -7,8 +7,19 @@ import CommunityDirectory from './components/CommunityDirectory';
 import { PALETTE } from '@/lib/palette';
 import BrandLogo from './components/BrandLogo';
 import ThemeToggle from './components/ThemeToggle';
-import CompassMotif from './components/CompassMotif';
-import { MEETUP_URL, AREABETA_URL, isAreabetaPromoActive } from '@/lib/site';
+import { MEETUP_URL, MEETUP_DATE, AREABETA_URL, isAreabetaPromoActive } from '@/lib/site';
+import { CATEGORIES, categoryOf, type Category, type CommunityStats } from '@/lib/categories';
+import Hero3D from './components/web3d/Hero3D';
+import CategoryChips from './components/web3d/CategoryChips';
+import CountUp from './components/web3d/CountUp';
+import WindRose, { type RoseCard } from './components/web3d/WindRose';
+import Terminal from './components/web3d/Terminal';
+import AgendaRoute from './components/web3d/AgendaRoute';
+import CtaNeedle from './components/web3d/CtaNeedle';
+import FooterCompass from './components/web3d/FooterCompass';
+import CompassCursor from './components/web3d/CompassCursor';
+import { bus } from './components/web3d/bus';
+import AssembleGrid from './components/web3d/AssembleGrid';
 
 interface Member {
   _id: string;
@@ -42,7 +53,8 @@ export default function Home() {
   const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const patchPresentation = (patch: Partial<PresentationState>) => setPresentation(prev => ({ ...prev, ...patch }));
 
-  const CATEGORIES = ['Founders', 'Builders', 'Inversores', 'Growth', 'Marketing', 'Creators'];
+  const [stats, setStats] = useState<CommunityStats | null>(null);
+  const [dirCategory, setDirCategory] = useState<Category | null>(null);
   const AVAILABLE_TAGS = ['AI', 'SaaS', 'Fintech', 'Web3', 'Proptech', 'Dev', 'Design', 'Marketing', 'Founder', 'Builder', 'Inversor'];
   const toggleTag = (tag: string) => setFormTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
 
@@ -50,9 +62,26 @@ export default function Home() {
 
   // CTA principal: la página de Luma del próximo meetup (MEETUP_URL en lib/site.ts).
   // Sin URL configurada, el CTA abre el formulario de alta.
+  // data-cta: el cursor de brújula busca estos botones.
   const meetupLinkProps = MEETUP_URL
-    ? { href: MEETUP_URL, target: '_blank', rel: 'noopener noreferrer' }
-    : { href: '#join', onClick: (e: React.MouseEvent) => { e.preventDefault(); setIsMobOpen(false); setShowJoinModal(true); } };
+    ? { href: MEETUP_URL, target: '_blank', rel: 'noopener noreferrer', 'data-cta': '' }
+    : { href: '#join', 'data-cta': '', onClick: (e: React.MouseEvent) => { e.preventDefault(); setIsMobOpen(false); setShowJoinModal(true); } };
+
+  // CTA del hero: hover o foco hacen que la aguja (A) o la estrella polar (B) apunten y latan.
+  const heroCtaFx = {
+    'data-hero-cta': '',
+    onPointerEnter: () => { bus.ctaHover = true; bus.ctaPulseAt = performance.now(); },
+    onPointerLeave: () => { bus.ctaHover = false; },
+    onFocus: () => { bus.ctaHover = true; bus.ctaPulseAt = performance.now(); },
+    onBlur: () => { bus.ctaHover = false; },
+  };
+
+  const ABOUT_CARDS: RoseCard[] = [
+    { n: '01', title: 'Meetups', text: 'Encuentros cortos y sin slides. Contás en qué andás y conocés a los que están en lo mismo.' },
+    { n: '02', title: 'Coworks', text: 'Tardes de laburo compartido en cafés y clubes de la zona. Traés la compu y trabajás al lado de otros que están en lo mismo.' },
+    { n: '03', title: 'Red', text: 'Founders, builders, inversores y gente de growth, marketing y contenido que vive en la zona.' },
+    { n: '04', title: 'Feedback', text: 'Mostrás tu producto y te devuelven algo útil. Sin pitch armado.' },
+  ];
 
   const fetchMembers = () => {
     fetch('/api/members')
@@ -67,6 +96,11 @@ export default function Home() {
 
   useEffect(() => {
     fetchMembers();
+    // Conteo agregado por categoría (sin datos personales) para partículas, chips y contador.
+    fetch('/api/members/stats')
+      .then(r => r.json())
+      .then((d: CommunityStats) => { if (d && typeof d.total === 'number') setStats(d); })
+      .catch(() => {});
   }, []);
 
   // Estado de sesión para el chip del nav (top-right).
@@ -93,7 +127,7 @@ export default function Home() {
     root.classList.add('reveal-ready');
     const targets = Array.from(
       document.querySelectorAll<HTMLElement>(
-        '[data-reveal], .about-grid > div, .feat, .terminal, .events-hd, .ev-card:not(.ev-dim), .comunidad-head, .cta-inner',
+        '[data-reveal], .about-grid > div, .feat:not(.rose-card), .terminal, .events-hd, .ev-card:not(.ev-dim), .comunidad-head, .cta-inner',
       ),
     );
     const io = new IntersectionObserver(
@@ -121,7 +155,11 @@ export default function Home() {
   // Builders con sitio propio, para la grilla de la sección comunidad.
   // Cortamos en 8: esto es un showcase,
   // el listado completo y buscable es el CommunityDirectory de más abajo.
-  const sites = members.filter(m => m.websiteUrl).slice(0, 8);
+  const sites = members
+    .filter(m => m.websiteUrl)
+    .filter(m => !dirCategory || categoryOf(m.role, m.tags) === dirCategory)
+    .slice(0, 8);
+  const shownTotal = stats?.live && stats.total > 0 ? stats.total : memberTotal;
 
   useEffect(() => {
     const handleResize = () => { if (window.innerWidth > 960) closeMob(); };
@@ -214,7 +252,7 @@ export default function Home() {
         )}
       </div>
 
-      <section className="hero">
+      <section className="hero" id="top">
         <div className="hero-bg"></div>
         <div className="hero-grid"></div>
 
@@ -231,16 +269,14 @@ export default function Home() {
             Founders, builders e inversores en la misma mesa.
           </p>
           <div className="hero-actions">
-            <a {...meetupLinkProps} className="btn btn-green">Sumate al próximo meetup</a>
+            <a {...meetupLinkProps} {...heroCtaFx} className="btn btn-green hero-cta">Sumate al próximo meetup</a>
             <button onClick={() => setShowJoinModal(true)} className="btn btn-ghost">Unirme a la comunidad</button>
           </div>
-          <ul className="nt-chips" aria-label="Quiénes forman la comunidad">
-            {CATEGORIES.map(c => <li key={c} className="nt-chip">{c}</li>)}
-          </ul>
+          <CategoryChips stats={stats} />
           <div className="hero-stats">
-            {memberTotal ? (
-              <div className="hero-stat">
-                <div className="val">{memberTotal}</div>
+            {shownTotal ? (
+              <div className="hero-stat hero-stat--members">
+                <div className="val"><CountUp value={shownTotal} /></div>
                 <div className="lbl">Miembros</div>
               </div>
             ) : null}
@@ -252,10 +288,7 @@ export default function Home() {
         </div>
 
         <div className="hero-right">
-          <div className="hero-emblem">
-            <CompassMotif />
-            <BrandLogo variant="isologo" className="hero-isologo" />
-          </div>
+          <Hero3D stats={stats} />
         </div>
 
         <a href="#sobre" className="hero-scroll" aria-label="Bajar">
@@ -275,7 +308,9 @@ export default function Home() {
         </div>
       </div>
 
-      <section id="sobre" className="section">
+      <section id="sobre" className="section sobre">
+        {/* Salida de la cámara del hero: la apertura de la brújula se abre acá. */}
+        <div className="sobre-aperture" aria-hidden="true" />
         <div className="about-grid">
           <div>
             <div className="eyebrow">Qué es Norte Tech</div>
@@ -285,37 +320,12 @@ export default function Home() {
               Nos vemos en meetups, coworks y charlas para mostrar lo que estamos haciendo, pedir feedback
               y armar equipo sin tener que ir hasta Capital.
             </p>
-            <div className="feat-grid">
-              <div className="feat"><div className="feat-icon">01</div><h4>Meetups</h4><p>Encuentros cortos y sin slides. Contás en qué andás y conocés a los que están en lo mismo.</p></div>
-              <div className="feat"><div className="feat-icon">02</div><h4>Coworks</h4><p>Tardes de laburo compartido en cafés y clubes de la zona. Traés la compu y trabajás al lado de otros que están en lo mismo.</p></div>
-              <div className="feat"><div className="feat-icon">03</div><h4>Red</h4><p>Founders, builders, inversores y gente de growth, marketing y contenido que vive en la zona.</p></div>
-              <div className="feat"><div className="feat-icon">04</div><h4>Feedback</h4><p>Mostrás tu producto y te devuelven algo útil. Sin pitch armado.</p></div>
-            </div>
           </div>
           <div>
-            <div className="terminal">
-              <div className="t-bar">
-                <div className="td"></div><div className="td"></div><div className="td"></div>
-                <span>~/norte-tech</span>
-              </div>
-              <div className="t-body mono">
-                <div><span className="pr">$</span> <span className="cm">whoami</span></div>
-                <div><span className="ou">→ founders, builders, inversores, growth, marketing, creators</span></div>
-                <div>&nbsp;</div>
-                <div><span className="pr">$</span> <span className="cm">cat ./comunidad.json</span></div>
-                <div><span className="ou">{`{ "nombre": "Norte Tech",`}</span></div>
-                {memberTotal ? <div><span className="ou">&nbsp;&nbsp;{`"miembros": ${memberTotal},`}</span></div> : null}
-                <div><span className="ou">&nbsp;&nbsp;{`"desde": 2025,`}</span></div>
-                <div><span className="ou">&nbsp;&nbsp;{`"estado": "shipping" }`}</span></div>
-                <div>&nbsp;</div>
-                <div><span className="pr">$</span> <span className="cm">next --meetup</span></div>
-                <div><span className="ou">→ zona norte, Buenos Aires</span></div>
-                <div>&nbsp;</div>
-                <div><span className="pr">$</span> <span className="cm">join<span className="cursor"></span></span></div>
-              </div>
-            </div>
+            <Terminal total={shownTotal} onJoin={() => setShowJoinModal(true)} />
           </div>
         </div>
+        <WindRose cards={ABOUT_CARDS} />
       </section>
 
       <div className="events-bg">
@@ -327,6 +337,7 @@ export default function Home() {
             </div>
             <a {...meetupLinkProps} className="btn btn-ghost">Sumate al próximo meetup →</a>
           </div>
+          <AgendaRoute nextProps={meetupLinkProps} meetupDate={MEETUP_DATE} />
           <div className="events-grid">
             <div className="ev-card ev-featured">
               <div className="ev-badge badge-star">Próximo meetup</div>
@@ -374,6 +385,14 @@ export default function Home() {
             <h2 className="sec-title display">La comunidad</h2>
             <p className="sec-sub">Founders, builders, inversores, growth, marketing y creators de zona norte, cada uno con lo que está construyendo. Si todavía no estás, te sumás en un minuto.</p>
           </div>
+          <ul className="nt-chips dir-filter" aria-label="Filtrar la comunidad por categoría">
+            <li><button type="button" className={`nt-chip${dirCategory === null ? ' is-on' : ''}`} aria-pressed={dirCategory === null} onClick={() => setDirCategory(null)}>Todos</button></li>
+            {CATEGORIES.map(c => (
+              <li key={c}>
+                <button type="button" className={`nt-chip${dirCategory === c ? ' is-on' : ''}`} aria-pressed={dirCategory === c} onClick={() => setDirCategory(dirCategory === c ? null : c)}>{c}</button>
+              </li>
+            ))}
+          </ul>
         </div>
 
         {membersLoading ? (
@@ -381,12 +400,12 @@ export default function Home() {
             {Array.from({ length: 6 }).map((_, i) => <div className="dir-card site-skel" key={i} />)}
           </div></div>
         ) : sites.length > 0 && (
-          <div className="sites"><div className="dir-grid">
-            {sites.map(m => {
+          <div className="sites"><AssembleGrid className="dir-grid" key={dirCategory ?? 'all'}>
+            {sites.map((m, i) => {
               const c = PALETTE[m.colorIndex % PALETTE.length];
               const sub = m.jobTitle && m.company ? `${m.jobTitle} @ ${m.company}` : (m.jobTitle || m.role);
               return (
-                <div className="dir-card dir-card-t1" key={m._id}>
+                <div className="dir-card dir-card-t1" key={m._id} style={{ ['--i' as string]: i }}>
                   <div className="dir-av" style={{ background: c.bg, color: c.color }}>{m.initials}</div>
                   <div className="dir-info">
                     <div className="dir-name">{m.name}</div>
@@ -398,10 +417,10 @@ export default function Home() {
                 </div>
               );
             })}
-          </div></div>
+          </AssembleGrid></div>
         )}
 
-        <CommunityDirectory />
+        <CommunityDirectory category={dirCategory} />
 
         <div className="members-join">
           {me
@@ -412,11 +431,12 @@ export default function Home() {
 
       <div id="join" className="cta-band">
         <div className="cta-inner">
-          <div>
+          <CtaNeedle targetSelector=".cta-band-btn" />
+          <div className="cta-copy">
             <h2 className="display">¿Te vemos en el próximo?</h2>
             <p>Los meetups son en zona norte y puede venir cualquiera que esté construyendo algo. Reservá tu lugar y vení.</p>
           </div>
-          <a {...meetupLinkProps} className="btn btn-green" style={{ fontSize: '.9rem', padding: '16px 36px' }}>
+          <a {...meetupLinkProps} className="btn btn-green cta-band-btn" style={{ fontSize: '.9rem', padding: '16px 36px' }}>
             Sumate al próximo meetup
           </a>
         </div>
@@ -446,10 +466,13 @@ export default function Home() {
           </div>
           <div className="footer-bottom">
             <p>© {new Date().getFullYear()} Norte Tech · Zona norte, Buenos Aires</p>
+            <FooterCompass />
             <a {...meetupLinkProps} className="f-wa">Sumate al próximo meetup</a>
           </div>
         </div>
       </footer>
+
+      <CompassCursor />
 
       {showJoinModal && (
         <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowJoinModal(false); }}>

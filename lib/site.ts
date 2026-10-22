@@ -32,3 +32,8 @@ export const AREABETA_PROMO_UNTIL = '2026-11-01T02:59:59Z';
 export function isAreabetaPromoActive(now: number = Date.now()): boolean {
   return now <= Date.parse(AREABETA_PROMO_UNTIL);
 }
+
+// Fecha del próximo meetup (ISO 8601, ej. 2026-11-12T19:00:00-03:00). Vacía =
+// sin cuenta regresiva (la fecha está en Luma). Setear NEXT_PUBLIC_MEETUP_DATE
+// en Vercel junto con NEXT_PUBLIC_MEETUP_URL cuando exista el evento.
+export const MEETUP_DATE = process.env.NEXT_PUBLIC_MEETUP_DATE?.trim() || '';

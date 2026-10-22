@@ -1,0 +1,307 @@
+/* ═══ Web 3D (feat/web-3d): brújula viva, rosa de los vientos, ruta y cursor ═══
+   Todo es capa visual sobre HTML. Sin WebGL o con reduced motion queda la
+   versión estática (ver app/components/web3d/*). */
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ─── Hero ─────────────────────────────────────────────── */
+/* El texto del hero se pinta sin esperar animaciones: es el LCP. */
+.hero-left { animation: none !important; }
+@media (prefers-reduced-motion: no-preference) {
+  .hero-left > * { animation: heroIn .7s cubic-bezier(.16,1,.3,1) both; }
+  .hero-left > .hero-h1 { animation: none; }
+  .hero-left > :nth-child(3) { animation-delay: .05s; }
+  .hero-left > :nth-child(4) { animation-delay: .1s; }
+  .hero-left > :nth-child(5) { animation-delay: .15s; }
+  .hero-left > :nth-child(6) { animation-delay: .2s; }
+}
+@keyframes heroIn { from { transform: translateY(14px); } to { transform: none; } }
+
+.hero-right { overflow: visible; }
+.hero-stage {
+  position: relative;
+  width: min(560px, 42vw);
+  aspect-ratio: 1;
+  display: grid; place-items: center;
+}
+.hero-stage .hero-emblem { width: 100%; transition: opacity .9s ease; }
+.hero-stage.is-ready .hero-static { opacity: 0; }
+.hero-canvas-wrap {
+  position: absolute; inset: -14%;
+  opacity: 0; transition: opacity 1.1s ease;
+}
+.hero-stage.is-ready .hero-canvas-wrap { opacity: 1; }
+.hero-canvas-wrap canvas, .hero-sky canvas { touch-action: pan-y; }
+
+.hero-fx { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.hero-paper {
+  position: absolute; inset: 0;
+  opacity: .55; transition: opacity 1.2s ease;
+  mask-image: radial-gradient(ellipse 85% 80% at 60% 50%, black 35%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 85% 80% at 60% 50%, black 35%, transparent 100%);
+}
+[data-theme="light"] .hero-paper { opacity: .35; }
+.hero-sky {
+  position: absolute; inset: 0; pointer-events: none;
+  opacity: 0; transition: opacity 1.1s ease;
+}
+.hero-fx.is-ready .hero-sky { opacity: 1; }
+/* El cielo de B queda detrás del texto, que tiene su propio z-index. */
+.hero-left { z-index: 2; }
+
+.star-tip {
+  position: absolute; left: 0; top: 0; z-index: 3; pointer-events: none;
+  margin: -42px 0 0 12px;
+  font-family: var(--f-mono); font-size: .66rem; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text); background: var(--nt-surface-raised);
+  border: 1px solid var(--nt-border-strong); border-radius: 999px; padding: 6px 12px;
+  white-space: nowrap; opacity: 0; transition: opacity .2s ease;
+}
+.star-tip[data-show="true"] { opacity: 1; }
+
+/* CTA principal: cuando la aguja lo apunta, un halo azul lo marca como norte. */
+.hero-cta { isolation: isolate; }
+.hero-cta::after {
+  content: ''; position: absolute; inset: -1px; border-radius: inherit; z-index: -1;
+  box-shadow: 0 0 0 0 rgba(23,116,253,.0);
+  transition: box-shadow .35s ease;
+}
+.hero-cta:hover::after, .hero-cta:focus-visible::after { box-shadow: 0 0 0 6px rgba(23,116,253,.18), 0 0 38px 4px rgba(23,116,253,.35); }
+.hero .btn-green.hero-cta { overflow: visible; }
+
+/* Chips: ahora son botones (hover/foco/toque resaltan la categoría). */
+.nt-chips--live li { display: contents; }
+.nt-chips .nt-chip { cursor: pointer; display: inline-flex; align-items: center; gap: 8px; min-height: 30px; transition: color .2s, border-color .2s, background .2s; }
+.nt-chip:hover, .nt-chip:focus-visible, .nt-chip.is-on {
+  color: var(--text); border-color: var(--nt-accent-blue); background: rgba(var(--accent-rgb), .1);
+}
+.nt-chip:focus-visible { outline: 2px solid var(--nt-accent-blue); outline-offset: 2px; }
+.nt-chip-n { font-variant-numeric: tabular-nums; color: var(--nt-accent-text); }
+.dir-filter { margin-top: 20px; }
+.dir-filter li { display: contents; }
+
+@media (max-width: 960px) {
+  .hero-stage { width: min(380px, 84vw); }
+  .hero-canvas-wrap { inset: -10%; }
+}
+
+/* ─── Qué es: apertura (salida de la cámara del hero) ───── */
+.sobre { position: relative; overflow-x: clip; }
+.sobre-aperture {
+  position: absolute; left: 50%; top: 0; width: min(900px, 120vw); aspect-ratio: 1;
+  transform: translate(-50%, -62%); border-radius: 50%; pointer-events: none;
+  border: 1px solid var(--nt-border-strong);
+  box-shadow: 0 0 0 60px rgba(var(--accent-rgb), .025), 0 0 0 140px rgba(var(--accent-rgb), .015);
+  mask-image: linear-gradient(to bottom, transparent 55%, black 62%, transparent 92%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 55%, black 62%, transparent 92%);
+  opacity: .8;
+}
+
+/* ─── Terminal ───────────────────────────────────────────── */
+.t-hidden { visibility: hidden; }
+.t-join {
+  font: inherit; color: var(--text); background: rgba(var(--accent-rgb), .12);
+  border: 1px dashed rgba(var(--accent-rgb), .6); border-radius: 4px;
+  padding: 0 8px; cursor: pointer; line-height: 1.6;
+  transition: background .2s, border-color .2s;
+}
+.t-join:hover, .t-join:focus-visible { background: rgba(var(--accent-rgb), .24); border-style: solid; outline: none; }
+
+/* ─── Rosa de los vientos ───────────────────────────────── */
+.reveal-ready .feat.rose-card { opacity: 1; transform: none; }
+.rose-card { border: 1px solid var(--border); border-radius: var(--r); }
+.rose-scroll { position: relative; height: 320vh; margin-top: clamp(40px, 6vw, 72px); }
+.rose-sticky {
+  position: sticky; top: 64px; height: calc(100vh - 64px); height: calc(100svh - 64px);
+  overflow: hidden;
+}
+.rose-center {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: min(460px, 36vw, 58vh); aspect-ratio: 1;
+}
+.rose-center canvas, .rose-center .rose-svg { width: 100% !important; height: 100% !important; }
+.rose-scroll .rose-card {
+  position: absolute; left: 50%; top: 50%;
+  width: min(300px, 26vw);
+  transition: none !important; will-change: transform, opacity;
+  background: var(--surf);
+}
+.rose-scroll .rose-card[data-front="true"] { border-color: rgba(var(--accent-rgb), .55); box-shadow: 0 18px 60px rgba(var(--accent-rgb), .12); }
+.rose-scroll .rose-card[data-front="true"]::after { transform: scaleX(1); }
+.rose-steps {
+  position: absolute; left: 0; bottom: 18px; list-style: none; display: flex; gap: 18px;
+  font-family: var(--f-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted2);
+}
+.rose-steps li.is-on { color: var(--nt-accent-text); }
+
+.rose-svg { display: block; }
+.rose-ring { fill: none; stroke: var(--nt-neutral-600); stroke-width: 1; opacity: .7; }
+.rose-ring--dash { stroke-dasharray: 2 5; opacity: .5; }
+.rose-lubber { fill: var(--nt-accent-blue); }
+.rose-spin { transition: transform .7s cubic-bezier(.16,1,.3,1); }
+.rose-scroll .rose-spin { transition: none; }
+.rose-svg.is-static .rose-spin { transition: none; }
+.rose-short-l { fill: #4A4C57; } .rose-short-r { fill: #34343C; }
+.rose-long-l { fill: #6B6D78; transition: fill .4s; } .rose-long-r { fill: #34343C; transition: fill .4s; }
+.is-front .rose-long-l { fill: #1774FD; } .is-front .rose-long-r { fill: #0F58DE; }
+.rose-hub { fill: #C9CAD1; }
+[data-theme="light"] .rose-short-l { fill: #A5A6B0; }
+[data-theme="light"] .rose-short-r, [data-theme="light"] .rose-long-r { fill: #82848F; }
+[data-theme="light"] .rose-long-l { fill: #C9CAD1; }
+[data-theme="light"] .is-front .rose-long-l { fill: #1774FD; }
+[data-theme="light"] .is-front .rose-long-r { fill: #0F58DE; }
+
+.rose-static { margin-top: 44px; display: grid; grid-template-columns: minmax(200px, 300px) 1fr; gap: clamp(28px, 4vw, 56px); align-items: center; }
+.rose-static .rose-svg { width: 100%; max-width: 300px; }
+.rose-static-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.rose-carousel { margin-top: 36px; display: grid; gap: 20px; justify-items: center; }
+.rose-carousel .rose-svg { width: min(220px, 60vw); }
+.rose-track {
+  width: 100%; display: grid; grid-auto-flow: column; grid-auto-columns: 84%;
+  gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 8% 12px;
+  scrollbar-width: none;
+}
+.rose-track::-webkit-scrollbar { display: none; }
+.rose-track .rose-card { scroll-snap-align: center; }
+.rose-dots { display: flex; gap: 8px; }
+.rose-dots button {
+  width: 44px; height: 44px; border-radius: 999px; cursor: pointer;
+  font-family: var(--f-mono); font-size: .7rem; color: var(--text-d);
+  background: var(--nt-surface); border: 1px solid var(--nt-border-strong);
+}
+.rose-dots button[aria-current="true"] { color: var(--text); border-color: var(--nt-accent-blue); background: rgba(var(--accent-rgb), .12); }
+
+@media (max-width: 960px) {
+  .rose-static { grid-template-columns: 1fr; justify-items: center; }
+  .rose-static .rose-svg { max-width: 220px; }
+  .rose-static-grid { grid-template-columns: 1fr; width: 100%; }
+}
+
+/* ─── Agenda: ruta ──────────────────────────────────────── */
+.route-wrap { margin: 0 0 clamp(28px, 4vw, 44px); }
+.route { position: relative; width: 100%; }
+.route svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.route--tall { display: none; max-width: 360px; margin: 0 auto; }
+@media (max-width: 720px) {
+  .route--wide { display: none; }
+  .route--tall { display: block; }
+}
+.route-base { fill: none; stroke: var(--nt-border-strong); stroke-width: 2; stroke-dasharray: 3 7; }
+.route-line { fill: none; stroke: var(--nt-accent-blue); stroke-width: 2; stroke-linecap: round; }
+.tv-l { fill: #1774FD; } .tv-r { fill: #0F58DE; }
+.route.is-drawn .route-traveler { opacity: 0; transition: opacity .6s ease .4s; }
+
+.wp {
+  position: absolute; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  text-decoration: none; color: var(--text-d);
+}
+.wp-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--nt-neutral-500); box-shadow: 0 0 0 4px var(--surf); position: relative; }
+.wp-label { position: absolute; top: 20px; white-space: nowrap; text-align: center; display: grid; gap: 2px; }
+.wp-label strong { font-size: .8rem; font-weight: 700; color: var(--text); }
+.wp-label em { font-style: normal; font-family: var(--f-mono); font-size: .58rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted2); }
+.wp--past .wp-label strong { color: var(--text-d); font-weight: 600; }
+.wp--base .wp-dot { width: 18px; height: 18px; background: var(--surf); border: 3px solid var(--nt-accent-blue); }
+.wp--base .wp-label em { color: var(--nt-accent-text); }
+.wp--base:hover .wp-label strong, .wp--base:focus-visible .wp-label strong { color: var(--nt-accent-text); }
+.wp--next .wp-dot { width: 20px; height: 20px; background: var(--nt-accent-blue); }
+.wp--next .wp-label em { color: var(--nt-accent-text); }
+.wp--next .wp-label strong { color: var(--text); }
+.wp-pulse { position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--nt-accent-blue); }
+@media (prefers-reduced-motion: no-preference) {
+  .wp-pulse { animation: beacon 1.8s ease-out infinite; }
+}
+@keyframes beacon { from { transform: scale(1); opacity: .9; } to { transform: scale(3.2); opacity: 0; } }
+.wp:focus-visible { outline: none; }
+.wp:focus-visible .wp-dot { outline: 2px solid var(--nt-accent-blue); outline-offset: 4px; }
+.route--wide .wp--past:nth-of-type(2) .wp-label, .route--wide .wp--base .wp-label { top: auto; bottom: 20px; }
+.route--tall .wp { flex-direction: row; }
+.route--tall .wp-label { top: 50%; transform: translateY(-50%); left: 26px; text-align: left; }
+.route--tall .wp:nth-of-type(2) .wp-label, .route--tall .wp:nth-of-type(4) .wp-label { left: auto; right: 26px; text-align: right; }
+
+/* ─── Comunidad: la grilla se arma desde las partículas ─── */
+@media (prefers-reduced-motion: no-preference) {
+  .assemble-ready > * { opacity: 0; }
+  .assemble-ready.in > * { animation: assemble .8s cubic-bezier(.16,1,.3,1) both; animation-delay: calc(var(--i, 0) * 55ms); }
+}
+@keyframes assemble {
+  0%   { opacity: 1; transform: scale(.04); border-radius: 50%; background: var(--nt-accent-blue); color: transparent; }
+  35%  { opacity: 1; transform: scale(.12); border-radius: 50%; background: var(--nt-accent-blue); color: transparent; }
+  100% { opacity: 1; transform: none; }
+}
+
+/* ─── Banda CTA: aguja grande ───────────────────────────── */
+.cta-inner { flex-wrap: nowrap; }
+.cta-needle { width: clamp(120px, 15vw, 200px); flex: none; overflow: visible; }
+.cn-ring { fill: none; stroke: var(--nt-neutral-600); stroke-width: 1.5; }
+.cn-ring--dash { stroke-dasharray: 2 6; opacity: .6; }
+.cn-tick { stroke: var(--nt-neutral-600); stroke-width: 2; }
+.cn-l { fill: #1774FD; } .cn-r { fill: #0F58DE; }
+.cn-hub { fill: var(--surf); stroke: var(--nt-neutral-600); stroke-width: 2; }
+.cta-needle.is-hot { filter: drop-shadow(0 0 18px rgba(23,116,253,.55)); }
+.cta-copy { flex: 1; min-width: 0; }
+@media (max-width: 640px) {
+  .cta-inner { flex-wrap: wrap; }
+  .cta-needle { width: 110px; }
+}
+
+/* ─── Footer: brújula que apunta arriba ─────────────────── */
+.f-compass {
+  display: inline-flex; align-items: center; gap: 10px; text-decoration: none;
+  font-family: var(--f-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted2);
+}
+.f-compass svg { width: 34px; height: 34px; }
+.f-compass:hover, .f-compass:focus-visible { color: var(--text); }
+.fc-ring { fill: none; stroke: var(--nt-neutral-600); stroke-width: 2; }
+.fc-tick { stroke: var(--nt-neutral-600); stroke-width: 2; }
+.fc-l { fill: #1774FD; } .fc-r { fill: #0F58DE; }
+
+/* ─── Cursor de brújula (sólo mouse) ────────────────────── */
+.has-nt-cursor, .has-nt-cursor * { cursor: none !important; }
+.has-nt-cursor :is(input, textarea, select, [contenteditable="true"]) { cursor: text !important; }
+.has-nt-cursor select { cursor: pointer !important; }
+.nt-cursor {
+  position: fixed; left: 0; top: 0; width: 0; height: 0; z-index: 9999; pointer-events: none;
+  opacity: 0; transition: opacity .15s ease;
+}
+.nt-cursor[data-show="true"] { opacity: 1; }
+.nt-cursor[data-text="true"] { opacity: 0; }
+.nt-cursor svg {
+  position: absolute; left: -11px; top: -1px; overflow: visible;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,.6));
+  transition: transform .18s ease; transform-origin: 11px 1px;
+}
+.nt-cursor[data-hot="true"] svg { transform: scale(1.25); }
+[data-theme="light"] .nt-cursor svg { filter: drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
+
+/* ─── Acento ámbar brújula (--nt-accent, uso escaso) ──────
+   Sólo en: badge de Areabeta, contador de miembros, baliza del próximo
+   meetup y cola sur de la aguja 3D. Nunca de fondo ni en texto chico sobre
+   blanco: en tema claro el texto queda oscuro y el ámbar va en borde/marca. */
+.badge-promo {
+  color: var(--nt-accent); border-color: rgba(var(--nt-accent-rgb), .55); background: transparent;
+}
+.badge-promo::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--nt-accent); flex: none; }
+[data-theme="light"] .badge-promo { color: var(--text); border-color: var(--nt-accent); }
+
+.hero-stat--members .val { color: var(--nt-accent); }
+.hero-stat--members .lbl { position: relative; }
+.hero-stat--members .lbl::after {
+  content: ''; display: block; width: 18px; height: 2px; margin-top: 6px; border-radius: 2px; background: var(--nt-accent);
+}
+[data-theme="light"] .hero-stat--members .val { color: var(--text); }
+
+.wp--next .wp-dot { background: var(--nt-accent); }
+.wp--next .wp-pulse { border-color: var(--nt-accent); }
+.wp--next .wp-label em { color: var(--nt-accent); }
+[data-theme="light"] .wp--next .wp-label em { color: var(--nt-accent-text); }
+.wp--next:focus-visible .wp-dot { outline-color: var(--nt-accent); }
+
+/* Isologo inline del fallback estático */
+.hero-iso-inline { width: 56%; height: auto; display: block; position: relative; }
+.iso-ring { fill: #5E5E5E; }
+[data-theme="light"] .iso-ring { fill: #8A8A8E; }

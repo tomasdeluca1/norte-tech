@@ -16,10 +16,10 @@ html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
   --border3:   var(--nt-border-strong);
   --accent:    var(--nt-accent-text);
   --accent-2:  var(--nt-accent-hover);
-  --accent-d:  var(--nt-accent);
+  --accent-d:  var(--nt-accent-blue);
   --accent-rgb: 23,116,253;
   --accent-glow: var(--nt-shadow-glow);
-  --blue:      var(--nt-accent);
+  --blue:      var(--nt-accent-blue);
   --red:       #ff5d7a;
   --amber:     #e8a23b;
   --text:      var(--nt-text-primary);
@@ -261,7 +261,7 @@ nav {
   backdrop-filter: blur(8px);
 }
 .pill-dot {
-  width: 6px; height: 6px; background: var(--nt-accent);
+  width: 6px; height: 6px; background: var(--nt-accent-blue);
   border-radius: 50%; animation: pulse 1.5s ease-in-out infinite;
 }
 .pill .pill-sep { color: var(--border3); }
@@ -342,7 +342,7 @@ nav {
   font-size: 0.7rem; color: var(--muted2);
   letter-spacing: 0.14em; text-transform: uppercase;
 }
-.m-item span { width: 4px; height: 4px; background: var(--nt-accent); border-radius: 50%; }
+.m-item span { width: 4px; height: 4px; background: var(--nt-accent-blue); border-radius: 50%; }
 
 /* ─── SECTION LABELS ─────────────────────────────────────── */
 .eyebrow {
@@ -460,7 +460,7 @@ nav {
 }
 .ev-featured::before {
   content:''; position:absolute; top:0; left:0; right:0; height:2px;
-  background: var(--nt-accent);
+  background: var(--nt-accent-blue);
 }
 .ev-featured::after {
   content: ''; position: absolute; top: -50%; right: -10%;
