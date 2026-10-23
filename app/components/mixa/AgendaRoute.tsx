@@ -54,7 +54,7 @@ function useCountdown(iso: string) {
   return left;
 }
 
-function Route({ l, nextProps, countdown }: { l: Layout; nextProps: React.AnchorHTMLAttributes<HTMLAnchorElement>; countdown: string | null }) {
+function Route({ l, nextProps, countdown, nextMeta }: { l: Layout; nextProps: React.AnchorHTMLAttributes<HTMLAnchorElement>; countdown: string | null; nextMeta: string }) {
   const wrap = useRef<HTMLDivElement>(null);
   const path = useRef<SVGPathElement>(null);
   const traveler = useRef<SVGGElement>(null);
@@ -112,7 +112,7 @@ function Route({ l, nextProps, countdown }: { l: Layout; nextProps: React.Anchor
           return (
             <a key={s.label} className="wp wp--next" style={style} {...nextProps}>
               <span className="wp-dot" aria-hidden="true"><span className="wp-pulse" /></span>
-              <span className="wp-label"><strong>{s.label}</strong><em>{countdown ?? 'Fecha y lugar en Luma'}</em></span>
+              <span className="wp-label"><strong>{s.label}</strong><em>{countdown ?? nextMeta}</em></span>
             </a>
           );
         }
@@ -135,12 +135,13 @@ function Route({ l, nextProps, countdown }: { l: Layout; nextProps: React.Anchor
   );
 }
 
-export default function AgendaRoute({ nextProps, meetupDate }: { nextProps: React.AnchorHTMLAttributes<HTMLAnchorElement>; meetupDate: string }) {
+// nextMeta: texto de la baliza cuando no hay cuenta regresiva.
+export default function AgendaRoute({ nextProps, meetupDate, nextMeta = 'Fecha y lugar en Luma' }: { nextProps: React.AnchorHTMLAttributes<HTMLAnchorElement>; meetupDate: string; nextMeta?: string }) {
   const countdown = useCountdown(meetupDate);
   return (
     <div className="route-wrap" role="group" aria-label="Ruta de encuentros: lo que ya hicimos y el próximo meetup">
-      <Route l={WIDE} nextProps={nextProps} countdown={countdown} />
-      <Route l={TALL} nextProps={nextProps} countdown={countdown} />
+      <Route l={WIDE} nextProps={nextProps} countdown={countdown} nextMeta={nextMeta} />
+      <Route l={TALL} nextProps={nextProps} countdown={countdown} nextMeta={nextMeta} />
     </div>
   );
 }

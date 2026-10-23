@@ -12,7 +12,7 @@ Completar aquí lo específico: comandos no estándar, env vars clave, decisione
 - Logos en `public/brand/norte-tech-<versión>-<dark|light>-bg.svg`; usar `app/components/BrandLogo.tsx`. `public/brand/norte-tech-horizontal.png` es el logo de los mails.
 - Botones primarios en `#0F58DE` con texto blanco (hover `#1360E6`). Nunca `#1774FD` con texto blanco.
 - El nombre es "Norte Tech" (sin artículo). No usar el nombre anterior en nada visible.
-- CTA principal: `MEETUP_URL` en `lib/site.ts` (env `NEXT_PUBLIC_MEETUP_URL` o la constante `LUMA_NEXT_MEETUP_URL_PLACEHOLDER`). Vacío = abre el formulario de alta.
+- CTA principal: `MEETUP_URL` en `lib/site.ts` (env `NEXT_PUBLIC_MEETUP_URL` o la constante `LUMA_NEXT_MEETUP_URL_PLACEHOLDER`). Sin URL ni fecha (`MEETUP_PENDING`) los CTA van a Instagram con "Seguinos y te avisamos la fecha"; el build no falla, sólo avisa.
 - Tokens: `--nt-primary*` = azul, `--nt-accent*` = ámbar #FFA23A (uso escaso, texto encima en `--nt-on-accent`). Los `--nt-accent-blue/-solid/-text` son alias deprecados.
 - Home v2 (Server Component, contador SSR desde Neon, decisiones y placeholders): ver `docs/web-v2.md`.
 - Legacy sin uso en la web: `marketing/hero-video` (video con el logo anterior), `marketing/assets-generator`; lo legacy de marketing se movió fuera del repo.

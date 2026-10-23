@@ -27,12 +27,18 @@ Spec: `marketing-contenido/norte-tech-redes/web-iteracion-v2/DISENO-ITERACION.md
 | `TERMINAL_ON_MOBILE` | `false` | D-C: terminal de "Qué es" oculta en <= 560 px |
 | `HERO_CHIP_COUNTS` | `false` | D-A: chips del hero sin número por categoría (el único número es el total) |
 
-## Producción bloqueada sin meetup (N0-2)
+## Próximo meetup sin evento (reemplaza N0-2)
 
-`next.config.mjs` corta el build cuando `VERCEL_ENV=production` y falta la URL de Luma
+El build ya no se corta. `next.config.mjs` deja un aviso en el log si falta la URL de Luma
 (`NEXT_PUBLIC_MEETUP_URL` o `LUMA_NEXT_MEETUP_URL_PLACEHOLDER`) o la fecha del pill
-(`NEXT_PUBLIC_MEETUP_DATE` o `NEXT_MEETUP_DATE_PLACEHOLDER`). Preview y local buildean igual.
-`lib/site.ts` repite el chequeo en runtime del servidor.
+(`NEXT_PUBLIC_MEETUP_DATE` o `NEXT_MEETUP_DATE_PLACEHOLDER`).
+
+- Faltan las dos (`MEETUP_PENDING` en `lib/site.ts`): la home no muestra fecha ni botón de
+  inscripción. El pill dice `NEXT_MEETUP_TEASER` ("Founders Edition · principios de noviembre") y
+  todos los CTA del meetup dicen `FOLLOW_CTA_LABEL` ("Seguinos y te avisamos la fecha") y van a
+  `FOLLOW_URL` (Instagram).
+- Están las dos: la home de siempre (pill con fecha, CTA a Luma, cuenta regresiva).
+- Hay una sola: se muestra sólo el dato cargado (como antes).
 
 ## LCP mobile
 
@@ -52,7 +58,7 @@ Spec: `marketing-contenido/norte-tech-redes/web-iteracion-v2/DISENO-ITERACION.md
 - `LUMA_NEXT_MEETUP_URL_PLACEHOLDER`: URL de Luma del próximo meetup (o `NEXT_PUBLIC_MEETUP_URL`).
   Vacía = los CTA abren el formulario de alta. No linkear Luma de eventos pasados.
 - `MEET_TALK_01_DATE_PLACEHOLDER`: fecha "DD.MM" del Meet & Talk 01 (vacía = sin fecha en la ruta).
-- `NEXT_PUBLIC_MEETUP_DATE` (ISO, o `NEXT_MEETUP_DATE_PLACEHOLDER`): fecha del pill del hero y de la ruta. Obligatoria para producción.
+- `NEXT_PUBLIC_MEETUP_DATE` (ISO, o `NEXT_MEETUP_DATE_PLACEHOLDER`): fecha del pill del hero y de la ruta. Sin ésta ni la URL, la home muestra el teaser y el CTA a Instagram.
 
 ## Fuentes
 
