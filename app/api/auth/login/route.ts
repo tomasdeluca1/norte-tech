@@ -32,6 +32,7 @@ export async function POST(request: Request) {
     session.email = user.email;
     session.name = user.name;
     session.mustChangePassword = user.mustChangePassword;
+    session.sv = user.sessionVersion;
     await session.save();
 
     return NextResponse.json({

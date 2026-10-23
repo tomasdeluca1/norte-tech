@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
 import { getDb, schema } from '@/lib/db';
-import { getSession } from '@/lib/auth';
+import { getActiveMember } from '@/lib/member-session';
 import { ROLES, ROLE_TITLE } from '@/lib/profile-fields';
 
 export const runtime = 'nodejs';
@@ -22,10 +22,11 @@ function normalizeUrl(raw: string | undefined | null): string | null {
 }
 
 export async function PATCH(request: Request) {
-  const session = await getSession();
-  if (!session.userId) {
+  const auth = await getActiveMember();
+  if (!auth) {
     return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
   }
+  const { session } = auth;
 
   try {
     const body = await request.json();
@@ -60,7 +61,7 @@ export async function PATCH(request: Request) {
         ...(tags ? { tags } : {}),
         updatedAt: new Date(),
       })
-      .where(eq(schema.members.id, session.userId))
+      .where(eq(schema.members.id, auth.member.id))
       .returning({
         id: schema.members.id,
         name: schema.members.name,
