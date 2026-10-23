@@ -46,7 +46,10 @@
   background: var(--bg);
   color: var(--text);
   font-family: var(--f-body);
+  /* clip y no hidden: hidden convierte a .mixA en contenedor de scroll y
+     rompe todo position: sticky de adentro (la rosa quedaba en negro). */
   overflow-x: hidden;
+  overflow-x: clip;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -82,7 +85,8 @@
 @keyframes shimmer  { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
 
 /* ─── NAV ────────────────────────────────────────────────── */
-.mixA nav {
+/* Solo el nav de primer nivel de A (hoy no existe: el nav del sitio vive en .v2). Sin el ">" pisaba los nav internos (brújula, índice de encuentros) con position:fixed. */
+.mixA > nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 200;
   padding: 0 var(--pad);
   height: 64px;
@@ -803,8 +807,8 @@
 .mixA .btn:active { transform: translateY(0) scale(0.985); }
 
 /* Nav: condense + lift on scroll */
-.mixA nav { transition: height .35s cubic-bezier(.16,1,.3,1), background .35s ease, border-color .35s ease, box-shadow .35s ease; }
-.mixA nav.scrolled {
+.mixA > nav { transition: height .35s cubic-bezier(.16,1,.3,1), background .35s ease, border-color .35s ease, box-shadow .35s ease; }
+.mixA > nav.scrolled {
   height: 56px;
   background: var(--nav-bg-solid);
   border-bottom-color: var(--border2);
@@ -911,7 +915,7 @@
 @media (max-width: 640px) { .mixA .dir-grid { grid-template-columns: 1fr; } }
 
 /* ── Comunidad: grilla de sitios propios en la landing ───────────── */
-.mixA .sites { max-width: 940px; margin: 0 auto clamp(28px, 4vw, 44px); }
+.mixA .sites { max-width: none; margin: clamp(16px, 2vw, 24px) 0 clamp(28px, 4vw, 44px); } /* alineado al directorio de abajo, con aire bajo los chips */
 .mixA .site-skel {
   min-height: 70px;
   background: linear-gradient(90deg, rgba(255,255,255,.02) 25%, rgba(255,255,255,.05) 50%, rgba(255,255,255,.02) 75%);
@@ -1041,68 +1045,95 @@
 .mixA .t-join:hover, .mixA .t-join:focus-visible { background: rgba(var(--accent-rgb), .24); border-style: solid; outline: none; }
 
 /* ─── Rosa de los vientos ───────────────────────────────── */
+/* Scroll nativo: columna de tarjetas + rosa fija al costado (desktop/tablet)
+   o barra fija arriba (mobile). Nada se superpone y nada se desvanece. */
 .reveal-ready .mixA .feat.rose-card { opacity: 1; transform: none; }
-.mixA .rose-card { border: 1px solid var(--border); border-radius: var(--r); }
-.mixA .rose-scroll { position: relative; height: 320vh; margin-top: clamp(40px, 6vw, 72px); }
-.mixA .rose-sticky {
-  position: sticky; top: 64px; height: calc(100vh - 64px); height: calc(100svh - 64px);
-  overflow: hidden;
+.mixA .rose {
+  --rose-top: 64px;
+  margin-top: clamp(40px, 6vw, 72px);
+  display: grid; grid-template-columns: minmax(260px, 5fr) 7fr;
+  gap: clamp(28px, 5vw, 80px); align-items: start;
 }
-.mixA .rose-center {
-  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-  width: min(460px, 36vw, 58vh); aspect-ratio: 1;
+.mixA .rose-aside {
+  position: sticky; top: var(--rose-top);
+  height: calc(100vh - var(--rose-top)); height: calc(100svh - var(--rose-top));
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: clamp(20px, 3vh, 32px);
 }
-.mixA .rose-center canvas, .mixA .rose-center .rose-svg { width: 100% !important; height: 100% !important; }
-.mixA .rose-scroll .rose-card {
-  position: absolute; left: 50%; top: 50%;
-  width: min(300px, 26vw);
-  transition: none !important; will-change: transform, opacity;
-  background: var(--surf);
+.mixA .rose-visual { width: min(400px, 100%, 52vh); aspect-ratio: 1; }
+.mixA .rose-visual canvas, .mixA .rose-visual .rose-svg { width: 100% !important; height: 100% !important; }
+
+.mixA .rose-nav { width: 100%; max-width: 340px; }
+.mixA .rose-nav ol { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.mixA .rose-nav ol button { width: 100%; }
+.mixA .rose-nav button {
+  min-height: 44px; padding: 0 14px; border-radius: 999px; cursor: pointer;
+  font-family: var(--f-mono); font-size: .68rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--text-d); background: transparent; border: 1px solid var(--nt-border-strong);
+  transition: color .2s, border-color .2s, background .2s;
 }
-.mixA .rose-scroll .rose-card[data-front="true"] { border-color: rgba(var(--accent-rgb), .55); box-shadow: 0 18px 60px rgba(var(--accent-rgb), .12); }
-.mixA .rose-scroll .rose-card[data-front="true"]::after { transform: scaleX(1); }
-.mixA .rose-steps {
-  position: absolute; left: 0; bottom: 18px; list-style: none; display: flex; gap: 18px;
-  font-family: var(--f-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted2);
+.mixA .rose-nav button:hover { color: var(--text); border-color: var(--nt-neutral-600); }
+.mixA .rose-nav button[aria-current="true"] { color: var(--text); border-color: var(--nt-accent-blue); background: rgba(var(--accent-rgb), .14); }
+.mixA .rose-nav button[aria-current="true"] .rose-nav-k { color: var(--nt-accent-text); }
+.mixA .rose-nav button:focus-visible { outline: 2px solid var(--nt-accent-text); outline-offset: 2px; }
+
+/* Cada tarjeta ocupa el mismo tramo de scroll: avanzar es predecible. */
+.mixA .rose-list { list-style: none; padding-block: 22vh; display: grid; }
+.mixA .rose-step { min-height: 56vh; display: flex; align-items: center; }
+.mixA .rose-card {
+  width: 100%; max-width: 520px;
+  border: 1px solid var(--border); border-radius: var(--r);
+  scroll-margin-block: 30vh;
+  transition: border-color .3s, box-shadow .3s, background .3s;
 }
-.mixA .rose-steps li.is-on { color: var(--nt-accent-text); }
+.mixA .rose-card .feat-icon { margin-bottom: 14px; }
+.mixA .rose-card .feat-title { font-size: clamp(1.15rem, 1.6vw, 1.4rem); margin-bottom: 10px; }
+.mixA .rose-card p:not(.feat-icon) { font-size: .95rem; color: var(--text-d); line-height: 1.65; }
+.mixA .rose-card[data-active="true"] { border-color: rgba(var(--accent-rgb), .6); box-shadow: 0 18px 60px rgba(var(--accent-rgb), .12); }
+.mixA .rose-card[data-active="true"]::after { transform: scaleX(1); }
+.mixA .rose-card:focus { outline: none; }
+.mixA .rose-card:focus-visible { outline: 2px solid var(--nt-accent-text); outline-offset: 3px; }
+.mixA .rose[data-motion="off"] .rose-card,
+.mixA .rose[data-motion="off"] .rose-nav button { transition: none; }
 
 .mixA .rose-svg { display: block; }
 .mixA .rose-ring { fill: none; stroke: var(--nt-neutral-600); stroke-width: 1; opacity: .7; }
 .mixA .rose-ring--dash { stroke-dasharray: 2 5; opacity: .5; }
 .mixA .rose-lubber { fill: var(--nt-accent-blue); }
 .mixA .rose-spin { transition: transform .7s cubic-bezier(.16,1,.3,1); }
-.mixA .rose-scroll .rose-spin { transition: none; }
 .mixA .rose-svg.is-static .rose-spin { transition: none; }
 .mixA .rose-short-l { fill: #4A4C57; } .mixA .rose-short-r { fill: #34343C; }
 .mixA .rose-long-l { fill: #6B6D78; transition: fill .4s; } .mixA .rose-long-r { fill: #34343C; transition: fill .4s; }
 .mixA .is-front .rose-long-l { fill: #1774FD; } .mixA .is-front .rose-long-r { fill: #0F58DE; }
 .mixA .rose-hub { fill: #C9CAD1; }
+.mixA .rose-svg.is-static .rose-long-l, .mixA .rose-svg.is-static .rose-long-r { transition: none; }
 
-.mixA .rose-static { margin-top: 44px; display: grid; grid-template-columns: minmax(200px, 300px) 1fr; gap: clamp(28px, 4vw, 56px); align-items: center; }
-.mixA .rose-static .rose-svg { width: 100%; max-width: 300px; }
-.mixA .rose-static-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-.mixA .rose-carousel { margin-top: 36px; display: grid; gap: 20px; justify-items: center; }
-.mixA .rose-carousel .rose-svg { width: min(220px, 60vw); }
-.mixA .rose-track {
-  width: 100%; display: grid; grid-auto-flow: column; grid-auto-columns: 84%;
-  gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 8% 12px;
-  scrollbar-width: none;
-}
-.mixA .rose-track .rose-card { scroll-snap-align: center; }
-.mixA .rose-dots { display: flex; gap: 8px; }
-.mixA .rose-dots button {
-  width: 44px; height: 44px; border-radius: 999px; cursor: pointer;
-  font-family: var(--f-mono); font-size: .7rem; color: var(--text-d);
-  background: var(--nt-surface); border: 1px solid var(--nt-border-strong);
-}
-.mixA .rose-dots button[aria-current="true"] { color: var(--text); border-color: var(--nt-accent-blue); background: rgba(var(--accent-rgb), .12); }
-
+/* Tablet: misma idea, columnas más justas y menos aire entre tarjetas. */
 @media (max-width: 960px) {
-  .mixA .rose-static { grid-template-columns: 1fr; justify-items: center; }
-  .mixA .rose-static .rose-svg { max-width: 220px; }
-  .mixA .rose-static-grid { grid-template-columns: 1fr; width: 100%; }
+  .mixA .rose { grid-template-columns: minmax(220px, 4fr) 6fr; }
+  .mixA .rose-visual { width: min(260px, 100%, 40vh); }
+  .mixA .rose-nav ol { display: grid; grid-template-columns: 1fr 1fr; width: 100%; max-width: 280px; }
+  .mixA .rose-nav button { width: 100%; padding: 0 8px; }
+  .mixA .rose-step { min-height: 44vh; }
+  .mixA .rose-list { padding-block: 16vh; }
+}
+/* Mobile: la rosa se achica y queda como barra fija arriba, con los cuatro
+   puntos como botones. Las tarjetas bajan una debajo de la otra. */
+@media (max-width: 720px) {
+  .mixA .rose { display: block; margin-top: 32px; }
+  .mixA .rose-aside {
+    height: auto; z-index: 5; flex-direction: row; justify-content: flex-start; gap: 10px;
+    margin-inline: calc(-1 * var(--pad)); padding: 8px var(--pad);
+    background: var(--bg); border-bottom: 1px solid var(--border);
+  }
+  .mixA .rose-visual { width: 44px; flex: none; }
+  .mixA .rose-nav { flex: 1; min-width: 0; max-width: none; }
+  .mixA .rose-nav ol { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; max-width: none; }
+  .mixA .rose-nav button { padding: 0 2px; font-size: .6rem; letter-spacing: .06em; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2; border-radius: 10px; }
+  .mixA .rose-nav-sep { display: none; }
+  .mixA .rose-list { padding-block: 16px 0; gap: 12px; }
+  .mixA .rose-step { min-height: 0; }
+  .mixA .rose-card { max-width: none; scroll-margin-block: 140px 24px; }
 }
 
 /* ─── Agenda: ruta ──────────────────────────────────────── */

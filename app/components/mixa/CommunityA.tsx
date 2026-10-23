@@ -15,7 +15,9 @@ interface Member {
   tags?: string[]; colorIndex: number; websiteUrl?: string | null;
 }
 
-export default function CommunityA() {
+// counts: conteo real por categoría (getCommunityStats, Neon, miembros activos).
+// Llega null si la base no respondió: en ese caso no se muestra ningún número.
+export default function CommunityA({ counts = null }: { counts?: Record<Category, number> | null }) {
   const [cat, setCat] = useState<Category | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,7 +55,7 @@ export default function CommunityA() {
         <li><button type="button" className={`nt-chip${cat === null ? ' is-on' : ''}`} aria-pressed={cat === null} onClick={() => setCat(null)}>Todos</button></li>
         {CATEGORIES.map((c) => (
           <li key={c}>
-            <button type="button" className={`nt-chip${cat === c ? ' is-on' : ''}`} aria-pressed={cat === c} onClick={() => setCat(cat === c ? null : c)}>{c}</button>
+            <button type="button" className={`nt-chip${cat === c ? ' is-on' : ''}`} aria-pressed={cat === c} onClick={() => setCat(cat === c ? null : c)}>{c}{counts && counts[c] > 0 ? <span className="nt-chip-n">{counts[c]}</span> : null}</button>
           </li>
         ))}
       </ul>

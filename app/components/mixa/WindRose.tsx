@@ -1,10 +1,12 @@
 "use client";
 
 // "Qué es": las 4 tarjetas en los puntos cardinales de una rosa de los vientos.
-// Desktop: la sección queda fija mientras scrolleás y la rosa gira 90° por
-// tarjeta; la que queda al norte es la activa. Mobile: carrusel con la misma
-// rotación en 2D. Reduced motion: rosa quieta y tarjetas en grilla.
-import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react';
+// El scroll es nativo: las tarjetas van en una columna normal y la rosa queda
+// fija al costado (o arriba, en mobile) marcando en qué punto estás. Cada
+// tarjeta ocupa el mismo tramo de scroll, así que avanzar es predecible.
+// La barra N · E · S · O son botones reales: click o teclado te llevan a la
+// tarjeta. Reduced motion: misma estructura, sin giro animado ni 3D.
+import { useEffect, useMemo, useRef, useState, type ComponentType, type KeyboardEvent } from 'react';
 import { useIsCompact, useMotionMode, whenIdle } from '../web3d/capabilities';
 import type { RoseState } from './RoseScene';
 
@@ -12,7 +14,7 @@ export interface RoseCard { n: string; title: string; text: string }
 
 const CARDINAL = ['N', 'E', 'S', 'O'];
 
-/** Rosa en SVG: la usan mobile, reduced motion y el fallback sin WebGL. */
+/** Rosa en SVG: la usan mobile, reduced motion, SSR y el fallback sin WebGL. */
 export function RoseSvg({ rotation = 0, active = 0, className = '' }: { rotation?: number; active?: number; className?: string }) {
   const pts = [0, 1, 2, 3];
   return (
@@ -39,149 +41,149 @@ export function RoseSvg({ rotation = 0, active = 0, className = '' }: { rotation
   );
 }
 
-function Card({ c, i, cardRef }: { c: RoseCard; i: number; cardRef?: (el: HTMLDivElement | null) => void }) {
-  return (
-    <div className="feat rose-card" ref={cardRef} data-i={i}>
-      <div className="feat-icon">{c.n} · {CARDINAL[i]}</div>
-      <h3 className="feat-title">{c.title}</h3>
-      <p>{c.text}</p>
-    </div>
-  );
-}
+export default function WindRose({ cards }: { cards: RoseCard[] }) {
+  const mode = useMotionMode();
+  const compact = useIsCompact('(max-width: 960px)');
+  const webgl = mode === 'full' && !compact;
+  const animate = mode === 'full' || mode === 'nowebgl';
 
-function ScrollRose({ cards, webgl }: { cards: RoseCard[]; webgl: boolean }) {
-  const wrap = useRef<HTMLDivElement>(null);
-  const stage = useRef<HTMLDivElement>(null);
-  const cardEls = useRef<(HTMLDivElement | null)[]>([]);
+  const root = useRef<HTMLDivElement>(null);
+  const cardEls = useRef<(HTMLElement | null)[]>([]);
+  const navEls = useRef<(HTMLButtonElement | null)[]>([]);
   const state = useMemo<RoseState>(() => ({ rot: 0 }), []);
   const [Scene, setScene] = useState<ComponentType<{ state: RoseState; active: boolean }> | null>(null);
   const [active, setActive] = useState(0);
   const [inView, setInView] = useState(false);
-  const [svgRot, setSvgRot] = useState(0);
 
+  // La escena 3D se pide solo en desktop con WebGL, cuando la sección se acerca.
   useEffect(() => {
-    if (!webgl) return;
-    // La escena se pide recién cuando la sección se acerca al viewport.
+    if (!webgl || Scene) return;
     const io = new IntersectionObserver(([e]) => {
       if (!e.isIntersecting) return;
       io.disconnect();
       whenIdle(() => import('./RoseScene').then((m) => setScene(() => m.default)), 1500);
     }, { rootMargin: '600px 0px' });
-    if (wrap.current) io.observe(wrap.current);
+    if (root.current) io.observe(root.current);
     return () => io.disconnect();
-  }, [webgl]);
+  }, [webgl, Scene]);
 
+  // Qué tarjeta está en el centro de la pantalla. Solo lee posiciones, nunca
+  // mueve el scroll. `t` es continuo (0 a 3) para que la rosa 3D acompañe.
   useEffect(() => {
-    const el = wrap.current;
+    const el = root.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting));
-    io.observe(el);
     let raf = 0;
-    let lastActive = -1;
-    let lastDeg = -1;
-    const tick = () => {
-      raf = requestAnimationFrame(tick);
-      const r = el.getBoundingClientRect();
-      const vh = window.innerHeight;
-      const p = Math.max(0, Math.min(1, -r.top / Math.max(1, r.height - vh)));
-      // Se detiene un rato en cada tarjeta (meseta) y gira entre una y otra.
-      const raw = p * 3;
-      const i = Math.min(2, Math.floor(raw));
-      const frac = raw - i;
-      const eased = raw >= 3 ? 3 : i + (frac < 0.25 ? 0 : frac > 0.75 ? 1 : (1 - Math.cos(((frac - 0.25) / 0.5) * Math.PI)) / 2);
-      state.rot = eased * (Math.PI / 2);
-      const st = stage.current;
-      const w = st?.clientWidth ?? 1000;
-      const h = st?.clientHeight ?? vh;
-      const rx = Math.min(w * 0.36, 430);
-      const ry = Math.min(h * 0.3, 250);
-      cardEls.current.forEach((card, k) => {
-        if (!card) return;
-        const theta = k * (Math.PI / 2) - state.rot;
-        const x = Math.sin(theta) * rx;
-        const y = -Math.cos(theta) * ry;
-        const front = Math.max(0, Math.cos(theta));
-        const scale = 0.82 + 0.18 * front;
-        card.style.transform = `translate(-50%, -50%) translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scale(${scale.toFixed(3)})`;
-        card.style.opacity = (0.28 + 0.72 * Math.pow(front, 1.5)).toFixed(3);
-        card.style.zIndex = String(Math.round(10 + front * 10));
-        card.dataset.front = front > 0.92 ? 'true' : 'false';
+    let visible = false;
+    let last = -1;
+    const measure = () => {
+      raf = 0;
+      const anchor = window.innerHeight * 0.5;
+      const centers = cardEls.current.map((c) => {
+        if (!c) return 0;
+        const r = c.getBoundingClientRect();
+        return r.top + r.height / 2;
       });
-      const a = Math.round(eased) % 4;
-      if (a !== lastActive) { lastActive = a; setActive(a); }
-      const deg = eased * 90;
-      if (Math.abs(deg - lastDeg) > 0.25) { lastDeg = deg; setSvgRot(deg); }
+      let t = 0;
+      if (anchor <= centers[0]) t = 0;
+      else if (anchor >= centers[centers.length - 1]) t = centers.length - 1;
+      else {
+        for (let k = 0; k < centers.length - 1; k++) {
+          if (anchor >= centers[k] && anchor < centers[k + 1]) {
+            const f = (anchor - centers[k]) / Math.max(1, centers[k + 1] - centers[k]);
+            // Meseta en cada tarjeta y giro entre una y otra.
+            const e = f < 0.3 ? 0 : f > 0.7 ? 1 : (1 - Math.cos(((f - 0.3) / 0.4) * Math.PI)) / 2;
+            t = k + e;
+            break;
+          }
+        }
+      }
+      state.rot = t * (Math.PI / 2);
+      const a = Math.round(t);
+      if (a !== last) { last = a; setActive(a); }
     };
-    raf = requestAnimationFrame(tick);
-    return () => { cancelAnimationFrame(raf); io.disconnect(); };
-  }, [state, webgl]);
+    const onScroll = () => { if (visible && !raf) raf = requestAnimationFrame(measure); };
+    const io = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting;
+      setInView(e.isIntersecting);
+      if (visible) onScroll();
+    });
+    io.observe(el);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      io.disconnect();
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [state]);
 
-  return (
-    <div ref={wrap} className="rose-scroll">
-      <div ref={stage} className="rose-sticky">
-        <div className="rose-center">
-          {Scene ? <Scene state={state} active={inView} /> : <RoseSvg rotation={svgRot} active={active} />}
-        </div>
-        {cards.map((c, i) => <Card key={c.title} c={c} i={i} cardRef={(el) => { cardEls.current[i] = el; }} />)}
-        <ol className="rose-steps" aria-hidden="true">
-          {cards.map((c, i) => <li key={c.title} className={i === active ? 'is-on' : ''}>{CARDINAL[i]} · {c.title}</li>)}
-        </ol>
-      </div>
-    </div>
-  );
-}
-
-function CarouselRose({ cards, animate }: { cards: RoseCard[]; animate: boolean }) {
-  const track = useRef<HTMLDivElement>(null);
-  const [active, setActive] = useState(0);
-  useEffect(() => {
-    const root = track.current;
-    if (!root) return;
-    const io = new IntersectionObserver((entries) => {
-      for (const e of entries) if (e.isIntersecting) setActive(Number((e.target as HTMLElement).dataset.i));
-    }, { root, threshold: 0.6 });
-    root.querySelectorAll('.rose-card').forEach((c) => io.observe(c));
-    return () => io.disconnect();
-  }, []);
   const go = (i: number) => {
-    const el = track.current?.querySelectorAll<HTMLElement>('.rose-card')[i];
-    el?.scrollIntoView({ behavior: animate ? 'smooth' : 'auto', block: 'nearest', inline: 'center' });
+    const card = cardEls.current[i];
+    if (!card) return;
+    const smooth = animate && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    card.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'center' });
+    card.focus({ preventScroll: true });
+    setActive(i);
   };
+
+  const onNavKey = (e: KeyboardEvent<HTMLButtonElement>, i: number) => {
+    const n = cards.length;
+    const map: Record<string, number> = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+    let next = -1;
+    if (e.key in map) next = (i + map[e.key] + n) % n;
+    else if (e.key === 'Home') next = 0;
+    else if (e.key === 'End') next = n - 1;
+    if (next < 0) return;
+    e.preventDefault();
+    navEls.current[next]?.focus();
+  };
+
   return (
-    <div className="rose-carousel">
-      <RoseSvg rotation={active * 90} active={active} className={animate ? '' : 'is-static'} />
-      <div className="rose-track" ref={track}>
-        {cards.map((c, i) => <Card key={c.title} c={c} i={i} />)}
+    <div ref={root} className="rose" data-motion={animate ? 'on' : 'off'}>
+      <div className="rose-aside">
+        <div className="rose-visual">
+          {Scene && webgl ? <Scene state={state} active={inView} /> : <RoseSvg rotation={active * 90} active={active} className={animate ? '' : 'is-static'} />}
+        </div>
+        <nav className="rose-nav" aria-label="Los cuatro puntos de Norte Tech">
+          <ol>
+            {cards.map((c, i) => (
+              <li key={c.title}>
+                <button
+                  type="button"
+                  ref={(b) => { navEls.current[i] = b; }}
+                  aria-controls={`rose-card-${i}`}
+                  aria-current={i === active ? 'true' : undefined}
+                  onClick={() => go(i)}
+                  onKeyDown={(e) => onNavKey(e, i)}
+                >
+                  <span className="rose-nav-k" aria-hidden="true">{CARDINAL[i]}</span>
+                  <span className="rose-nav-sep" aria-hidden="true"> · </span>
+                  <span className="rose-nav-t">{c.title}</span>
+                </button>
+              </li>
+            ))}
+          </ol>
+        </nav>
       </div>
-      <div className="rose-dots" role="group" aria-label="Elegí una tarjeta">
+      <ol className="rose-list">
         {cards.map((c, i) => (
-          <button key={c.title} type="button" aria-label={`${c.title} (${CARDINAL[i]})`} aria-current={i === active} onClick={() => go(i)}>
-            {CARDINAL[i]}
-          </button>
+          <li key={c.title} className="rose-step">
+            <article
+              id={`rose-card-${i}`}
+              ref={(el) => { cardEls.current[i] = el; }}
+              tabIndex={-1}
+              className="feat rose-card"
+              data-active={i === active ? 'true' : 'false'}
+              aria-labelledby={`rose-card-${i}-t`}
+            >
+              <p className="feat-icon">{c.n} · {CARDINAL[i]}</p>
+              <h3 id={`rose-card-${i}-t`} className="feat-title">{c.title}</h3>
+              <p>{c.text}</p>
+            </article>
+          </li>
         ))}
-      </div>
+      </ol>
     </div>
   );
-}
-
-function StaticRose({ cards }: { cards: RoseCard[] }) {
-  return (
-    <div className="rose-static">
-      <RoseSvg className="is-static" />
-      <div className="rose-static-grid">
-        {cards.map((c, i) => <Card key={c.title} c={c} i={i} />)}
-      </div>
-    </div>
-  );
-}
-
-export default function WindRose({ cards }: { cards: RoseCard[] }) {
-  const mode = useMotionMode();
-  const compact = useIsCompact('(max-width: 960px)');
-  if (mode === 'pending' || mode === 'reduced') {
-    // SSR y reduced motion: grilla estática (todo el texto en el HTML).
-    return compact && mode === 'reduced' ? <CarouselRose cards={cards} animate={false} /> : <StaticRose cards={cards} />;
-  }
-  if (compact) return <CarouselRose cards={cards} animate />;
-  return <ScrollRose cards={cards} webgl={mode === 'full'} />;
 }
