@@ -78,9 +78,11 @@ export function isAreabetaPromoActive(now: number = Date.now()): boolean {
 export const NEXT_MEETUP_DATE_PLACEHOLDER = '';
 export const MEETUP_DATE = process.env.NEXT_PUBLIC_MEETUP_DATE?.trim() || NEXT_MEETUP_DATE_PLACEHOLDER;
 
-// N0-2 · Producción sin URL de Luma o sin fecha del pill es imposible: el build de
-// producción falla (el chequeo principal está en next.config.mjs, que corre antes de
-// compilar; éste es la red de seguridad en runtime del servidor). Preview y local siguen.
-if (typeof window === 'undefined' && process.env.VERCEL_ENV === 'production' && (!MEETUP_URL || !MEETUP_DATE)) {
-  throw new Error('Falta la URL de Luma del próximo meetup (NEXT_PUBLIC_MEETUP_URL) o su fecha (NEXT_PUBLIC_MEETUP_DATE): no se publica sin el CTA principal.');
-}
+// Próximo meetup sin evento todavía. Si faltan las DOS (URL de Luma y fecha), la
+// home no muestra fecha ni botón de inscripción: muestra NEXT_MEETUP_TEASER y el
+// CTA FOLLOW_CTA_LABEL hacia FOLLOW_URL. El build no falla, sólo avisa en el log
+// (ver next.config.mjs). Con las dos cargadas, la home es la de siempre.
+export const NEXT_MEETUP_TEASER = 'Founders Edition · principios de noviembre';
+export const FOLLOW_URL = 'https://instagram.com/nortetech_ar';
+export const FOLLOW_CTA_LABEL = 'Seguinos y te avisamos la fecha';
+export const MEETUP_PENDING = !MEETUP_URL && !MEETUP_DATE;

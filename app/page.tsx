@@ -24,7 +24,7 @@ import CommunityA from './components/mixa/CommunityA';
 import RevealA from './components/mixa/RevealA';
 import CompassCursor from './components/web3d/CompassCursor';
 import { getCommunityStats } from '@/lib/stats';
-import { MEETUP_URL, MEETUP_DATE, FOTOS_FACT_REQUESTS } from '@/lib/site';
+import { MEETUP_URL, MEETUP_DATE, FOTOS_FACT_REQUESTS, MEETUP_PENDING, NEXT_MEETUP_TEASER, FOLLOW_URL, FOLLOW_CTA_LABEL } from '@/lib/site';
 
 // Fotos de encuentros elegidas por Marketing (22/10): todos salen bien, sin mascota ni marca vieja.
 import fotoRisas from '@/public/encuentros/mt02-risas-escalera.webp';
@@ -82,16 +82,21 @@ export default async function Home() {
 
   // CTA principal: la página de Luma del próximo meetup (MEETUP_URL en lib/site.ts).
   // Sin URL, el CTA abre el formulario de alta (data-open-join, ver JoinModal).
-  const meetup: MeetupLink = MEETUP_URL
-    ? { href: MEETUP_URL, target: '_blank', rel: 'noopener noreferrer' }
-    : { href: '#join', 'data-open-join': '' };
+  // Sin URL ni fecha (MEETUP_PENDING): no hay inscripción; los CTA llevan a Instagram.
+  const meetup: MeetupLink = MEETUP_PENDING
+    ? { href: FOLLOW_URL, target: '_blank', rel: 'noopener noreferrer' }
+    : MEETUP_URL
+      ? { href: MEETUP_URL, target: '_blank', rel: 'noopener noreferrer' }
+      : { href: '#join', 'data-open-join': '' };
+  const cta = MEETUP_PENDING ? FOLLOW_CTA_LABEL : 'Sumate al próximo meetup';
+  const reserve = MEETUP_PENDING ? `${FOLLOW_CTA_LABEL} →` : 'Reservá tu lugar →';
 
 
   return (
     <>
       <div className="v2">
         <a className="skip" href="#contenido">Saltar al contenido</a>
-        <SiteNav meetup={meetup} />
+        <SiteNav meetup={meetup} meetupLabel={MEETUP_PENDING ? 'Seguinos' : undefined} />
       </div>
 
       <main id="contenido">
@@ -102,7 +107,9 @@ export default async function Home() {
             {/* A: grilla de puntos del motivo brújula detrás del hero */}
             <div className="hero-grid" aria-hidden="true" />
             <div className="hero-copy">
-              {nextDate ? (
+              {MEETUP_PENDING ? (
+                <p className="pill"><span className="pill-dot" aria-hidden="true" />{NEXT_MEETUP_TEASER}</p>
+              ) : nextDate ? (
                 <p className="pill pill--live"><span className="pill-dot" aria-hidden="true" />Próximo meetup · {nextDate}</p>
               ) : (
                 <p className="pill"><span className="pill-dot" aria-hidden="true" />Comunidad tech · Zona norte</p>
@@ -111,7 +118,7 @@ export default async function Home() {
               {/* A: bajada en dos líneas */}
               <p className="hero-sub">La comunidad tech de zona norte.<br />Founders, builders e inversores en la misma mesa.</p>
               <div className="hero-actions">
-                <a {...meetup} className="btn btn-primary btn-lg hero-cta" data-hero-cta="" data-cta="">Sumate al próximo meetup</a>
+                <a {...meetup} className="btn btn-primary btn-lg hero-cta" data-hero-cta="" data-cta="">{cta}</a>
                 <button type="button" className="btn btn-ghost btn-lg" data-open-join="">Unirme a la comunidad</button>
               </div>
               <div className="hero-meta">
@@ -190,7 +197,7 @@ export default async function Home() {
                 <p className="ef-fact"><strong>{FOTOS_FACT_REQUESTS}</strong><span>pedidos para sumarse a la comunidad</span></p>
               ) : null}
               <p className="ef-fact"><strong>Cupo lleno</strong><span>El primer meetup se llenó. Reservá con tiempo.</span></p>
-              <a {...meetup} className="btn btn-green" data-cta="">Reservá tu lugar →</a>
+              <a {...meetup} className="btn btn-green" data-cta="">{reserve}</a>
             </div>
           </section>
 
@@ -202,17 +209,23 @@ export default async function Home() {
                   <p className="eyebrow">Agenda</p>
                   <h2 id="agenda-title" className="sec-title display">Cómo nos juntamos</h2>
                 </div>
-                <a {...meetup} className="btn btn-ghost">Sumate al próximo meetup →</a>
+                <a {...meetup} className="btn btn-ghost">{`${cta} →`}</a>
               </div>
-              <AgendaRoute nextProps={meetup} meetupDate={MEETUP_DATE} />
+              <AgendaRoute nextProps={meetup} meetupDate={MEETUP_DATE} nextMeta={MEETUP_PENDING ? 'Founders · nov.' : undefined} />
               <div className="events-grid">
                 <article className="ev-card ev-featured">
-                  <p className="ev-badge badge-star">Próximo meetup</p>
+                  <p className="ev-badge badge-star">{MEETUP_PENDING ? 'Meetup' : 'Próximo meetup'}</p>
                   <h3>Meet &amp; Talk</h3>
                   <p>Charlamos de tecnología y conocemos a los que están construyendo en la zona. En el Random Pick &amp; Talk salen nombres al azar y cada uno tiene 60 segundos para contar quién es y qué está haciendo. Sin slides, sin pitch.</p>
                   <div className="ev-meta">
-                    <span className="ev-date">{nextDate ? `Zona norte · ${nextDate} · Lugar en Luma` : 'Zona norte · Fecha y lugar en Luma'}</span>
-                    <a {...meetup} className="ev-link">Reservá tu lugar →</a>
+                    {MEETUP_PENDING ? (
+                      <span className="ev-date">Zona norte</span>
+                    ) : (
+                      <>
+                        <span className="ev-date">{nextDate ? `Zona norte · ${nextDate} · Lugar en Luma` : 'Zona norte · Fecha y lugar en Luma'}</span>
+                        <a {...meetup} className="ev-link">Reservá tu lugar →</a>
+                      </>
+                    )}
                   </div>
                 </article>
                 <article className="ev-card">
@@ -222,10 +235,14 @@ export default async function Home() {
                   <div className="ev-meta"><span className="ev-date">Recurrente</span><span>Zona norte</span></div>
                 </article>
                 <article className="ev-card">
-                  <p className="ev-badge badge-hack">Founders</p>
+                  <p className="ev-badge badge-hack">{MEETUP_PENDING ? 'Próximo · Founders' : 'Founders'}</p>
                   <h3>Founders Edition</h3>
                   <p>Una noche para founders que ya construyeron algo real: con ronda, facturando o con años encima. Con dinámicas para que termines hablando con gente que no habrías cruzado.</p>
-                  <div className="ev-meta"><span className="ev-date">Con cupo</span><span>Zona norte</span></div>
+                  {MEETUP_PENDING ? (
+                    <div className="ev-meta"><span className="ev-date">Principios de noviembre · Con cupo</span><a {...meetup} className="ev-link">{reserve}</a></div>
+                  ) : (
+                    <div className="ev-meta"><span className="ev-date">Con cupo</span><span>Zona norte</span></div>
+                  )}
                 </article>
               </div>
             </section>
@@ -252,9 +269,11 @@ export default async function Home() {
               <CtaNeedleA targetSelector=".cta-band-btn" />
               <div className="cta-copy">
                 <h2 id="cta-title" className="display">¿Te vemos en el próximo?</h2>
-                <p>Los meetups son en zona norte y puede venir cualquiera que esté construyendo algo. Reservá tu lugar y vení.</p>
+                <p>{MEETUP_PENDING
+                  ? 'Los meetups son en zona norte y puede venir cualquiera que esté construyendo algo. El próximo es la Founders Edition, a principios de noviembre: seguinos y te avisamos la fecha.'
+                  : 'Los meetups son en zona norte y puede venir cualquiera que esté construyendo algo. Reservá tu lugar y vení.'}</p>
               </div>
-              <a {...meetup} className="btn btn-green cta-band-btn" data-cta="">Sumate al próximo meetup</a>
+              <a {...meetup} className="btn btn-green cta-band-btn" data-cta="">{cta}</a>
             </div>
           </section>
         </div>
@@ -279,14 +298,14 @@ export default async function Home() {
               </div>
               <div className="f-col" role="navigation" aria-labelledby="f-sumate">
                 <h2 className="f-title" id="f-sumate">Sumate</h2>
-                <a {...meetup}>Próximo meetup</a>
+                <a {...meetup}>{MEETUP_PENDING ? 'Instagram' : 'Próximo meetup'}</a>
                 <a href="#join" data-open-join="">Unirme a la comunidad</a>
               </div>
             </div>
             <div className="footer-bottom">
               <p>© {new Date().getFullYear()} Norte Tech · Zona norte, Buenos Aires</p>
               <FooterCompassA />
-              <a {...meetup} className="f-wa">Sumate al próximo meetup</a>
+              <a {...meetup} className="f-wa">{cta}</a>
             </div>
           </div>
         </footer>

@@ -12,7 +12,7 @@ import ThemeToggle from '../ThemeToggle';
 
 export type MeetupLink = { href: string; target?: string; rel?: string; 'data-open-join'?: string };
 
-export default function SiteNav({ meetup }: { meetup: MeetupLink }) {
+export default function SiteNav({ meetup, meetupLabel = 'Próximo meetup' }: { meetup: MeetupLink; meetupLabel?: string }) {
   const [scrolled, setScrolled] = useState(false);
   const [me, setMe] = useState<{ name: string; initials: string; colorIndex: number } | null>(null);
 
@@ -70,7 +70,7 @@ export default function SiteNav({ meetup }: { meetup: MeetupLink }) {
         ) : (
           <a href="/login" className="nav-login">Iniciar sesión</a>
         )}
-        <a {...meetup} className="btn btn-primary btn-sm" data-cta="">Próximo meetup</a>
+        <a {...meetup} className="btn btn-primary btn-sm" data-cta="">{meetupLabel}</a>
       </div>
     </header>
   );
