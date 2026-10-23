@@ -7,14 +7,14 @@ export function registrationReceivedHtml(params: { name: string; appUrl: string 
   const body = `
     ${headingRow(`HOLA, ${escapeHtml(firstName.toUpperCase())} 👋`)}
     ${paragraphRow(
-      `Recibimos tu registro en <strong style="color:#a9b7f3;">Norte Tech</strong>, la comunidad de founders, devs y makers de la Zona Norte. 🙌`,
+      `Recibimos tu registro en <strong style="color:#6EA6FF;">Norte Tech</strong>, la comunidad tech de zona norte: founders, builders e inversores en la misma mesa. 🙌`,
     )}
     ${paragraphRow(
-      `Ahora un admin va a revisar tu solicitud. <strong style="color:#dde4ea;">Cuando te aceptemos te llega otro email con tu acceso al dashboard y la invitación al grupo de WhatsApp.</strong>`,
+      `Ahora un admin va a revisar tu solicitud. <strong style="color:#FFFFFF;">Cuando te aceptemos te llega otro email con tu acceso al dashboard y la invitación al grupo de WhatsApp.</strong>`,
     )}
     <tr><td style="padding:24px 40px 0 40px;">
-      <div style="background:#131920;border:1px solid #252e35;border-radius:12px;padding:18px 22px;font-size:14px;color:#a9b6c0;line-height:1.6;">
-        <span style="font-family:'SF Mono',Menlo,Consolas,monospace;color:#a9b7f3;">$ status</span><br/>
+      <div style="background:#16161A;border:1px solid #24242A;border-radius:12px;padding:18px 22px;font-size:14px;color:#A5A6B0;line-height:1.6;">
+        <span style="font-family:'JetBrains Mono',Menlo,Consolas,'Courier New',monospace;color:#6EA6FF;">$ status</span><br/>
         → solicitud recibida · pendiente de aprobación
       </div>
     </td></tr>

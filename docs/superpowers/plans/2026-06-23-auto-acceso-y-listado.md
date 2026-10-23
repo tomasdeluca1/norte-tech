@@ -84,7 +84,7 @@ export function welcomeEmailHtml(params: {
   const body = `
     ${headingRow(`BIENVENIDO, ${escapeHtml(firstName.toUpperCase())} 🚀`)}
     ${paragraphRow(
-      `Ya estás adentro de <strong style="color:#00e5a0;">Nordelta Tech</strong>, la comunidad de founders, devs y makers de la zona norte. Sin esperas: tu acceso está listo.`,
+      `Ya estás adentro de <strong style="color:#00e5a0;">Norte Tech</strong>, la comunidad de founders, devs y makers de la zona norte. Sin esperas: tu acceso está listo.`,
     )}
     <tr><td style="padding:24px 40px 0 40px;">
       <div style="background:#131920;border:1px solid #252e35;border-radius:12px;padding:20px 24px;">
@@ -123,7 +123,7 @@ export async function sendWelcomeEmail(params: {
   await getResend().emails.send({
     from: getFromAddress(),
     to: params.to,
-    subject: '¡Entraste a Nordelta Tech! 🚀',
+    subject: '¡Entraste a Norte Tech! 🚀',
     html: welcomeEmailHtml({
       name: params.name,
       email: params.to,
@@ -143,7 +143,7 @@ maneja `''` ocultando el bloque. Pasar `whatsappUrl ?? ''`.
 
 En `sendAdminNewRegistrationEmail`, cambiar el subject de
 `` `🛎️ Nuevo registro pendiente: ${params.name}` `` a
-`` `🛎️ Nuevo builder en Nordelta Tech: ${params.name}` `` (ya no es una cola).
+`` `🛎️ Nuevo builder en Norte Tech: ${params.name}` `` (ya no es una cola).
 
 - [ ] **Step 4: Build**
 
@@ -220,9 +220,9 @@ En `app/page.tsx`:
   por
   `"Contanos quién sos, dónde vivís y qué construís. Entrás al toque: te llega un mail con tu acceso y la invitación al grupo de WhatsApp."`
 - `success-text` (≈línea 540):
-  `"Tu solicitud para sumarte a nordelta.tech quedó registrada."`
+  `"Tu solicitud para sumarte a nortetech.ar quedó registrada."`
   →
-  `"Ya sos parte de nordelta.tech."`
+  `"Ya sos parte de nortetech.ar."`
 - `success-title` (≈línea 539): `"¡Recibimos tu registro!"` →
   `"¡Estás <span style={{ color: 'var(--accent)' }}>adentro</span>!"`
   (mantener el wrapper del span verde).

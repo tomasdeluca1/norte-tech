@@ -2,9 +2,11 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { NEIGHBORHOODS, LOOKING_FOR_OPTIONS, ROLES } from '@/lib/profile-fields';
+import { NEIGHBORHOODS, LOOKING_FOR_OPTIONS, ROLES, neighborhoodLabel, normalizeNeighborhood } from '@/lib/profile-fields';
 import '../auth.css';
 import './admin.css';
+import BrandLogo from '../components/BrandLogo';
+import ThemeToggle from '../components/ThemeToggle';
 
 interface AdminMember {
   id: number;
@@ -112,9 +114,10 @@ export default function AdminPage() {
     <main className="dash-shell">
       <nav className="dash-nav">
         <a href="/" className="nav-logo">
-          <img src="/brand/norte-tech-horizontal.svg" alt="Norte Tech" />
+          <BrandLogo variant="logo-horizontal" />
         </a>
         <div className="dash-nav-right">
+          <ThemeToggle />
           <span className="dash-domain">admin</span>
           <a href="/dashboard" className="btn btn-ghost dash-logout">Mi perfil</a>
         </div>
@@ -271,7 +274,7 @@ function EditModal({ member, canManageAdmin, onClose, onSaved }: { member: Admin
     company: member.company ?? '',
     companyUrl: member.companyUrl ?? '',
     isAdmin: member.isAdmin,
-    neighborhood: member.neighborhood ?? '',
+    neighborhood: normalizeNeighborhood(member.neighborhood),
     bio: member.bio ?? '',
     building: member.building ?? '',
     canHelpWith: member.canHelpWith ?? '',
@@ -331,7 +334,7 @@ function EditModal({ member, canManageAdmin, onClose, onSaved }: { member: Admin
           <label className="auth-label"><span>Barrio / zona</span>
             <select value={f.neighborhood} onChange={e => setF({ ...f, neighborhood: e.target.value })}>
               <option value="">—</option>
-              {NEIGHBORHOODS.map(n => <option key={n} value={n}>{n}</option>)}
+              {NEIGHBORHOODS.map(n => <option key={n} value={n}>{neighborhoodLabel(n)}</option>)}
             </select>
           </label>
           <label className="auth-label"><span>Bio</span>
@@ -432,7 +435,7 @@ function DetailModal({
         <a href={`mailto:${m.email}`} className="admin-detail-email">{m.email}</a>
 
         <div className="admin-detail">
-          <DetailRow label="Barrio / zona">{m.neighborhood}</DetailRow>
+          <DetailRow label="Barrio / zona">{neighborhoodLabel(m.neighborhood)}</DetailRow>
           <DetailRow label="Bio">{m.bio}</DetailRow>
           <DetailRow label="Qué construye">{m.building}</DetailRow>
           <DetailRow label="Qué busca">

@@ -1,0 +1,142 @@
+/* Norte Tech · tokens de marca v1 (copia de brand-v1/tokens/tokens.css; no editar a mano, regenerar desde la guía). */
+:root {
+  --nt-black: #000000;
+  --nt-white: #FFFFFF;
+  --nt-neutral-950: #0A0A0C;
+  --nt-neutral-900: #0E0E11;
+  --nt-neutral-850: #16161A;
+  --nt-neutral-800: #24242A;
+  --nt-neutral-700: #34343C;
+  --nt-neutral-600: #5E5E5E;
+  --nt-neutral-550: #4A4C57;
+  --nt-neutral-500: #6B6D78;
+  --nt-neutral-450: #82848F;
+  --nt-neutral-400: #8A8A8E;
+  --nt-neutral-300: #A5A6B0;
+  --nt-neutral-200: #C9CAD1;
+  --nt-neutral-100: #E4E4E9;
+  --nt-neutral-50: #F6F6F8;
+  --nt-neutral-ink: #0B0B0F;
+  --nt-blue-200: #A9CAFF;
+  --nt-blue-300: #6EA6FF;
+  --nt-blue-400: #1774FD;
+  --nt-blue-500: #1360E6;
+  --nt-blue-600: #0F58DE;
+  --nt-blue-700: #0B47B8;
+  --nt-blue-800: #0A3A94;
+  --nt-font-display: Montserrat, ui-sans-serif, system-ui, sans-serif;
+  --nt-font-sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --nt-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --nt-weight-regular: 400;
+  --nt-weight-medium: 500;
+  --nt-weight-semibold: 600;
+  --nt-weight-bold: 700;
+  --nt-weight-extrabold: 800;
+  --nt-text-xs: 0.75rem;
+  --nt-text-sm: 0.875rem;
+  --nt-text-base: 1rem;
+  --nt-text-lg: 1.125rem;
+  --nt-text-xl: 1.25rem;
+  --nt-text-2xl: 1.5rem;
+  --nt-text-3xl: 1.875rem;
+  --nt-text-4xl: 2.25rem;
+  --nt-text-5xl: 3rem;
+  --nt-text-6xl: 3.75rem;
+  --nt-text-7xl: 4.5rem;
+  --nt-leading-tight: 1.1;
+  --nt-leading-snug: 1.25;
+  --nt-leading-normal: 1.5;
+  --nt-leading-relaxed: 1.65;
+  --nt-tracking-tight: -0.02em;
+  --nt-tracking-normal: 0;
+  --nt-tracking-wide: 0.06em;
+  --nt-radius-none: 0;
+  --nt-radius-sm: 6px;
+  --nt-radius-md: 10px;
+  --nt-radius-lg: 16px;
+  --nt-radius-xl: 24px;
+  --nt-radius-pill: 9999px;
+  --nt-space-0: 0px;
+  --nt-space-1: 4px;
+  --nt-space-2: 8px;
+  --nt-space-3: 12px;
+  --nt-space-4: 16px;
+  --nt-space-5: 20px;
+  --nt-space-6: 24px;
+  --nt-space-8: 32px;
+  --nt-space-10: 40px;
+  --nt-space-12: 48px;
+  --nt-space-16: 64px;
+  --nt-space-20: 80px;
+  --nt-space-24: 96px;
+  --nt-space-32: 128px;
+  --nt-duration-fast: 120ms;
+  --nt-duration-base: 200ms;
+  --nt-duration-slow: 320ms;
+  --nt-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --nt-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --nt-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* semantica: oscuro (default) */
+  color-scheme: dark;
+  --nt-bg: var(--nt-black);
+  --nt-surface: var(--nt-neutral-900);
+  --nt-surface-raised: var(--nt-neutral-850);
+  --nt-border: var(--nt-neutral-800);
+  --nt-border-strong: var(--nt-neutral-700);
+  --nt-text-primary: var(--nt-white);
+  --nt-text-secondary: var(--nt-neutral-300);
+  --nt-text-muted: var(--nt-neutral-450);
+  --nt-accent: var(--nt-blue-400);
+  --nt-accent-hover: var(--nt-blue-300);
+  --nt-accent-text: var(--nt-blue-300);
+  --nt-accent-solid: var(--nt-blue-600);
+  --nt-accent-solid-hover: var(--nt-blue-500);
+  --nt-on-accent: var(--nt-white);
+  --nt-focus-ring: var(--nt-blue-300);
+  --nt-brand-ring: var(--nt-neutral-600);
+  --nt-logo-primary: var(--nt-white);
+  --nt-logo-secondary: var(--nt-neutral-300);
+  --nt-shadow-sm: 0 1px 2px rgba(0,0,0,0.40);
+  --nt-shadow-md: 0 4px 16px rgba(0,0,0,0.45);
+  --nt-shadow-lg: 0 12px 40px rgba(0,0,0,0.55);
+  --nt-shadow-glow: 0 0 0 1px rgba(23,116,253,0.35), 0 0 24px rgba(23,116,253,0.28);
+  --nt-shadow-glow-strong: 0 0 0 1px rgba(23,116,253,0.55), 0 0 40px rgba(23,116,253,0.40);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --nt-bg: var(--nt-white);
+  --nt-surface: var(--nt-neutral-50);
+  --nt-surface-raised: var(--nt-white);
+  --nt-border: var(--nt-neutral-100);
+  --nt-border-strong: var(--nt-neutral-200);
+  --nt-text-primary: var(--nt-neutral-ink);
+  --nt-text-secondary: var(--nt-neutral-550);
+  --nt-text-muted: var(--nt-neutral-500);
+  --nt-accent: var(--nt-blue-600);
+  --nt-accent-hover: var(--nt-blue-700);
+  --nt-accent-text: var(--nt-blue-600);
+  --nt-accent-solid: var(--nt-blue-600);
+  --nt-accent-solid-hover: var(--nt-blue-700);
+  --nt-on-accent: var(--nt-white);
+  --nt-focus-ring: var(--nt-blue-400);
+  --nt-brand-ring: var(--nt-neutral-400);
+  --nt-logo-primary: var(--nt-neutral-ink);
+  --nt-logo-secondary: var(--nt-neutral-500);
+  --nt-shadow-sm: 0 1px 2px rgba(11,11,15,0.06);
+  --nt-shadow-md: 0 4px 16px rgba(11,11,15,0.08);
+  --nt-shadow-lg: 0 12px 40px rgba(11,11,15,0.12);
+  --nt-shadow-glow: 0 0 0 1px rgba(15,88,222,0.30), 0 0 20px rgba(15,88,222,0.18);
+  --nt-shadow-glow-strong: 0 0 0 1px rgba(15,88,222,0.50), 0 0 32px rgba(15,88,222,0.28);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --nt-duration-fast: 0ms; --nt-duration-base: 0ms; --nt-duration-slow: 0ms; }
+}
+
+/* foco accesible */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--nt-focus-ring);
+  outline-offset: 2px;
+}

@@ -29,8 +29,8 @@ const COWORKS: { venue: string; img?: string }[] = [
 ];
 
 const SPONSOR_WINS = [
-  { t: 'Una audiencia que construye', d: 'Founders y devs AI-first de Zona Norte, en un solo lugar.' },
-  { t: 'Tu marca donde pasa', d: 'Presencia en los eventos y en bsasnortetech.vercel.app.' },
+  { t: 'Una audiencia que construye', d: 'Founders y builders AI-first de Zona Norte, en un solo lugar.' },
+  { t: 'Tu marca donde pasa', d: 'Presencia en los eventos y en el sitio de la comunidad.' },
   { t: 'Acceso a talento', d: 'Gente que ya está buscando equipo y proyectos.' },
   { t: 'Las startups de la zona, de cerca', d: 'Ves qué se está construyendo antes que nadie.' },
 ];
@@ -50,14 +50,14 @@ export function buildSlides(memberTotal: number, sponsor?: Sponsor): React.React
     <React.Fragment key="cover">
       <div className="s-eyebrow">{sponsor ? sponsor.coverEyebrow : 'Pitch para sponsors · 2026'}</div>
       <h1 className="s-title">BUILD<br />THE FUTURE</h1>
-      <p className="s-lead">La comunidad tech de founders, devs y makers de la Zona Norte.</p>
+      <p className="s-lead">La comunidad tech de zona norte. Founders, builders e inversores en la misma mesa.</p>
       {sponsor && (
         <div className="sponsor-lockup">
           <span className="sl-label">Sponsor principal</span>
           <img className="sl-logo" src={sponsor.logoSrc} alt={sponsor.name} />
         </div>
       )}
-      <div className="deck-foot"><span className="big">{memberTotal}+ builders</span>bsasnortetech.vercel.app</div>
+      <div className="deck-foot"><span className="big">{memberTotal}+ builders</span>Norte Tech · zona norte</div>
     </React.Fragment>,
 
     // 2 — La oportunidad
@@ -65,7 +65,7 @@ export function buildSlides(memberTotal: number, sponsor?: Sponsor): React.React
       <div className="s-eyebrow">La oportunidad</div>
       <h1 className="s-title">ACÁ HAY MUCHA<br />GENTE QUE<br />CONSTRUYE</h1>
       <p className="s-lead">
-        Zona Norte está lleno de founders, devs y makers. Hasta ahora cada uno remaba solo:
+        Zona Norte está lleno de founders, builders e inversores. Hasta ahora cada uno remaba solo:
         no había un lugar tech que los junte. Eso es lo que estamos armando.
       </p>
     </React.Fragment>,
@@ -102,7 +102,7 @@ export function buildSlides(memberTotal: number, sponsor?: Sponsor): React.React
         <Donut data={ROLES} />
         <Legend data={ROLES} />
       </div>
-      <p className="s-lead" style={{ marginTop: 14 }}>8 de cada 10 son founders o devs.</p>
+      <p className="s-lead" style={{ marginTop: 14 }}>8 de cada 10 son founders o builders.</p>
       <Snapshot />
     </React.Fragment>,
 
@@ -111,7 +111,7 @@ export function buildSlides(memberTotal: number, sponsor?: Sponsor): React.React
       <div className="s-eyebrow">La comunidad</div>
       <h1 className="s-title">ESTA ES LA<br />COMUNIDAD</h1>
       <p className="s-lead">
-        Estos son algunos: founders, devs y makers que viven acá y ya construyeron
+        Estos son algunos: founders, builders e inversores que viven acá y ya construyeron
         cosas serias, de exits a productos en producción.
       </p>
       <div className="builder-grid">
@@ -276,7 +276,7 @@ export function buildSlides(memberTotal: number, sponsor?: Sponsor): React.React
         {CONTACT.emails.map((e) => (
           <span className="big" key={e}><a href={`mailto:${e}`}>{e}</a></span>
         ))}
-        {CONTACT.site}
+        {CONTACT.site ? <span>{CONTACT.site}</span> : null}
       </div>
     </React.Fragment>,
   ];

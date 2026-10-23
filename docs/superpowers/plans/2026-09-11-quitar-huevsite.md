@@ -404,7 +404,7 @@ En `app/page.tsx`, el input de empresa usa huevsite como ejemplo:
                       <input placeholder="Ej. huevsite.io" value={formData.company} onChange={e => setFormData({...formData, company: e.target.value})} />
 ```
 
-Cambiarlo a `placeholder="Ej. Nordelta Tech"`.
+Cambiarlo a `placeholder="Ej. Norte Tech"`.
 
 - [ ] **Step 6: Reemplazar el CSS**
 
@@ -659,7 +659,7 @@ Reemplazar la `<div className="dash-card">` de "Conectá tu huevsite.io" — des
 
 - [ ] **Step 6: Cambiar el placeholder de ejemplo**
 
-La línea `<input placeholder="huevsite.io" value={profile.company} …` usa huevsite como ejemplo de empresa. Cambiar a `placeholder="Ej. Nordelta Tech"`.
+La línea `<input placeholder="huevsite.io" value={profile.company} …` usa huevsite como ejemplo de empresa. Cambiar a `placeholder="Ej. Norte Tech"`.
 
 - [ ] **Step 7: Verificar**
 
@@ -855,13 +855,13 @@ ordenaba. Se va entera junto con el setting de URL base."
 En `lib/email.ts`, línea 21:
 
 ```ts
-  return process.env.EMAIL_FROM?.trim() || 'Nordelta Tech <onboarding@nordelta.tech>';
+  return process.env.EMAIL_FROM?.trim() || 'Norte Tech <onboarding@nortetech.ar>';
 ```
 
 En `.env.example`, línea 12:
 
 ```
-EMAIL_FROM="Nordelta Tech <onboarding@nordelta.tech>"
+EMAIL_FROM="Norte Tech <onboarding@nortetech.ar>"
 ```
 
 - [ ] **Step 2: Cambiar el copy del email de aceptación**
@@ -893,13 +893,13 @@ Expected: **exactamente una línea** — `admin_notification_email: 'huevsite.st
 
 ```bash
 git add lib/email.ts lib/email-templates/accepted.ts lib/settings.ts .env.example
-git commit -m "chore(email): remitente por defecto pasa a nordelta.tech
+git commit -m "chore(email): remitente por defecto pasa a nortetech.ar
 
 El destinatario de avisos (admin_notification_email) queda como está: es
 una casilla de Gmail que ya recibe, y huevsite.studio es el estudio, no
 el producto .io que estamos sacando.
 
-REQUIERE antes de deployar: verificar nordelta.tech en Resend (SPF/DKIM)
+REQUIERE antes de deployar: verificar nortetech.ar en Resend (SPF/DKIM)
 y setear EMAIL_FROM en Vercel, o los mails rebotan."
 ```
 
@@ -964,7 +964,7 @@ Los scripts son JS sin tipos, así que el build **no** los cubre — hay que ir 
 git rm scripts/send-update-email.js
 ```
 
-Es una campaña puntual ya enviada cuyo asunto literal es *"Nordelta Tech está on 🟢 — conectá tu huevsite"*: el mail entero existe para pedir que conecten su huevsite (`huevLine`, el botón "Armá / editá tu huevsite", el link a huevsite.io). No hay nada que rescatar reescribiéndolo; si más adelante hace falta una campaña de "sumá tu sitio", se escribe de cero.
+Es una campaña puntual ya enviada cuyo asunto literal es *"Norte Tech está on 🟢 — conectá tu huevsite"*: el mail entero existe para pedir que conecten su huevsite (`huevLine`, el botón "Armá / editá tu huevsite", el link a huevsite.io). No hay nada que rescatar reescribiéndolo; si más adelante hace falta una campaña de "sumá tu sitio", se escribe de cero.
 
 **`scripts/community-stats.js`** — sacar las dos líneas del FILTER y ajustar la salida:
 
@@ -998,15 +998,15 @@ Y la 113 a:
     companyUrl: 'https://huevsite.io',
 ```
 
-Cambiar a un ejemplo neutro (`company: 'Nordelta Tech'`, `companyUrl: 'https://nordelta.tech'`).
+Cambiar a un ejemplo neutro (`company: 'Norte Tech'`, `companyUrl: 'https://nortetech.ar'`).
 
 **`scripts/reengage.js:95` y `scripts/send-access-emails.js:87`** — el mismo fallback de remitente que la Tarea 8:
 
 ```js
-  const from = process.env.EMAIL_FROM || 'Nordelta Tech <onboarding@huevsite.studio>';
+  const from = process.env.EMAIL_FROM || 'Norte Tech <onboarding@huevsite.studio>';
 ```
 
-Cambiar el default a `'Nordelta Tech <onboarding@nordelta.tech>'` en los dos.
+Cambiar el default a `'Norte Tech <onboarding@nortetech.ar>'` en los dos.
 
 - [ ] **Step 6: Verificar que no quedó nada en código**
 
@@ -1180,4 +1180,4 @@ El orden entre migraciones y deploy no es opcional:
 3. **Verificar** que la landing y el dashboard andan en prod
 4. **Tarea 10** → correr `0005` en prod
 
-**Bloqueante aparte, previo al paso 2:** `nordelta.tech` tiene que estar verificado en Resend (SPF/DKIM en DNS) y `EMAIL_FROM` seteado en Vercel. Si no, los mails de alta rebotan apenas se deploye la Tarea 8. Es trabajo de infraestructura, no de código — confirmarlo con el usuario antes de deployar.
+**Bloqueante aparte, previo al paso 2:** `nortetech.ar` tiene que estar verificado en Resend (SPF/DKIM en DNS) y `EMAIL_FROM` seteado en Vercel. Si no, los mails de alta rebotan apenas se deploye la Tarea 8. Es trabajo de infraestructura, no de código — confirmarlo con el usuario antes de deployar.

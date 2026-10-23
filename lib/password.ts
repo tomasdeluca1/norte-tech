@@ -29,7 +29,8 @@ function slugifyName(name: string): string {
  * Predictable default password pattern: `{name-slug}.nortetech`.
  * The user can derive their own (e.g. Tomás Deluca → `tomas-deluca.nortetech`).
  * Los miembros dados de alta antes del rebrand conservan el hash del patrón viejo
- * (`{name-slug}.nordelta.tech`); no se migran, lo rotan con "olvidé mi contraseña".
+ * (`{name-slug}.<sufijo legacy>`, ver LEGACY_PASSWORD_SUFFIX en scripts/); no se migran,
+ * lo rotan con "olvidé mi contraseña".
  * `must_change_password=true` is set so first login forces a rotation.
  */
 export function defaultPasswordFor(name: string): string {

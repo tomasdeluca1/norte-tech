@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import '../auth.css';
+import BrandLogo from '../components/BrandLogo';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -79,11 +81,12 @@ export default function LoginPage() {
         <div className="auth-orb auth-orb-2" />
       </div>
 
+      <ThemeToggle className="auth-theme-toggle" />
       <div className="auth-card">
         <a href="/" className="auth-logo">
-          <img src="/brand/norte-tech-horizontal.svg" alt="Norte Tech" />
+          <BrandLogo variant="logo-horizontal" />
         </a>
-        <div className="auth-eyebrow">bsasnortetech.vercel.app</div>
+        <div className="auth-eyebrow">Comunidad tech de zona norte</div>
 
         {mode === 'login' ? (
           <>

@@ -2,9 +2,9 @@
 
 > Lanzamiento **always-on** (sin fecha fija). Es una secuencia de arranque de ~2 semanas + un ritmo continuo. Empezás cuando quieras: el Día 1 es el día que publicás el primer post.
 
-**Producto:** Comunidad tech presencial de founders, devs y makers de la Zona Norte de Buenos Aires.
+**Producto:** Comunidad tech presencial de founders, builders e inversores de la Zona Norte de Buenos Aires.
 **Web:** https://bsasnortetech.vercel.app · **Tagline:** `BUILD THE FUTURE.`
-**Estado:** v0.1 beta · 40+ founding members · 2025
+**Estado:** comunidad activa · 261 miembros activos (datos a octubre 2026)
 **Voz:** español es-AR, tech-native, directo, sin humo. Mezcla inglés tech + español ("buildear", "shippear", "desde el agua"). Estética terminal/programador.
 **Color marca:** verde neón `#00E5A0` sobre fondo oscuro `#05070A`. Fuentes: Bebas Neue (títulos) · Space Mono (mono/tags) · DM Sans (texto).
 
@@ -25,7 +25,7 @@ Usá **el mismo handle en ambas plataformas** para que sea fácil de recordar y 
 
 ### Bio para X (máx. 160 caracteres)
 ```
-Comunidad tech de founders, devs y makers de la Zona Norte. Construimos startups desde el agua 🌊 No es otro grupo de WhatsApp ⚡
+Comunidad tech de founders, builders e inversores de la Zona Norte. Construimos startups desde el agua 🌊 No es otro grupo de WhatsApp ⚡
 ```
 - **Ubicación:** Zona Norte, Buenos Aires
 - **Website field:** `bsasnortetech.vercel.app`
@@ -33,7 +33,7 @@ Comunidad tech de founders, devs y makers de la Zona Norte. Construimos startups
 ### Bio para Instagram (máx. 150 caracteres, permite saltos de línea)
 ```
 🌊 Comunidad tech de la Zona Norte de Buenos Aires
-⚡ Founders · Devs · Makers
+⚡ Founders · Builders · Inversores · Growth · Marketing · Creators
 🚀 Construimos startups desde el agua
 👇 Sumate gratis
 ```
@@ -60,7 +60,7 @@ Todo lo de redes (canal **rented**) tiene un único objetivo: empujar a la web y
 |---|---|---|
 | **Owned** | Conversión y retención | `bsasnortetech.vercel.app` (signup) + grupo de WhatsApp + email de bienvenida (Resend). Todo post termina acá. |
 | **Rented** | Visibilidad / awareness | X (audiencia dev/founder, formato thread) + Instagram (audiencia local zona norte, formato visual). |
-| **Borrowed** | Atajo de credibilidad | Founders/empresas tech conocidas de zona norte, medios de Nordelta, comunidades de startups AR. Que reposteen / etiqueten. |
+| **Borrowed** | Atajo de credibilidad | Founders/empresas tech conocidas de zona norte, medios de zona norte, comunidades de startups AR. Que reposteen / etiqueten. |
 
 **Regla de oro:** el link a `bsasnortetech.vercel.app` va en la bio y en el último post del thread/carrusel, NO al principio (los algoritmos penalizan links tempranos). En IG, "link en bio".
 
@@ -114,9 +114,9 @@ Después del Día 14 → ritmo sostenido (sección 8).
 ```
 Zona Norte tiene torres, lagos, y ahora algo nuevo:
 
-una comunidad tech de founders, devs y makers que construyen en serio.
+una comunidad tech de founders, builders e inversores que construyen en serio.
 
-Se llama Norte Tech. Ya somos 40+ buildeando desde el agua 🌊
+Se llama Norte Tech. Ya somos más de 260 miembros 🌊
 
 Te cuento qué es 🧵
 —
@@ -129,7 +129,7 @@ Es una comunidad para construir cosas reales —startups, proyectos, side-projec
 ¿Qué vas a encontrar adentro?
 
 → Founders buscando co-founders y early hires
-→ Devs y makers shippeando productos
+→ Builders shippeando productos
 → Workshops técnicos y talks de founders
 → Inversores y mentores de la zona
 
@@ -212,7 +212,7 @@ Así que armé algo para cambiar eso 🧵
 —
 Se llama Norte Tech.
 
-Una comunidad de founders, devs y makers de la Zona Norte. Presencial, real, sin humo.
+Una comunidad de founders, builders e inversores de la Zona Norte. Presencial, real, sin humo.
 
 Empezamos siendo 40 y ya se está moviendo.
 —
@@ -247,8 +247,7 @@ Respondé 👇 (armamos bsasnortetech.vercel.app justo para esto)
 $ cat bsasnortetech.vercel.app/status
 
 {
-  members: "40+",
-  year: 2025,
+  members: "260+", // datos a octubre 2026
   status: "shipping"
 }
 
@@ -262,7 +261,7 @@ Cada semana sumamos builders.
 ```
 En poco tiempo:
 
-→ 40+ founders, devs y makers adentro
+→ Más de 260 miembros adentro
 → Kick-off en camino
 → Una comunidad tech real en zona norte, no un grupo más
 
@@ -293,20 +292,20 @@ Así es la gente que vas a encontrar adentro → bsasnortetech.vercel.app
 - **Slide 2:** "Zona Norte tiene torres, lagos... y ahora una comunidad tech."
 - **Slide 3:** "Founders. Devs. Makers. Buildeando desde el agua 🌊"
 - **Slide 4:** "No es otro grupo de WhatsApp. Es donde se construye en serio."
-- **Slide 5:** "Ya somos 40+. Y esto recién arranca."
+- **Slide 5:** "Ya somos más de 260. Y esto recién arranca." (datos a octubre 2026)
 - **Slide 6 (CTA):** "Sumate gratis → link en bio · bsasnortetech.vercel.app"
 
 **Caption:**
 ```
 Arrancó Norte Tech 🌊⚡
 
-La comunidad tech de founders, devs y makers de la Zona Norte. Construimos startups, compartimos conocimiento y hacemos crecer el ecosistema —en serio, no en otro grupo de WhatsApp.
+La comunidad tech de founders, builders e inversores de la Zona Norte. Construimos startups, compartimos conocimiento y hacemos crecer el ecosistema —en serio, no en otro grupo de WhatsApp.
 
-Ya somos 40+ builders. Si estás en zona norte y construís (o querés construir) algo, esto es para vos.
+Ya somos más de 260 miembros. Si estás en zona norte y construís (o querés construir) algo, esto es para vos.
 
 Sumate gratis 👉 link en bio · bsasnortetech.vercel.app
 
-#NorteTech #Nordelta #ZonaNorte #TechArgentina #StartupsArgentina #Founders #Devs #Makers #BuildInPublic #ComunidadTech #EmprendedoresAR #BuenosAires
+#NorteTech #ZonaNorte #TechArgentina #StartupsArgentina #Founders #Devs #Makers #BuildInPublic #ComunidadTech #EmprendedoresAR #BuenosAires
 ```
 
 ### IG2 · Carrusel de los 4 pilares (6 slides) — Día 5
@@ -330,15 +329,15 @@ Todo presencial + online, acá en zona norte.
 
 Link en bio para sumarte gratis 🌊
 
-#NorteTech #ZonaNorte #StartupsArgentina #TechArgentina #Founders #ComunidadTech #Emprendedores #Nordelta
+#NorteTech #ZonaNorte #StartupsArgentina #TechArgentina #Founders #ComunidadTech #Emprendedores
 ```
 
 ### IG3 · Reel "Qué es Norte Tech en 30s" — Día 3
 Formato 9:16, subtítulos siempre, hook en el primer segundo.
 ```
 [0-3s]  HOOK · texto en pantalla: "Vivís en zona norte y estás en tech? Esto es para vos."
-        (visual: drone/timelapse de Nordelta o pantalla con código + el logo)
-[3-10s] "Norte Tech es la comunidad de founders, devs y makers de la zona."
+        (visual: drone/timelapse de zona norte o pantalla con código + el logo)
+[3-10s] "Norte Tech es la comunidad de founders, builders e inversores de la zona."
 [10-18s] "No es otro grupo de WhatsApp. Conectamos gente que construye en serio:
          co-founders, early hires, inversores, mentores."
 [18-25s] "Workshops, talks, un kick-off y un hackathon en camino."
@@ -369,7 +368,7 @@ Conocé a los builders de Norte Tech 👇
 ```
 [0-3s]  HOOK: "Estamos armando una comunidad tech en zona norte. Día [X]."
 [3-20s] Detrás de escena: pantalla de la web (member grid creciendo), mensajes del grupo,
-        preparando el kick-off. Texto: "40+ builders y subiendo."
+        preparando el kick-off. Texto: "Más de 260 miembros y subiendo."
 [20-30s] CTA: "Querés ser parte? bsasnortetech.vercel.app · link en bio"
 ```
 **Caption:** `Construyendo la comunidad tech de zona norte, en público 🛠️ #BuildInPublic #NorteTech #ZonaNorte #Startups`
@@ -393,7 +392,7 @@ Secuencia sugerida para el Día 1–2:
 
 **Instagram (mezclá 8–12 por post):**
 - Marca/nicho: `#NorteTech` `#ComunidadTech` `#BuildInPublic`
-- Geo: `#Nordelta` `#ZonaNorte` `#BuenosAires` `#TigrePilar` `#ArgentinaTech`
+- Geo: `#ZonaNorte` `#BuenosAires` `#TigrePilar` `#ArgentinaTech`
 - Audiencia: `#Founders` `#Devs` `#Makers` `#Emprendedores` `#Startups`
 - Amplios: `#StartupsArgentina` `#TechArgentina` `#Programacion` `#Emprendedurismo`
 

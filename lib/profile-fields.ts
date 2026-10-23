@@ -34,25 +34,16 @@ export const ROLE_TAGS: Record<string, string[]> = {
   'Otro':                ['Builder'],
 };
 
-// Barrios de Nordelta + localidades de zona norte.
+// Barrios de Tigre + localidades de zona norte. Formato "Barrio · Localidad".
+const TIGRE_BARRIOS = [
+  'Los Castores', 'El Yacht', 'La Isla', 'Los Lagos', 'El Golf', 'Las Caletas',
+  'Vistas', 'Portezuelo', 'El Portón', 'Cabos del Lago', 'Bahía Grande',
+  'La Alameda', 'Santa Catalina', 'El Rincón', 'Los Sauces', 'El Naudir',
+];
+
 export const NEIGHBORHOODS: string[] = [
-  'Nordelta · Los Castores',
-  'Nordelta · El Yacht',
-  'Nordelta · La Isla',
-  'Nordelta · Los Lagos',
-  'Nordelta · El Golf',
-  'Nordelta · Las Caletas',
-  'Nordelta · Vistas',
-  'Nordelta · Portezuelo',
-  'Nordelta · El Portón',
-  'Nordelta · Cabos del Lago',
-  'Nordelta · Bahía Grande',
-  'Nordelta · La Alameda',
-  'Nordelta · Santa Catalina',
-  'Nordelta · El Rincón',
-  'Nordelta · Los Sauces',
-  'Nordelta · El Naudir',
-  'Nordelta · otro barrio',
+  ...TIGRE_BARRIOS.map((b) => `${b} · Tigre`),
+  'Tigre · otro barrio',
   'Tigre',
   'Benavídez',
   'General Pacheco',
@@ -63,6 +54,34 @@ export const NEIGHBORHOODS: string[] = [
   'Escobar',
   'Otra zona',
 ];
+
+const KNOWN = new Set(NEIGHBORHOODS);
+const BARRIO_BY_KEY = new Map(TIGRE_BARRIOS.map((b) => [b.toLowerCase(), b]));
+
+/**
+ * Normaliza un barrio guardado al formato actual. Migración en lectura (sin
+ * tocar la base): los valores viejos con formato "Prefijo · Barrio" de uno de
+ * los barrios de Tigre pasan a "Barrio · Tigre", y "Prefijo · otro barrio" a
+ * "Tigre · otro barrio". Se reescriben solos cuando el miembro vuelve a guardar.
+ */
+export function normalizeNeighborhood(value: string | null | undefined): string {
+  if (!value) return '';
+  const v = value.trim();
+  if (KNOWN.has(v)) return v;
+  const m = /^([^·]+)·\s*(.+)$/.exec(v);
+  if (m) {
+    const tail = m[2].trim().toLowerCase();
+    if (tail === 'otro barrio') return 'Tigre · otro barrio';
+    const barrio = BARRIO_BY_KEY.get(tail);
+    if (barrio) return `${barrio} · Tigre`;
+  }
+  return v;
+}
+
+/** Etiqueta visible de un barrio/zona (siempre en el formato actual). */
+export function neighborhoodLabel(value: string | null | undefined): string {
+  return normalizeNeighborhood(value);
+}
 
 // Qué busca cada builder en la comunidad (chips).
 export const LOOKING_FOR_OPTIONS: string[] = [

@@ -28,10 +28,12 @@ const ROLE_LABEL = {
   'Otro': 'Otro',
 };
 
+// Zona de un barrio guardado. Formato actual "Barrio · Tigre"; los valores
+// viejos "Prefijo · Barrio" (barrios de Tigre) también cuentan como Tigre.
 function areaOf(neighborhood) {
   if (!neighborhood) return null;
-  const head = neighborhood.split('·')[0].trim();
-  return head || null;
+  if (neighborhood.includes('·')) return 'Tigre';
+  return neighborhood.trim() || null;
 }
 
 async function main() {

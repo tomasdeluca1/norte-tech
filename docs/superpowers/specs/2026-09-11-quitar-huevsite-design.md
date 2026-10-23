@@ -22,7 +22,7 @@ Decisiones tomadas con el usuario:
   `https://huevsite.io/<user>` y se guarda en `website_url`, sin pisar a quien
   ya cargó una web. Nadie pierde su lugar en el directorio.
 - **La moderación se va entera** (YAGNI). Ver "Estado actual" — nunca moderó.
-- **El remitente de mails pasa a `nordelta.tech`.** El destinatario de avisos
+- **El remitente de mails pasa a `nortetech.ar`.** El destinatario de avisos
   (`huevsite.studio@gmail.com`) queda como está: es una casilla que ya recibe,
   y `huevsite.studio` es el estudio, no el producto `.io` que se saca.
 
@@ -168,8 +168,8 @@ ordenada alfabéticamente, y desaparece el bloque de desempate por
 
 ### Emails
 
-- `lib/email.ts:21` — default `Nordelta Tech <onboarding@huevsite.studio>` →
-  `Nordelta Tech <onboarding@nordelta.tech>`
+- `lib/email.ts:21` — default `Norte Tech <onboarding@huevsite.studio>` →
+  `Norte Tech <onboarding@nortetech.ar>`
 - `lib/email-templates/accepted.ts:43` — *"Completá tu perfil y conectá tu
   huevsite.io"* → *"Completá tu perfil y sumá tu sitio"*
 - `.env.example` — mismo cambio en `EMAIL_FROM`
@@ -178,7 +178,7 @@ ordenada alfabéticamente, y desaparece el bloque de desempate por
   destinatario, no el remitente)
 
 > **Bloqueante operativo, fuera del código:** el remitente real lo define
-> Resend. Hasta que `nordelta.tech` esté verificado ahí (SPF/DKIM en DNS) y
+> Resend. Hasta que `nortetech.ar` esté verificado ahí (SPF/DKIM en DNS) y
 > `EMAIL_FROM` seteado en Vercel, los mails **rebotan**. El cambio de default
 > es seguro de mergear, pero no se despliega a producción sin eso resuelto.
 
@@ -218,7 +218,7 @@ personal de Twitter del usuario, no el producto. **Queda como está.**
 - Reintroducir moderación bajo otro nombre
 - Verificar que las URLs cargadas por los builders resuelvan
 - Cambiar `admin_notification_email`
-- Verificación de `nordelta.tech` en Resend (operativo, no código)
+- Verificación de `nortetech.ar` en Resend (operativo, no código)
 
 ---
 

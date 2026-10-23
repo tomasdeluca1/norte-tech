@@ -7,19 +7,19 @@ export function rejectedEmailHtml(params: { name: string; appUrl: string }): str
   const body = `
     ${headingRow(`HOLA, ${escapeHtml(firstName.toUpperCase())}`)}
     ${paragraphRow(
-      `Gracias por tu interés en sumarte a <strong style="color:#a9b7f3;">Norte Tech</strong>. 🙏`,
+      `Gracias por tu interés en sumarte a <strong style="color:#6EA6FF;">Norte Tech</strong>. 🙏`,
     )}
     ${paragraphRow(
       `Por ahora no vamos a poder darte el alta en la comunidad. Estamos arrancando de a poco y cuidando mucho el grupo, así que no es algo personal.`,
     )}
     ${paragraphRow(
-      `Si creés que fue un error o querés contarnos más sobre lo que estás construyendo, respondé a este email y lo revisamos. 💚`,
+      `Si creés que fue un error o querés contarnos más sobre lo que estás construyendo, respondé a este email y lo revisamos. 💙`,
     )}
   `;
 
   return emailShell({
     appUrl,
     bodyHtml: body,
-    footerNote: 'Recibís este email porque te registraste en bsasnortetech.vercel.app.',
+    footerNote: 'Recibís este email porque te registraste en Norte Tech.',
   });
 }

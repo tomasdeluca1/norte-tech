@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ROLES } from '@/lib/profile-fields';
 import '../auth.css';
+import BrandLogo from '../components/BrandLogo';
+import ThemeToggle from '../components/ThemeToggle';
 
 interface User {
   id: number;
@@ -163,11 +165,12 @@ export default function DashboardPage() {
     <main className="dash-shell">
       <nav className="dash-nav">
         <a href="/" className="nav-logo">
-          <img src="/brand/norte-tech-horizontal.svg" alt="Norte Tech" />
+          <BrandLogo variant="logo-horizontal" />
         </a>
         <div className="dash-nav-right">
+          <ThemeToggle />
           {user.isAdmin && <a href="/admin" className="btn btn-ghost dash-logout">Admin</a>}
-          <span className="dash-domain">bsasnortetech.vercel.app</span>
+          <span className="dash-domain">Dashboard</span>
           <button onClick={handleLogout} className="btn btn-ghost dash-logout">Salir</button>
         </div>
       </nav>

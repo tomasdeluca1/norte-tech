@@ -12,7 +12,7 @@ necesita cada uno.
 
 ## Qué necesita cada uno
 
-- **Kick-off (~50):** áreas comunes de Balanz Nordelta · picada + bebidas · proyección y sonido para 2-3 charlas cortas.
+- **Kick-off (~50):** áreas comunes de Balanz zona norte · picada + bebidas · proyección y sonido para 2-3 charlas cortas.
 - **Build with AI (~30):** mesas + wifi sólido · café/snacks · proyección. Grupo más chico y técnico.
 - **Hackathon #1 (~20):** espacio por más horas · varias comidas en el día · wifi/energía para los equipos · **premio (lo pone Balanz)**.
 
