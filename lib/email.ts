@@ -6,7 +6,9 @@ import { acceptedEmailHtml } from './email-templates/accepted';
 import { rejectedEmailHtml } from './email-templates/rejected';
 import { adminNewRegistrationHtml } from './email-templates/admin-notification';
 import { welcomeEmailHtml } from './email-templates/welcome';
-import { passwordResetHtml } from './email-templates/password-reset';
+import { passwordResetLinkHtml, passwordResetLinkText } from './email-templates/password-reset';
+import { sendMail, getFromAddress as mailerFrom } from './mailer';
+import { RESET_TOKEN_TTL_MINUTES, resetUrl } from './reset-token';
 import { presentationReceivedHtml } from './email-templates/presentation-received';
 
 let resendClient: Resend | undefined;
@@ -18,9 +20,8 @@ function getResend(): Resend {
   return resendClient;
 }
 
-function getFromAddress(): string {
-  return process.env.EMAIL_FROM?.trim() || 'Norte Tech <onboarding@resend.dev>';
-}
+// Mismo remitente que lib/mailer.ts (EMAIL_FROM o el default de Resend).
+const getFromAddress = mailerFrom;
 
 function getAppUrl(): string {
   // APP_URL (env) manda; si no está, se usa SITE_URL de lib/site.ts.
@@ -148,23 +149,15 @@ export async function sendWelcomeEmail(params: {
 }
 
 /** Recuperación de contraseña → nueva contraseña temporal. */
-export async function sendPasswordResetEmail(params: {
-  to: string;
-  name: string;
-  tempPassword: string;
-}): Promise<void> {
+/** Link para elegir contraseña nueva (pasa por lib/mailer.ts). */
+export async function sendPasswordResetLinkEmail(params: { to: string; name: string; token: string }): Promise<void> {
   const appUrl = getAppUrl();
-  await getResend().emails.send({
-    from: getFromAddress(),
+  const url = resetUrl(appUrl, params.token);
+  await sendMail({
     to: params.to,
-    subject: 'Recuperá tu acceso a Norte Tech 🔑',
-    html: passwordResetHtml({
-      name: params.name,
-      email: params.to,
-      password: params.tempPassword,
-      loginUrl: `${appUrl}/login`,
-      appUrl,
-    }),
+    subject: 'Elegí tu nueva contraseña de Norte Tech',
+    html: passwordResetLinkHtml({ name: params.name, resetUrl: url, expiresInMinutes: RESET_TOKEN_TTL_MINUTES, appUrl }),
+    text: passwordResetLinkText({ name: params.name, resetUrl: url, expiresInMinutes: RESET_TOKEN_TTL_MINUTES }),
   });
 }
 

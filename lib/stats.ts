@@ -5,6 +5,7 @@ import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
 import { eq } from 'drizzle-orm';
 import * as schema from './db/schema';
+import './db/local-neon';
 import { categoryOf, emptyCounts, type CommunityStats } from './categories';
 
 export const STATS_REVALIDATE_SECONDS = 300;

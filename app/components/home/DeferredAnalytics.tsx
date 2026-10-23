@@ -10,6 +10,8 @@ type W = Window & { __ntAnalytics?: boolean; dataLayer?: unknown[]; gtag?: (...a
 function inject() {
   const w = window as W;
   if (w.__ntAnalytics) return;
+  // /restablecer lleva el token de un solo uso en la URL: ahí no se mide nada.
+  if (location.pathname.startsWith('/restablecer')) return;
   w.__ntAnalytics = true;
   const u = document.createElement('script');
   u.src = 'https://cloud.umami.is/script.js';
