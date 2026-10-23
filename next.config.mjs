@@ -24,5 +24,8 @@ import { readFileSync } from 'node:fs';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
+    // Fotos de encuentros: WebP por defecto. AVIF queda detrás de un flag apagado
+    // (NEXT_IMAGE_AVIF=1) porque encodear AVIF en el optimizador cuesta CPU y latencia en el primer request.
+    images: { formats: process.env.NEXT_IMAGE_AVIF === '1' ? ['image/avif', 'image/webp'] : ['image/webp'] },
 };
 export default nextConfig;

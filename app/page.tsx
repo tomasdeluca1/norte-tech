@@ -26,14 +26,12 @@ import CompassCursor from './components/web3d/CompassCursor';
 import { getCommunityStats } from '@/lib/stats';
 import { MEETUP_URL, MEETUP_DATE, FOTOS_FACT_REQUESTS, MEETUP_PENDING, NEXT_MEETUP_TEASER, FOLLOW_URL, FOLLOW_CTA_LABEL } from '@/lib/site';
 
-// Fotos de encuentros elegidas por Marketing (22/10): todos salen bien, sin mascota ni marca vieja.
-import fotoRisas from '@/public/encuentros/mt02-risas-escalera.webp';
-import fotoCharla from '@/public/encuentros/mt02-charla-escalera.webp';
-import fotoTrio from '@/public/encuentros/mt02-trio-ventanal.webp';
-import fotoPizarra from '@/public/encuentros/mt02-pizarra-norte-tech.webp';
-import fotoTribuna from '@/public/encuentros/mt02-tribuna.webp';
-import fotoSonrisa from '@/public/encuentros/mt02-sonrisa-ventanal.webp';
-import fotoCafeGarcia from '@/public/encuentros/cowork-cafe-garcia.webp';
+// Fotos de encuentros elegidas por Marketing (22/10, revisión web-comunidad): todos salen bien,
+// sin mascota ni marca vieja, sin caras tapadas. Fuentes y recortes: web-comunidad/fotos/fuentes.json.
+import fotoCierre from '@/public/encuentros/mt02-cierre-escalera.webp';
+import fotoCharla from '@/public/encuentros/mt02-charla-ronda.webp';
+import fotoPizarra from '@/public/encuentros/mt02-pizarra-risa.webp';
+import fotoRonda from '@/public/encuentros/mt02-ronda-cenital.webp';
 
 // Contador y chips: totales reales de Neon, regenerados cada 5 minutos (ISR).
 // Tiene que ser un literal (Next lo lee estáticamente); igual a STATS_REVALIDATE_SECONDS.
@@ -60,16 +58,44 @@ const ABOUT_CARDS: RoseCard[] = [
 // Marquee de A, con menos repeticiones (4 en vez de 20) para aliviar el DOM.
 const MARQUEE = ['Inteligencia Artificial', 'Fintech', 'SaaS', 'Web3', 'Proptech', 'Healthtech', 'EdTech', 'Developer Tools', 'E-commerce', 'Networking'];
 
-// Fotos de encuentros: cada una dice de qué encuentro es.
-const FOTOS = [
-  { src: fotoRisas, cls: 'ef-a', ev: 'Meet & Talk 02 · 14.10', cap: 'La previa', pos: '50% 35%', alt: 'Dos chicos se ríen al lado de una escalera roja en el salón del meetup.' },
-  { src: fotoCharla, cls: 'ef-b', ev: 'Meet & Talk 02 · 14.10', cap: 'Charlas cruzadas', pos: '50% 30%', alt: 'Un chico de barba y remera clara sonríe mientras charla, con la escalera roja atrás.' },
-  { src: fotoSonrisa, cls: 'ef-c', ev: 'Meet & Talk 02 · 14.10', cap: 'Primera vez', pos: '50% 30%', alt: 'Una chica de pelo enrulado y buzo negro sonríe a cámara.' },
-  { src: fotoTrio, cls: 'ef-d', ev: 'Meet & Talk 02 · 14.10', cap: 'Gente nueva', pos: '50% 62%', alt: 'Tres personas charlan sonriendo junto a los ventanales del salón.' },
-  { src: fotoTribuna, cls: 'ef-e', ev: 'Meet & Talk 02 · 14.10', cap: 'En la tribuna', pos: '80% 15%', alt: 'Dos chicas sonríen sentadas en la tribuna del salón.' },
-  { src: fotoPizarra, cls: 'ef-f', ev: 'Meet & Talk 02 · 14.10', cap: 'La pizarra', pos: '75% 25%', alt: 'Un chico escribe en una pizarra con el título Norte Tech, junto a los ventanales.' },
-  { src: fotoCafeGarcia, cls: 'ef-g', ev: 'Cowork · Café García', cap: 'Tarde de laburo', pos: '50% 45%', alt: 'Cuatro chicos sonríen alrededor de una mesa redonda con computadoras en un café.' },
+// "Así son los encuentros", por capítulos: un capítulo por tipo de encuentro.
+// Solo originales de cámara (lado largo >= 1600 px reales, nítidas en las caras); los formatos
+// sin fotos que pasen ese umbral se muestran como tarjeta de texto. Fuentes: web-comunidad/fotos/fuentes-v2.json.
+type Foto = { src: typeof fotoRonda; cap: string; pos: string; alt: string; sizes: string };
+const MT_HERO: Foto = { src: fotoCierre, cap: 'Gente nueva', pos: '50% 40%', sizes: '(max-width: 720px) 100vw, (max-width: 1240px) 60vw, 720px', alt: 'Tres personas sonríen abrazadas frente a la escalera roja del salón al cierre del meetup.' };
+const MT_FOTOS: Foto[] = [
+  { src: fotoCharla, cap: 'Charlas cruzadas', pos: '50% 30%', sizes: '(max-width: 720px) 78vw, (max-width: 1240px) 40vw, 470px', alt: 'Una chica cuenta algo con las manos mientras un grupo de pie charla alrededor en el salón.' },
+  { src: fotoPizarra, cap: 'La pizarra', pos: '50% 30%', sizes: '(max-width: 720px) 78vw, (max-width: 1240px) 20vw, 230px', alt: 'Un hombre de remera negra se ríe mientras habla frente a una pizarra escrita a mano.' },
+  { src: fotoRonda, cap: 'La ronda', pos: '50% 50%', sizes: '(max-width: 720px) 78vw, (max-width: 1240px) 20vw, 230px', alt: 'Vista desde arriba del salón: un grupo de pie en ronda escucha a uno que se presenta, junto a una pizarra y ventanales.' },
 ];
+const CAPITULOS = [
+  { id: 'enc-meet', n: '01', title: 'Meet & Talk' },
+  { id: 'enc-cowork', n: '02', title: 'Coworks' },
+  { id: 'enc-founders', n: '03', title: 'Founders Edition' },
+  { id: 'enc-pronto', n: '04', title: 'Próximamente' },
+];
+
+const FOTO_Q = 85;
+
+function Galeria({ hero, fotos, label }: { hero: Foto; fotos: Foto[]; label: string }) {
+  return (
+    <div className="enc-mosaic">
+      <figure className="enc-ph enc-ph--hero" data-reveal>
+        <Image src={hero.src} alt={hero.alt} fill sizes={hero.sizes} quality={FOTO_Q} placeholder="blur" style={{ objectFit: 'cover', objectPosition: hero.pos }} />
+        <figcaption>{hero.cap}</figcaption>
+      </figure>
+      {/* En mobile es una tira horizontal con scroll nativo y snap; tabIndex para poder scrollearla con teclado. */}
+      <div className="enc-strip" role="group" aria-label={label} tabIndex={0}>
+        {fotos.map((f) => (
+          <figure key={f.cap} className="enc-ph" data-reveal>
+            <Image src={f.src} alt={f.alt} fill sizes={f.sizes} quality={FOTO_Q} placeholder="blur" style={{ objectFit: 'cover', objectPosition: f.pos }} />
+            <figcaption>{f.cap}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 /* CSS crítico del bloque de texto del hero, inline para no depender del CSS externo.
    Copia exacta de las reglas de home.css (que siguen siendo la fuente de verdad). */
@@ -175,23 +201,57 @@ export default async function Home() {
             <WindRose cards={ABOUT_CARDS} />
           </section>
 
-          {/* ───────────── ENCUENTROS (fotos nuevas, con el lenguaje visual de A) ───────────── */}
-          <section id="fotos" className="section encuentros" aria-labelledby="fotos-title">
-            <div className="events-hd">
+          {/* ───────────── ENCUENTROS: un capítulo por tipo de encuentro ───────────── */}
+          <section id="fotos" className="section encuentros enc" aria-labelledby="fotos-title">
+            <div className="enc-hd">
               <div>
                 <p className="eyebrow">Encuentros</p>
                 <h2 id="fotos-title" className="sec-title display">Así son los encuentros.</h2>
-                <p className="sec-sub">Meetups y coworks en zona norte. Gente que está construyendo algo, charlando cara a cara.</p>
+                <p className="sec-sub">Meetups, coworks y noches para founders en zona norte. Gente que está construyendo algo, charlando cara a cara.</p>
               </div>
+              <nav className="enc-index" aria-label="Tipos de encuentro">
+                <ol>
+                  {CAPITULOS.map((c) => (
+                    <li key={c.id}><a href={`#${c.id}`}><span className="enc-index-n">{c.n}</span>{c.title}</a></li>
+                  ))}
+                </ol>
+              </nav>
             </div>
-            <div className="ef-grid">
-              {FOTOS.map((f) => (
-                <figure key={f.cls} className={`ef ${f.cls}`} data-reveal>
-                  <Image src={f.src} alt={f.alt} fill sizes="(max-width: 560px) 100vw, (max-width: 1000px) 90vw, 760px" style={{ objectFit: 'cover', objectPosition: f.pos }} />
-                  <figcaption><span className="ef-ev">{f.ev}</span><span className="ef-cap">{f.cap}</span></figcaption>
-                </figure>
-              ))}
+
+            <article id="enc-meet" className="enc-ch" aria-labelledby="enc-meet-t">
+              <header className="enc-ch-hd">
+                <p className="enc-n" aria-hidden="true">01</p>
+                <h3 id="enc-meet-t" className="enc-t display">Meet &amp; Talk</h3>
+                <p className="enc-meta">Último: Meet &amp; Talk 02 · 14.10</p>
+                <p className="enc-d">Charlamos de tecnología y conocemos a los que están construyendo en la zona. En el Random Pick &amp; Talk salen nombres al azar y cada uno tiene 60 segundos para contar quién es y qué está haciendo.</p>
+              </header>
+              <Galeria hero={MT_HERO} fotos={MT_FOTOS} label="Más fotos del Meet & Talk 02" />
+            </article>
+
+            {/* Coworks, Founders Edition y Próximamente: tres tarjetas parejas. Coworks todavía no tiene
+                fotos de cámara que pasen el umbral de calidad, así que va sin foto (ver PROPUESTA.md). */}
+            <div className="enc-trio">
+              <article id="enc-cowork" className="enc-ch enc-ch--text" aria-labelledby="enc-cowork-t">
+                <p className="enc-n" aria-hidden="true">02</p>
+                <h3 id="enc-cowork-t" className="enc-t display">Coworks</h3>
+                <p className="enc-meta">Recurrente · Café García · Santa Bárbara · Islas del Golf</p>
+                <p className="enc-d">Una tarde de laburo en cafés, clubes y hubs de zona norte. Traés la compu y trabajás al lado de gente que también está construyendo.</p>
+              </article>
+              <article id="enc-founders" className="enc-ch enc-ch--text" aria-labelledby="enc-founders-t">
+                <p className="enc-n" aria-hidden="true">03</p>
+                <h3 id="enc-founders-t" className="enc-t display">Founders Edition</h3>
+                <p className="enc-meta">Primera edición · 18.09 · Tigre</p>
+                <p className="enc-d">Una noche para founders que ya construyeron algo real: con ronda, facturando o con años encima. Con dinámicas para que termines hablando con gente que no habrías cruzado.</p>
+              </article>
+              <article id="enc-pronto" className="enc-ch enc-ch--text enc-ch--soon" aria-labelledby="enc-pronto-t">
+                <p className="enc-n" aria-hidden="true">04</p>
+                <p className="enc-soon">Próximamente</p>
+                <h3 id="enc-pronto-t" className="enc-t display">Hackathons y más</h3>
+                <p className="enc-d">Estamos armando formatos para construir juntos, no solo para charlar. Todavía no hay fecha: si te sumás a la comunidad, te avisamos primero.</p>
+                <button type="button" className="btn btn-ghost enc-soon-btn" data-open-join="">Unirme a la comunidad →</button>
+              </article>
             </div>
+
             <div className="ef-facts" data-reveal>
               {FOTOS_FACT_REQUESTS ? (
                 <p className="ef-fact"><strong>{FOTOS_FACT_REQUESTS}</strong><span>pedidos para sumarse a la comunidad</span></p>
@@ -257,7 +317,7 @@ export default async function Home() {
                 <p className="sec-sub">Founders, builders, inversores, growth, marketing y creators de zona norte, cada uno con lo que está construyendo. Si todavía no estás, te sumás en un minuto.</p>
               </div>
             </div>
-            <CommunityA />
+            <CommunityA counts={stats.live && stats.total > 0 ? stats.categories : null} />
             <div className="members-join">
               <button type="button" className="btn btn-green" data-open-join="">Unirme a la comunidad →</button>
             </div>
