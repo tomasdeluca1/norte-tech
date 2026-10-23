@@ -47,8 +47,8 @@
   color: var(--text);
   font-family: var(--f-body);
   /* clip y no hidden: hidden convierte a .mixA en contenedor de scroll y
-     rompe todo position: sticky de adentro (la rosa quedaba en negro). */
-  overflow-x: hidden;
+     rompe todo position: sticky de adentro (la rosa quedaba en negro).
+     Safari < 16 no soporta clip: ver el @supports de abajo. */
   overflow-x: clip;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -1024,6 +1024,12 @@
 
 /* ─── Qué es: apertura (salida de la cámara del hero) ───── */
 .mixA .sobre { position: relative; overflow-x: clip; }
+/* Safari < 16 (sin overflow: clip): hidden evita el scroll horizontal. La
+   brújula pierde el sticky (queda en su lugar, arriba de las tarjetas) pero
+   el layout no se rompe. */
+@supports not (overflow: clip) {
+  .mixA, .mixA .sobre { overflow-x: hidden; }
+}
 .mixA .sobre-aperture {
   position: absolute; left: 50%; top: 0; width: min(900px, 120vw); aspect-ratio: 1;
   transform: translate(-50%, -62%); border-radius: 50%; pointer-events: none;
