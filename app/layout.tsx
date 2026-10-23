@@ -1,28 +1,36 @@
 import type { Metadata, Viewport } from 'next';
-import Script from 'next/script';
 import localFont from 'next/font/local';
-import { SITE_URL } from '@/lib/site';
+import { SITE_URL, THEME_TOGGLE_ENABLED } from '@/lib/site';
+import DeferredAnalytics from './components/home/DeferredAnalytics';
 import './tokens.css';
 import './globals.css';
 
-// Fuentes de marca self-hosted (subset latino, variables). Ver brand-v1/BRAND.md §7.
+// Fuentes de marca self-hosted. Subset latino básico + ÁÉÍÓÚáéíóúÑñ¿¡·→ y
+// rango de pesos recortado a lo que usa el sitio (pyftsubset + instancer,
+// ver docs/web-v2.md). Sólo Montserrat se precarga: es la del H1 (LCP).
+// Inter y Mono entran en una segunda etapa, después del load y del primer paint (FONTS_STAGE_2).
 const montserrat = localFont({
-  src: './fonts/Montserrat-latin-var.woff2',
+  src: './fonts/Montserrat-latin-700.woff2',
   variable: '--font-montserrat',
-  weight: '100 900',
+  weight: '700',
   display: 'swap',
+  preload: true,
 });
 const inter = localFont({
   src: './fonts/Inter-latin-var.woff2',
   variable: '--font-inter',
-  weight: '100 900',
+  weight: '400 700',
   display: 'swap',
+  preload: false,
+  adjustFontFallback: 'Arial',
 });
 const jetbrainsMono = localFont({
   src: './fonts/JetBrainsMono-latin-var.woff2',
   variable: '--font-jetbrains-mono',
-  weight: '100 800',
+  weight: '400 600',
   display: 'swap',
+  preload: false,
+  adjustFontFallback: false,
 });
 
 const siteUrl = SITE_URL;
@@ -75,7 +83,16 @@ export const viewport: Viewport = {
 
 // Tema: oscuro por defecto; claro con data-theme="light" en <html>.
 // Se aplica antes del primer paint para evitar el flash. Acepta ?theme=light|dark.
+// Con THEME_TOGGLE_ENABLED = false (decisión D4) el sitio queda sólo oscuro y
+// este script no se inyecta.
 const THEME_INIT = `(function(){try{var q=new URLSearchParams(location.search).get('theme');if(q==='light'||q==='dark'){localStorage.setItem('nt-theme',q);}var t=q||localStorage.getItem('nt-theme');if(t==='light'){document.documentElement.setAttribute('data-theme','light');}}catch(e){}})();`;
+
+// Fuentes en dos etapas (crítica v2 §3.3 paso 1): hasta el load, cuerpo y mono usan
+// fallbacks con la métrica ajustada (ver 'Inter Fallback' en globals.css) y Inter y
+// JetBrains Mono no se piden; después del load y del primer paint se agrega .fonts-2 y entran.
+// Etapa 2 de fuentes: espera el load Y el primer paint (+300 ms), así Inter y Mono nunca compiten con el LCP
+// (el subtítulo pinta con 'Inter Fallback' local, con métricas ajustadas, y después hace swap).
+const FONTS_STAGE_2 = `(function(){var d=document.documentElement,l=0,p=0,t;function go(){if(t)return;t=1;setTimeout(function(){requestAnimationFrame(function(){d.classList.add('fonts-2')})},300)}function chk(){if(l&&p)go()}function onL(){l=1;chk();setTimeout(go,2500)}try{if(performance.getEntriesByName('first-contentful-paint').length)p=1;else new PerformanceObserver(function(e,o){if(e.getEntriesByName('first-contentful-paint').length){p=1;o.disconnect();chk()}}).observe({type:'paint',buffered:true})}catch(e){p=1}if(document.readyState==='complete')onL();else addEventListener('load',onL)})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -85,27 +102,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
+        {THEME_TOGGLE_ENABLED && <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />}
+        <script dangerouslySetInnerHTML={{ __html: FONTS_STAGE_2 }} />
       </head>
       <body>
         {children}
-        <Script
-          src="https://cloud.umami.is/script.js"
-          data-website-id="c6d29b68-5d43-4ebf-96cb-74b8ca555a80"
-          strategy="afterInteractive"
-        />
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-XN447TYF0F"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-XN447TYF0F');
-          `}
-        </Script>
+        <DeferredAnalytics />
       </body>
     </html>
   );

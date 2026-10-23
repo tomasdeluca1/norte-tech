@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { THEME_TOGGLE_ENABLED } from '@/lib/site';
 
 // Alterna entre el tema oscuro (default) y el claro de los tokens de marca.
 export default function ThemeToggle({ className = '' }: { className?: string }) {
@@ -17,6 +18,8 @@ export default function ThemeToggle({ className = '' }: { className?: string }) 
     try { localStorage.setItem('nt-theme', next); } catch {}
     setTheme(next);
   };
+
+  if (!THEME_TOGGLE_ENABLED) return null; // D4: sólo oscuro (ver lib/site.ts)
 
   const label = theme === 'light' ? 'Cambiar a tema oscuro' : 'Cambiar a tema claro';
 

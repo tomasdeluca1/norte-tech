@@ -6,3 +6,4 @@ migrated-credentials.csv
 .vercel
 
 tsconfig.tsbuildinfo
+.lighthouseci

@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from 'react';
 import { NEIGHBORHOODS, LOOKING_FOR_OPTIONS, neighborhoodLabel, normalizeNeighborhood } from '@/lib/profile-fields';
 
 export interface PresentationState {
@@ -66,6 +67,9 @@ interface Props {
  * maneja cada página por separado.
  */
 export default function PresentationFields({ value, onChange }: Props) {
+  // ids para asociar cada label con su campo (lectores de pantalla).
+  const uid = useId();
+  const id = (name: string) => `${uid}-${name}`;
   const toggleLooking = (opt: string) =>
     onChange({
       lookingFor: value.lookingFor.includes(opt)
@@ -76,8 +80,8 @@ export default function PresentationFields({ value, onChange }: Props) {
   return (
     <>
       <div className="field">
-        <label>¿Dónde vivís?</label>
-        <select value={value.neighborhood} onChange={(e) => onChange({ neighborhood: e.target.value })}>
+        <label htmlFor={id('hood')}>¿Dónde vivís?</label>
+        <select id={id('hood')} value={value.neighborhood} onChange={(e) => onChange({ neighborhood: e.target.value })}>
           <option value="">Elegí tu barrio / zona…</option>
           {NEIGHBORHOODS.map((n) => (
             <option key={n} value={n}>{neighborhoodLabel(n)}</option>
@@ -86,8 +90,8 @@ export default function PresentationFields({ value, onChange }: Props) {
       </div>
 
       <div className="field">
-        <label>Bio <span className="opt">— quién sos en una o dos líneas</span></label>
-        <textarea
+        <label htmlFor={id('bio')}>Bio <span className="opt">(quién sos en una o dos líneas)</span></label>
+        <textarea id={id('bio')}
           rows={2}
           maxLength={1000}
           placeholder="Ej. Dev full-stack, ex-Mercado Libre. Me mudé a zona norte en 2023 y armo productos de IA."
@@ -97,8 +101,8 @@ export default function PresentationFields({ value, onChange }: Props) {
       </div>
 
       <div className="field">
-        <label>¿Qué estás construyendo hoy?</label>
-        <input
+        <label htmlFor={id('building')}>¿Qué estás construyendo hoy?</label>
+        <input id={id('building')}
           maxLength={280}
           placeholder="Ej. Un SaaS de facturación para PyMEs"
           value={value.building}
@@ -107,12 +111,13 @@ export default function PresentationFields({ value, onChange }: Props) {
       </div>
 
       <div className="field">
-        <label>¿Qué buscás en la comunidad? <span className="opt">(elegí los que apliquen)</span></label>
-        <div className="tag-picker">
+        <span className="label" id={id('looking')}>¿Qué buscás en la comunidad? <span className="opt">(elegí los que apliquen)</span></span>
+        <div className="tag-picker" role="group" aria-labelledby={id('looking')}>
           {LOOKING_FOR_OPTIONS.map((opt) => (
             <button
               key={opt}
               type="button"
+              aria-pressed={value.lookingFor.includes(opt)}
               onClick={() => toggleLooking(opt)}
               className={`tag-btn${value.lookingFor.includes(opt) ? ' active' : ''}`}
             >
@@ -123,8 +128,8 @@ export default function PresentationFields({ value, onChange }: Props) {
       </div>
 
       <div className="field">
-        <label>¿En qué podés ayudar? <span className="opt">(opcional)</span></label>
-        <input
+        <label htmlFor={id('help')}>¿En qué podés ayudar? <span className="opt">(opcional)</span></label>
+        <input id={id('help')}
           maxLength={280}
           placeholder="Ej. Reviews de código, intros a inversores, growth"
           value={value.canHelpWith}
@@ -133,8 +138,8 @@ export default function PresentationFields({ value, onChange }: Props) {
       </div>
 
       <div className="field">
-        <label>LinkedIn <span className="opt" style={{ color: 'var(--accent)' }}>* requerido</span></label>
-        <input
+        <label htmlFor={id('linkedin')}>LinkedIn <span className="opt">(requerido)</span></label>
+        <input id={id('linkedin')}
           type="text"
           required
           placeholder="linkedin.com/in/…"
@@ -145,8 +150,8 @@ export default function PresentationFields({ value, onChange }: Props) {
 
       <div className="form-grid">
         <div className="field">
-          <label>X / Twitter <span className="opt">(opcional)</span></label>
-          <input
+          <label htmlFor={id('twitter')}>X / Twitter <span className="opt">(opcional)</span></label>
+          <input id={id('twitter')}
             type="text"
             placeholder="x.com/…"
             value={value.twitterUrl}
@@ -154,8 +159,8 @@ export default function PresentationFields({ value, onChange }: Props) {
           />
         </div>
         <div className="field">
-          <label>Instagram <span className="opt">(opcional)</span></label>
-          <input
+          <label htmlFor={id('instagram')}>Instagram <span className="opt">(opcional)</span></label>
+          <input id={id('instagram')}
             type="text"
             placeholder="instagram.com/…"
             value={value.instagramUrl}
@@ -165,8 +170,8 @@ export default function PresentationFields({ value, onChange }: Props) {
       </div>
 
       <div className="field">
-        <label>Tu sitio <span className="opt">(opcional)</span></label>
-        <input
+        <label htmlFor={id('site')}>Tu sitio <span className="opt">(opcional)</span></label>
+        <input id={id('site')}
           type="text"
           placeholder="https://tu-sitio.com"
           value={value.websiteUrl}

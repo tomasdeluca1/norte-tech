@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { NEIGHBORHOODS, LOOKING_FOR_OPTIONS, ROLES, neighborhoodLabel, normalizeNeighborhood } from '@/lib/profile-fields';
+import { NEIGHBORHOODS, LOOKING_FOR_OPTIONS, ROLES, neighborhoodLabel, normalizeNeighborhood, TAGS } from '@/lib/profile-fields';
 import '../auth.css';
 import './admin.css';
 import BrandLogo from '../components/BrandLogo';
@@ -36,7 +36,6 @@ interface AdminMember {
   updatedAt: string;
 }
 
-const AVAILABLE_TAGS = ['AI', 'SaaS', 'Fintech', 'Web3', 'Proptech', 'Dev', 'Design', 'Marketing', 'Founder', 'Builder', 'Inversor'];
 
 const TABS: { key: string; label: string }[] = [
   { key: 'pending', label: 'Pendientes' },
@@ -333,7 +332,7 @@ function EditModal({ member, canManageAdmin, onClose, onSaved }: { member: Admin
           </div>
           <label className="auth-label"><span>Barrio / zona</span>
             <select value={f.neighborhood} onChange={e => setF({ ...f, neighborhood: e.target.value })}>
-              <option value="">—</option>
+              <option value="">Sin elegir</option>
               {NEIGHBORHOODS.map(n => <option key={n} value={n}>{neighborhoodLabel(n)}</option>)}
             </select>
           </label>
@@ -369,7 +368,7 @@ function EditModal({ member, canManageAdmin, onClose, onSaved }: { member: Admin
           </div>
           <div className="auth-label"><span>Tags</span>
             <div className="dash-tag-picker">
-              {AVAILABLE_TAGS.map(t => (
+              {TAGS.map(t => (
                 <button type="button" key={t} onClick={() => toggleTag(t)} className={`dash-tag-chip${tags.includes(t) ? ' is-active' : ''}`}>{t}</button>
               ))}
             </div>
