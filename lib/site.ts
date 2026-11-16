@@ -1,15 +1,13 @@
 // Constantes del sitio. Cambiá acá (o por env) el dominio y el link del meetup.
 
 // Dominio de producción por defecto. Se puede pisar con NEXT_PUBLIC_SITE_URL.
-const DEFAULT_SITE_URL = 'https://nortetech.ar';
+const DEFAULT_SITE_URL = 'https://nortetech.com.ar';
 
 function resolveSiteUrl(): string {
   const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
   if (explicit) return explicit.replace(/\/$/, '');
-  // En los previews de Vercel usamos la URL del deploy para que OG y links funcionen.
-  if (process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
+  // Canonical, Open Graph, sitemap y robots siempre usan el dominio de producción,
+  // también en previews: nortetech.ar no resuelve y rompería la imagen al compartir.
   return DEFAULT_SITE_URL;
 }
 
