@@ -92,7 +92,7 @@ async function main() {
 
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM || 'Norte Tech <onboarding@resend.dev>';
-  const appUrl = (process.env.APP_URL || 'https://bsasnortetech.vercel.app').replace(/\/$/, '');
+  const appUrl = (process.env.APP_URL || 'https://nortetech.com.ar').replace(/\/$/, '');
   const dbUrl = process.env.DATABASE_URL;
   const sessionPwd = process.env.SESSION_PASSWORD;
   if (!dbUrl) throw new Error('Falta DATABASE_URL en .env.local');

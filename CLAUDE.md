@@ -1,6 +1,6 @@
 # Norte Tech
 
-Sitio de comunidad. URL del sitio en `lib/site.ts` (`SITE_URL`, por defecto https://nortetech.ar; se pisa con `NEXT_PUBLIC_SITE_URL` y en previews usa `VERCEL_URL`).
+Sitio de comunidad. URL del sitio en `lib/site.ts` (`SITE_URL`, por defecto https://nortetech.com.ar; se pisa con `NEXT_PUBLIC_SITE_URL`).
 
 Stack: Next.js + Neon + Resend · hereda las constantes del raíz (`Projects/CLAUDE.md`).
 Completar aquí lo específico: comandos no estándar, env vars clave, decisiones de arquitectura.

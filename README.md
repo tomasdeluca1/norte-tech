@@ -89,4 +89,4 @@ scripts/{seed.js, migrate-from-mongo.js}
 
 ## Domain
 
-Production: **https://bsasnortetech.vercel.app**. All metadata, OG, and emails use this host (override via `APP_URL`).
+Production: **https://nortetech.com.ar**. Metadata, Open Graph, sitemap y robots usan `SITE_URL` en `lib/site.ts` (se pisa con `NEXT_PUBLIC_SITE_URL`). Los mails usan `APP_URL` si está definida, si no `SITE_URL`.

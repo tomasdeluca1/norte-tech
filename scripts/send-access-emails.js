@@ -91,7 +91,7 @@ async function main() {
 
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM || 'Norte Tech <onboarding@resend.dev>';
-  const appUrl = process.env.APP_URL || 'https://bsasnortetech.vercel.app';
+  const appUrl = process.env.APP_URL || 'https://nortetech.com.ar';
   const dbUrl = process.env.DATABASE_URL;
   if (!apiKey || apiKey.startsWith('re_placeholder')) throw new Error('Set RESEND_API_KEY in .env.local');
   if (!dbUrl) throw new Error('Set DATABASE_URL in .env.local');
