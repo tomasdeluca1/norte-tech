@@ -6,6 +6,8 @@ export type SessionData = {
   email?: string;
   name?: string;
   mustChangePassword?: boolean;
+  /** members.session_version al abrir la sesión. Sin valor = 0 (cookies anteriores a drizzle/0006). */
+  sv?: number;
 };
 
 function getSessionPassword(): string {

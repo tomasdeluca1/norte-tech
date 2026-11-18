@@ -1,43 +1,29 @@
 import { NextResponse } from 'next/server';
-import { eq } from 'drizzle-orm';
-import { getDb, schema } from '@/lib/db';
-import { getSession } from '@/lib/auth';
 import { isOwner } from '@/lib/admin';
+import { getActiveMember } from '@/lib/member-session';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const session = await getSession();
-  if (!session.userId) {
-    return NextResponse.json({ user: null }, { status: 200 });
-  }
-  const db = getDb();
-  const [user] = await db
-    .select({
-      id: schema.members.id,
-      name: schema.members.name,
-      email: schema.members.email,
-      initials: schema.members.initials,
-      role: schema.members.role,
-      jobTitle: schema.members.jobTitle,
-      company: schema.members.company,
-      companyUrl: schema.members.companyUrl,
-      websiteUrl: schema.members.websiteUrl,
-      tags: schema.members.tags,
-      colorIndex: schema.members.colorIndex,
-      mustChangePassword: schema.members.mustChangePassword,
-      isAdmin: schema.members.isAdmin,
-      createdAt: schema.members.createdAt,
-    })
-    .from(schema.members)
-    .where(eq(schema.members.id, session.userId))
-    .limit(1);
-
-  if (!user) {
-    session.destroy();
-    return NextResponse.json({ user: null }, { status: 200 });
-  }
-
+  const auth = await getActiveMember();
+  if (!auth) return NextResponse.json({ user: null }, { status: 200 });
+  const m = auth.member;
+  const user = {
+    id: m.id,
+    name: m.name,
+    email: m.email,
+    initials: m.initials,
+    role: m.role,
+    jobTitle: m.jobTitle,
+    company: m.company,
+    companyUrl: m.companyUrl,
+    websiteUrl: m.websiteUrl,
+    tags: m.tags,
+    colorIndex: m.colorIndex,
+    mustChangePassword: m.mustChangePassword,
+    isAdmin: m.isAdmin,
+    createdAt: m.createdAt,
+  };
   return NextResponse.json({ user: { ...user, isOwner: isOwner(user) } });
 }

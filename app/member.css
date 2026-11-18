@@ -1,0 +1,236 @@
+/* Norte Tech · área de miembros (login, restablecer contraseña y dashboard).
+   Mismo sistema que la home v2 (app/home.css): negro de fondo, superficies
+   #0E0E11, Montserrat en títulos, Inter en texto, JetBrains Mono en etiquetas,
+   CTA #0F58DE con texto blanco y ámbar escaso (sólo sobre negro o con tinta
+   #0B0B0F encima; nunca texto blanco sobre ámbar ni ámbar sobre azul).
+   Todo va bajo .mb para no pisar admin ni /completar (que siguen con auth.css). */
+
+.mb {
+  --t-display: clamp(36px, 4.6vw, 60px);
+  --t-h2: clamp(26px, 2.4vw, 32px);
+  --t-h3: 20px;
+  --t-lead: clamp(16px, 1.2vw, 18px);
+  --t-body: 16px;
+  --t-small: 14px;
+  --t-mono: 12px;
+  --r-sm: 8px; --r-md: 12px; --r-lg: 20px;
+  --d-fast: 120ms; --d-base: 200ms;
+  --ease-out: cubic-bezier(.2,.8,.2,1);
+  --ink: var(--nt-neutral-ink);
+  --surface: var(--nt-surface);
+  --raised: var(--nt-surface-raised);
+  --line: var(--nt-border);
+  --line-strong: var(--nt-border-strong);
+  --t1: var(--nt-text-primary);
+  --t2: var(--nt-text-secondary);
+  --t3: var(--nt-text-muted);
+  --blue-text: var(--nt-primary-text);
+  --cta: var(--nt-primary-solid);
+  --cta-hover: var(--nt-primary-solid-hover);
+  --amber: var(--nt-accent);
+  --on-amber: var(--nt-on-accent);
+  --danger: #FF8A9B;
+  --ok: #7BD9A6;
+
+  min-height: 100dvh;
+  background: var(--nt-bg);
+  color: var(--t1);
+  font: 400 var(--t-body)/1.6 var(--f-body);
+  position: relative;
+  isolation: isolate;
+}
+.mb :focus-visible { outline: 2px solid var(--nt-focus-ring); outline-offset: 3px; border-radius: 6px; }
+.mb p { text-wrap: pretty; }
+.mb :where(a) { color: inherit; }
+
+/* Grilla de puntos de la guía (paso 28 px, puntos casi negros, nunca protagonista). */
+.mb-dots {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background-image: radial-gradient(#1c1c22 1.2px, transparent 1.4px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
+  mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 70%);
+}
+
+/* ─── Tipografía ─────────────────────────────────────────── */
+.mb-eyebrow {
+  display: inline-flex; align-items: center; gap: 12px; margin: 0 0 16px;
+  font: 500 var(--t-mono)/1.2 var(--f-mono); letter-spacing: .14em; text-transform: uppercase;
+  color: var(--blue-text);
+}
+.mb-eyebrow::before { content: ''; width: 24px; height: 1px; background: currentColor; }
+.mb-display { font: 700 var(--t-display)/1.02 var(--f-display); letter-spacing: -0.03em; text-wrap: balance; margin: 0; }
+.mb-h2 { font: 700 var(--t-h2)/1.1 var(--f-display); letter-spacing: -0.02em; margin: 0; }
+.mb-h3 { font: 700 var(--t-h3)/1.25 var(--f-display); letter-spacing: -0.015em; margin: 0; }
+.mb-lead { font-size: var(--t-lead); line-height: 1.55; color: var(--t2); margin: 12px 0 0; max-width: 38em; }
+.mb-small { font-size: var(--t-small); color: var(--t2); margin: 0; }
+.mb-mono { font: 500 var(--t-mono)/1.3 var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--t3); }
+/* Único ámbar del título: subrayado fino, como "norte" en el hero de la home. */
+.mb-u-amber { background: linear-gradient(var(--amber), var(--amber)) left 94% / 100% .07em no-repeat; padding-bottom: .02em; }
+
+/* ─── Botones (mismo sistema que .v2 .btn) ───────────────── */
+.mb-btn {
+  --h: 44px; height: var(--h); padding: 0 20px; border-radius: var(--r-sm);
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font: 600 16px/1 var(--f-body); letter-spacing: -0.005em; text-decoration: none; white-space: nowrap;
+  cursor: pointer; border: 1px solid transparent;
+  transition: background-color var(--d-base) var(--ease-out), border-color var(--d-base) var(--ease-out), color var(--d-base) var(--ease-out), transform var(--d-fast) var(--ease-out), box-shadow var(--d-base) var(--ease-out);
+}
+.mb-btn-sm { --h: 36px; padding: 0 14px; font-size: 14px; }
+.mb-btn-lg { --h: 52px; padding: 0 24px; }
+.mb-btn-block { width: 100%; }
+.mb-btn-primary { background: var(--cta); border-color: var(--cta); color: #fff; }
+.mb-btn-primary:hover { background: var(--cta-hover); border-color: var(--cta-hover); color: #fff; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(15,88,222,.35); }
+.mb-btn-primary:active { transform: scale(.98); box-shadow: none; }
+.mb-btn-ghost { background: transparent; color: var(--t1); border-color: var(--nt-neutral-700); }
+.mb-btn-ghost:hover { border-color: var(--nt-neutral-300); background: rgba(255,255,255,.04); }
+.mb-btn[disabled] { opacity: .6; cursor: progress; transform: none; box-shadow: none; }
+.mb-link { color: var(--blue-text); font-weight: 600; text-decoration: none; }
+.mb-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.mb-linkbtn { background: none; border: 0; padding: 0; font: inherit; cursor: pointer; color: var(--blue-text); font-weight: 600; min-height: 44px; }
+.mb-linkbtn:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ─── Barra superior ─────────────────────────────────────── */
+.mb-bar {
+  position: sticky; top: 0; z-index: 50; height: 64px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 0 clamp(20px, 5vw, 64px);
+  background: rgba(0,0,0,.82); backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border-bottom: 1px solid var(--nt-neutral-800);
+}
+.mb-bar-logo { display: inline-flex; align-items: center; min-height: 44px; }
+.mb-bar-logo img { height: 28px; width: auto; display: block; }
+.mb-bar-right { display: flex; align-items: center; gap: 12px; }
+.mb-bar-link { font: 500 var(--t-small)/1 var(--f-body); color: var(--nt-neutral-300); text-decoration: none; padding: 15px 4px; }
+.mb-bar-link:hover { color: #fff; }
+@media (max-width: 560px) { .mb-bar-link.is-wide { display: none; } }
+
+/* ─── Login y restablecer: tarjeta centrada ──────────────── */
+.mb-auth { display: flex; flex-direction: column; min-height: 100dvh; }
+.mb-auth-main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 48px 20px 72px; }
+.mb-card {
+  width: 100%; max-width: 440px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg);
+  padding: clamp(24px, 5vw, 40px);
+}
+.mb-card .mb-display { font-size: clamp(30px, 3.4vw, 40px); }
+.mb-card-foot { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); font-size: var(--t-small); color: var(--t2); text-align: center; }
+.mb-card-foot + .mb-card-foot { margin-top: 0; border-top: 0; padding-top: 4px; }
+
+/* ─── Formularios ────────────────────────────────────────── */
+.mb-form { display: flex; flex-direction: column; gap: 16px; margin-top: 24px; }
+.mb-field { display: flex; flex-direction: column; gap: 8px; }
+.mb-field > .mb-label, .mb-fieldset > legend { font: 600 var(--t-small)/1.2 var(--f-body); color: var(--t1); }
+.mb-hint { font-size: 13px; line-height: 1.5; color: var(--t3); margin: 0; }
+.mb-input {
+  width: 100%; height: 48px; padding: 0 14px;
+  background: #000; color: var(--t1);
+  border: 1px solid var(--line-strong); border-radius: var(--r-sm);
+  font: 400 16px/1 var(--f-body);
+  transition: border-color var(--d-base), box-shadow var(--d-base);
+}
+.mb-input::placeholder { color: var(--t3); }
+.mb-input:hover { border-color: var(--nt-neutral-600); }
+.mb-input:focus { outline: none; border-color: var(--nt-blue-400); box-shadow: 0 0 0 3px rgba(23,116,253,.25); }
+.mb-input[readonly] { color: var(--t2); background: var(--raised); cursor: default; }
+.mb-input[aria-invalid="true"] { border-color: var(--danger); }
+select.mb-input {
+  appearance: none; -webkit-appearance: none; padding-right: 40px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'><path d='M1 1.5L6 6.5L11 1.5' stroke='%23A5A6B0' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat; background-position: right 14px center;
+}
+.mb-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 560px) { .mb-row { grid-template-columns: 1fr; } }
+.mb-pass { position: relative; }
+.mb-pass .mb-input { padding-right: 84px; }
+.mb-pass-toggle {
+  position: absolute; right: 4px; top: 4px; height: 40px; padding: 0 12px;
+  background: transparent; border: 0; border-radius: 6px; cursor: pointer;
+  font: 600 13px/1 var(--f-body); color: var(--blue-text);
+}
+.mb-pass-toggle:hover { background: rgba(255,255,255,.05); }
+.mb-fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+
+/* Chips: JetBrains Mono en mayúsculas dentro de píldora (guía 08). */
+.mb-chips { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
+.mb-chip {
+  display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px; border-radius: 999px;
+  font: 500 12px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--t2); background: transparent; border: 1px solid var(--line-strong);
+}
+button.mb-chip { cursor: pointer; min-height: 36px; transition: border-color var(--d-base), color var(--d-base), background var(--d-base); }
+button.mb-chip:hover { color: var(--t1); border-color: var(--nt-neutral-450); }
+button.mb-chip[aria-pressed="true"] { color: #fff; background: rgba(23,116,253,.16); border-color: var(--nt-blue-400); }
+button.mb-chip[aria-pressed="true"]::before { content: '✓'; margin-right: 6px; font-family: var(--f-body); }
+
+/* Mensajes */
+.mb-msg { font-size: var(--t-small); line-height: 1.5; border-radius: var(--r-sm); padding: 12px 14px; margin: 0; border: 1px solid; }
+.mb-msg-error { color: var(--danger); background: rgba(255,138,155,.08); border-color: rgba(255,138,155,.35); }
+.mb-msg-ok { color: var(--ok); background: rgba(123,217,166,.08); border-color: rgba(123,217,166,.3); }
+.mb-msg-info { color: var(--t1); background: var(--raised); border-color: var(--line-strong); }
+/* Aviso destacado: borde ámbar sobre negro, texto blanco (el ámbar nunca lleva texto blanco encima). */
+.mb-notice { display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; border-radius: var(--r-md); background: #000; border: 1px solid var(--line-strong); border-left: 3px solid var(--amber); color: var(--t1); font-size: var(--t-small); line-height: 1.55; }
+.mb-notice strong { font-weight: 600; }
+.mb-badge { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px; background: var(--amber); color: var(--on-amber); font: 600 11px/1 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; }
+
+/* Pasos del reset (1 email · 2 mail · 3 contraseña): tres barras y un rótulo. */
+.mb-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; list-style: none; margin: 0 0 10px; padding: 0; }
+.mb-steps li { height: 3px; border-radius: 2px; background: var(--line-strong); }
+.mb-steps li[data-state="done"] { background: var(--nt-blue-400); }
+.mb-steps li[aria-current="step"] { background: var(--nt-blue-300); }
+.mb-step-label { margin: 0 0 20px; font: 500 var(--t-mono)/1.3 var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--t2); }
+
+/* Medidor de contraseña */
+.mb-meter { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 2px; }
+.mb-meter span { height: 4px; border-radius: 2px; background: var(--line-strong); }
+.mb-meter[data-score="1"] span:nth-child(-n+1),
+.mb-meter[data-score="2"] span:nth-child(-n+2),
+.mb-meter[data-score="3"] span:nth-child(-n+3),
+.mb-meter[data-score="4"] span { background: var(--nt-blue-300); }
+
+/* Ícono de estado (check / reloj) dentro de un aro */
+.mb-state-icon { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--line-strong); background: #000; color: var(--blue-text); margin-bottom: 20px; }
+.mb-state-icon svg { width: 26px; height: 26px; }
+
+/* ─── Dashboard ──────────────────────────────────────────── */
+.mb-wrap { max-width: 1120px; margin: 0 auto; padding: clamp(32px, 5vw, 56px) clamp(20px, 5vw, 64px) 96px; }
+.mb-hero { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; margin-bottom: 32px; }
+.mb-avatar {
+  flex: none; width: 80px; height: 80px; border-radius: 50%;
+  display: grid; place-items: center;
+  font: 700 28px/1 var(--f-display); letter-spacing: -0.02em;
+  color: #fff; background: #000; border: 1px solid var(--line-strong);
+  box-shadow: inset 0 0 0 6px var(--surface);
+}
+.mb-avatar-sm { width: 48px; height: 48px; font-size: 18px; box-shadow: inset 0 0 0 4px var(--surface); }
+.mb-hero-meta { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 12px; color: var(--t2); font-size: var(--t-small); }
+.mb-hero-meta > span { display: inline-flex; gap: 8px; align-items: baseline; }
+.mb-hero-meta .mb-mono { color: var(--t3); }
+
+.mb-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+.mb-col { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+@media (max-width: 900px) { .mb-grid { grid-template-columns: 1fr; } }
+
+.mb-panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: clamp(20px, 3vw, 32px); min-width: 0; }
+.mb-panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 4px; }
+.mb-panel .mb-form { margin-top: 20px; }
+.mb-panel-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 4px; }
+.mb-divider { height: 1px; background: var(--line); border: 0; margin: 24px 0; }
+
+/* Ficha (misma pieza que el directorio de la home) */
+.mb-member { display: flex; gap: 14px; align-items: center; padding: 16px; margin-top: 16px; border-radius: var(--r-md); background: #000; border: 1px solid var(--line); }
+.mb-member-name { font: 700 17px/1.25 var(--f-display); letter-spacing: -0.01em; margin: 0; overflow-wrap: anywhere; }
+.mb-member-role { font-size: var(--t-small); color: var(--t2); margin: 2px 0 0; overflow-wrap: anywhere; }
+.mb-member + .mb-chips { margin-top: 12px; }
+.mb-site { display: inline-flex; gap: 6px; align-items: center; margin-top: 12px; font-size: var(--t-small); overflow-wrap: anywhere; }
+
+/* La comunidad hoy: totales reales de la base */
+.mb-stat-total { display: flex; align-items: baseline; gap: 12px; margin: 12px 0 16px; }
+.mb-stat-total b { font: 700 clamp(40px, 4vw, 52px)/1 var(--f-display); letter-spacing: -0.03em; }
+.mb-stats { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 20px; }
+.mb-stats li { display: flex; justify-content: space-between; gap: 8px; padding: 10px 0; border-top: 1px solid var(--line); font-size: var(--t-small); color: var(--t2); }
+.mb-stats li b { color: var(--t1); font: 600 var(--t-small)/1.6 var(--f-mono); }
+
+@media (prefers-reduced-motion: reduce) {
+  .mb *, .mb *::before { transition: none !important; animation: none !important; }
+}

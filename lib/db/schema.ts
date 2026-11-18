@@ -1,4 +1,4 @@
-import { pgTable, serial, text, varchar, integer, timestamp, boolean, index } from 'drizzle-orm/pg-core';
+import { pgTable, serial, bigserial, text, varchar, char, integer, timestamp, boolean, index } from 'drizzle-orm/pg-core';
 
 export const members = pgTable(
   'members',
@@ -32,6 +32,10 @@ export const members = pgTable(
     profileSubmittedAt: timestamp('profile_submitted_at', { withTimezone: true }),
     // cuándo se le mandó el link mágico de la campaña (para reminders y prune).
     reengagedAt: timestamp('reengaged_at', { withTimezone: true }),
+    // Versión de sesión (drizzle/0006): las cookies guardan la versión con la que
+    // se abrieron; al cambiar o restablecer la contraseña se incrementa y las
+    // sesiones viejas dejan de valer.
+    sessionVersion: integer('session_version').notNull().default(0),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
@@ -52,3 +56,34 @@ export const appSettings = pgTable('app_settings', {
 });
 
 export type AppSetting = typeof appSettings.$inferSelect;
+
+// Reset de contraseña (drizzle/0006). Sólo se guarda el SHA-256 del token.
+export const passwordResetTokens = pgTable(
+  'password_reset_tokens',
+  {
+    id: serial('id').primaryKey(),
+    memberId: integer('member_id').notNull().references(() => members.id, { onDelete: 'cascade' }),
+    tokenHash: char('token_hash', { length: 64 }).notNull().unique(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    usedAt: timestamp('used_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    memberIdx: index('password_reset_tokens_member_idx').on(t.memberId),
+  }),
+);
+
+export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
+
+// Rate limit de endpoints de auth (drizzle/0006). bucket = "<scope>:<sha256 corto>".
+export const authRateLimits = pgTable(
+  'auth_rate_limits',
+  {
+    id: bigserial('id', { mode: 'number' }).primaryKey(),
+    bucket: varchar('bucket', { length: 80 }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => ({
+    bucketCreatedIdx: index('auth_rate_limits_bucket_created_idx').on(t.bucket, t.createdAt),
+  }),
+);

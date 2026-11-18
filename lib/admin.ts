@@ -1,7 +1,5 @@
-import { eq } from 'drizzle-orm';
-import { getDb, schema } from './db';
-import { getSession } from './auth';
 import type { Member } from './db/schema';
+import { getActiveMember } from './member-session';
 
 // Dueño de la comunidad: la única cuenta que puede otorgar/quitar admin.
 // Configurable por env; default a la cuenta fundadora.
@@ -12,16 +10,10 @@ export function isOwner(member: { email: string } | null | undefined): boolean {
   return !!member && member.email.trim().toLowerCase() === OWNER_EMAIL;
 }
 
-/** Returns the logged-in member row, or null if no valid session. */
+/** Miembro logueado (activo y con la sesión vigente) o null. */
 export async function getCurrentMember(): Promise<Member | null> {
-  const session = await getSession();
-  if (!session.userId) return null;
-  const [m] = await getDb()
-    .select()
-    .from(schema.members)
-    .where(eq(schema.members.id, session.userId))
-    .limit(1);
-  return m ?? null;
+  const r = await getActiveMember();
+  return r?.member ?? null;
 }
 
 /** Returns the member only if it is an active admin, otherwise null. */
